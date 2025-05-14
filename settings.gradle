@@ -1,4 +1,5 @@
 rootProject.name = 'motimo'
 
 include 'motimo-api'
-include 'motimo-rdb'
+include 'motimo-infra-rdb'
+include 'motimo-domain'

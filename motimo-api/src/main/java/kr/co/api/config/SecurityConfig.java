@@ -29,7 +29,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                antMatcher("/health")
+                                antMatcher("/health"),
+                                antMatcher("/swagger-ui/index.html")
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

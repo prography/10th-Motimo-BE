@@ -19,9 +19,10 @@ public class UserMapper {
     public static UserEntity toEntity(User user) {
         if (user == null) return null;
         return UserEntity.builder()
-                .id(user.id())
-                .nickname(user.nickname())
-                .password(user.password())
+                .id(user.getId())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .password(user.getPassword())
                 .build();
     }
 }

@@ -28,9 +28,9 @@ public class UserPrincipal implements UserDetails {
                 singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new UserPrincipal(
-                user.id(),
-                user.email(),
-                user.password(),
+                user.getId(),
+                user.getEmail(),
+                user.getPassword(),
                 authorities
         );
     }
@@ -49,4 +49,5 @@ public class UserPrincipal implements UserDetails {
     public String getUsername() {
         return email;
     }
+
 }

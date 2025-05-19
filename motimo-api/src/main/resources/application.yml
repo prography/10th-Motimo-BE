@@ -14,3 +14,8 @@ spring:
       ddl-auto: create-drop
     properties:
       hibernate.dialect.storage-engine: innodb
+
+auth:
+  jwt-secret:
+  token-expiration:
+  issuer:

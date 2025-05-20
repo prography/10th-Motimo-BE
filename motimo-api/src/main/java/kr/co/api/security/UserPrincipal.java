@@ -11,12 +11,12 @@ import java.util.List;
 
 public class UserPrincipal implements UserDetails {
 
-    private Long id;
+    private String id;
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(String id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -28,7 +28,7 @@ public class UserPrincipal implements UserDetails {
                 singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new UserPrincipal(
-                user.id(),
+                user.id().toString(),
                 user.email(),
                 user.password(),
                 authorities

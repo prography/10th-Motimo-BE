@@ -11,16 +11,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
 public class UserPrincipal implements UserDetails, OAuth2User {
 
-    private String id;
+    private UUID id;
     private String email;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(String id, String email, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(UUID id, String email, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.authorities = authorities;
@@ -31,7 +32,7 @@ public class UserPrincipal implements UserDetails, OAuth2User {
                 singletonList(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new UserPrincipal(
-                user.getId().toString(),
+                user.getId(),
                 user.getEmail(),
                 authorities
         );

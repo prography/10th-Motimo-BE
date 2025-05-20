@@ -1,12 +1,10 @@
-package kr.co.api.security;
+package kr.co.api.security.jwt;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import kr.co.api.config.AuthProperties;
-import kr.co.domain.auth.dto.AuthInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -18,24 +16,23 @@ import java.util.Date;
 public class TokenProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
-    private final AuthProperties authProperties;
+    private final JwtProperties jwtProperties;
     private final SecretKey secretKey;
     private final JwtParser jwtParser;
 
-    public TokenProvider(AuthProperties authProperties) {
-        this.authProperties = authProperties;
-        byte[] keyBytes = Decoders.BASE64URL.decode(authProperties.getJwtSecret());
+    public TokenProvider(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+        byte[] keyBytes = Decoders.BASE64URL.decode(jwtProperties.getJwtSecret());
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
         this.jwtParser = Jwts.parser().verifyWith(secretKey).build();
     }
 
-    public AuthInfo createToken(Long id, String email) {
+    public TokenResponse createToken(Long id, String email) {
         String accessToken = createAccessToken(id, email);
         // todo: refresh token
-        return new AuthInfo(accessToken);
+        return new TokenResponse(accessToken);
     }
 
-    // valid token
     public boolean validateToken(String token) {
         try {
             jwtParser.parseSignedClaims(token);
@@ -54,11 +51,11 @@ public class TokenProvider {
 
     private String createAccessToken(Long id, String email) {
         Date now = new Date();
-        Date expiredDate = new Date(now.getTime() + authProperties.getTokenExpiration());
+        Date expiredDate = new Date(now.getTime() + jwtProperties.getTokenExpiration());
 
         return Jwts.builder()
                 .subject(id.toString())
-                .issuer(authProperties.getIssuer())
+                .issuer(jwtProperties.getIssuer())
                 .issuedAt(now)
                 .expiration(expiredDate)
                 .claim("userId", id)

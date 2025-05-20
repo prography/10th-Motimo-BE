@@ -5,6 +5,8 @@ import kr.co.infra.rdb.user.entity.UserEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("UserMapper 테스트")
@@ -13,8 +15,9 @@ class UserMapperTest {
     @Test
     @DisplayName("UserEntity를 User로 매핑")
     void toDomain_ValidEntity_ReturnsUser() {
+        UUID uuid = UUID.randomUUID();
         UserEntity entity = UserEntity.builder()
-                .id(1L)
+                .id(uuid)
                 .email("test@gmail.com")
                 .nickname("tester")
                 .password("encoded_pw")
@@ -32,7 +35,8 @@ class UserMapperTest {
     @Test
     @DisplayName("User를 UserEntity로 매핑")
     void toEntity_ValidUser_ReturnsEntity() {
-        User user = new User(1L, "test@gmail.com", "tester", "encoded_pw");
+        UUID uuid = UUID.randomUUID();
+        User user = new User(uuid, "test@gmail.com", "tester", "encoded_pw");
 
         UserEntity entity = UserMapper.toEntity(user);
 

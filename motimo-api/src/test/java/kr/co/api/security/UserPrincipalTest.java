@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UserPrincipalTest {
@@ -12,7 +14,8 @@ class UserPrincipalTest {
     @Test
     @DisplayName("User로부터 UserPrincipal을 생성한다")
     void of_ValidUser_ReturnsCorrectUserPrincipal() {
-        User user = new User(1L, "test@gmail.com", "tester", "encoded_pw");
+        UUID uuid = UUID.randomUUID();
+        User user = new User(uuid, "test@gmail.com", "tester", "encoded_pw");
 
         UserPrincipal principal = UserPrincipal.of(user);
 

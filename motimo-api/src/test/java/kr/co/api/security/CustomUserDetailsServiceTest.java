@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,10 +31,11 @@ class CustomUserDetailsServiceTest {
     @Test
     @DisplayName("존재하는 이메일이면 UserPrincipal을 반환한다")
     void loadUserByUsername_UserExists_ReturnsUserPrincipal() {
+        UUID uuid = UUID.randomUUID();
         String email = "user@example.com";
         String nickname = "test user";
         String password = "encoded_pw";
-        User user = new User(1L, email, nickname, password);
+        User user = new User(uuid, email, nickname, password);
 
         given(userRepository.findByEmail(email)).willReturn(Optional.of(user));
 

@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Builder
@@ -13,7 +14,7 @@ import java.util.Objects;
 public class User {
 
     @Builder.Default
-    private Long id = null;
+    private UUID id = null;
     private String email;
     private String nickname;
     private String profileImageUrl;

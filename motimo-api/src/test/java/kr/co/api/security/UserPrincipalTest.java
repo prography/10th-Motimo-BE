@@ -13,14 +13,19 @@ class UserPrincipalTest {
 
     @Test
     @DisplayName("User로부터 UserPrincipal을 생성한다")
-    void of_ValidUser_ReturnsCorrectUserPrincipal() {
+    void create_ValidUser_ReturnsCorrectUserPrincipal() {
         UUID uuid = UUID.randomUUID();
-        User user = new User(uuid, "test@gmail.com", "tester", "encoded_pw");
+        String email = "test@gmail.com";
+        String nickname = "test user";
+        User user = User.builder()
+                .id(uuid)
+                .email(email)
+                .nickname(nickname)
+                .build();
 
-        UserPrincipal principal = UserPrincipal.of(user);
+        UserPrincipal principal = UserPrincipal.create(user);
 
         assertThat(principal.getUsername()).isEqualTo("test@gmail.com");
-        assertThat(principal.getPassword()).isEqualTo("encoded_pw");
         assertThat(principal.getAuthorities())
                 .extracting(GrantedAuthority::getAuthority)
                 .containsExactly("ROLE_USER");

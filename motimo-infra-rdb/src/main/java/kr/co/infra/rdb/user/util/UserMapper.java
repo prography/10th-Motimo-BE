@@ -9,11 +9,17 @@ public class UserMapper {
 
     public static User toDomain(UserEntity entity) {
         if (entity == null) return null;
-        return new User(
-                entity.getId(),
-                entity.getEmail(),
-                entity.getNickname(),
-                entity.getPassword());
+        return User.builder()
+                .id(entity.getId())
+                .email(entity.getEmail())
+                .nickname(entity.getNickname())
+                .profileImageUrl(entity.getProfileImageUrl())
+                .role(entity.getRole())
+                .provider(entity.getProvider())
+                .providerId(entity.getProviderId())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .build();
     }
 
     public static UserEntity toEntity(User user) {
@@ -22,7 +28,10 @@ public class UserMapper {
                 .id(user.getId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .password(user.getPassword())
+                .profileImageUrl(user.getProfileImageUrl())
+                .role(user.getRole())
+                .provider(user.getProvider())
+                .providerId(user.getProviderId())
                 .build();
     }
 }

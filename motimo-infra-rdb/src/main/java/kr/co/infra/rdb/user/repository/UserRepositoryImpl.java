@@ -7,6 +7,8 @@ import kr.co.infra.rdb.user.entity.UserEntity;
 import kr.co.infra.rdb.user.util.UserMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 
@@ -17,7 +19,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User findById(Long id) {
+    public User findById(UUID id) {
         UserEntity userEntity = userJpaRepository.findById(id)
                 .orElseThrow(UserNotFoundException::new);
         return UserMapper.toDomain(userEntity);

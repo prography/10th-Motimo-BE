@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class TokenProvider {
@@ -27,8 +28,8 @@ public class TokenProvider {
         this.jwtParser = Jwts.parser().verifyWith(secretKey).build();
     }
 
-    public TokenResponse createToken(Long id, String email) {
-        String accessToken = createAccessToken(id, email);
+    public TokenResponse createToken(UUID id, String email) {
+        String accessToken = createAccessToken(id.toString(), email);
         // todo: refresh token
         return new TokenResponse(accessToken);
     }
@@ -43,18 +44,25 @@ public class TokenProvider {
         }
     }
 
-    public Long getIdFromToken(String token) {
-        return jwtParser.parseSignedClaims(token)
+    public UUID getIdFromToken(String token) {
+        String userId = jwtParser.parseSignedClaims(token)
                 .getPayload()
-                .get("userId", Long.class);
+                .get("userId", String.class);
+
+        try {
+            return UUID.fromString(userId);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid UUID format in token: {}", userId);
+            throw new IllegalArgumentException("토큰에서 유효하지 않은 UUID를 찾았습니다: " + userId, e);
+        }
     }
 
-    private String createAccessToken(Long id, String email) {
+    private String createAccessToken(String id, String email) {
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + jwtProperties.getTokenExpiration());
 
         return Jwts.builder()
-                .subject(id.toString())
+                .subject(id)
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(now)
                 .expiration(expiredDate)

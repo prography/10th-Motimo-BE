@@ -1,12 +1,11 @@
 package kr.co.api.user.service;
 
-import kr.co.domain.user.dto.UserInfo;
-import kr.co.domain.user.exception.DuplicateEmailException;
-import kr.co.domain.user.exception.InvalidPasswordException;
+import kr.co.domain.auth.oauth2.OAuth2UserInfo;
+import kr.co.domain.user.model.Provider;
+import kr.co.domain.user.model.Role;
 import kr.co.domain.user.model.User;
 import kr.co.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,26 +14,38 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void create(String email, String nickname, String password) {
-        if (userRepository.existsByEmail(email)) throw new DuplicateEmailException();
-        User user = User.builder()
-                .email(email)
-                .nickname(nickname)
-                .password(passwordEncoder.encode(password))
-                .build();
-        userRepository.save(user);
+    public User loginFromOAuth2(OAuth2UserInfo oAuth2UserInfo, String registrationId) {
+        if (userRepository.existsByEmail(oAuth2UserInfo.getEmail())) {
+            User existingUser = userRepository.findByEmail(oAuth2UserInfo.getEmail());
+            return updateExistingUser(existingUser, oAuth2UserInfo);
+        }
+        User newUser = registerUserFromOAuth2(oAuth2UserInfo, registrationId);
+        return userRepository.save(newUser);
     }
 
-    public UserInfo getUserByEmailAndPassword(String email, String password) {
-        User user = userRepository.findByEmail(email);
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new InvalidPasswordException();
-        }
+    public User findById(Long id) {
+        return userRepository.findById(id);
+    }
 
-        return UserInfo.from(user);
+    private User registerUserFromOAuth2(OAuth2UserInfo oAuth2UserInfo, String registrationId) {
+        return User.builder()
+                .nickname(oAuth2UserInfo.getName())
+                .email(oAuth2UserInfo.getEmail())
+                .profileImageUrl(oAuth2UserInfo.getImageUrl())
+                .role(Role.USER)
+                .provider(Provider.valueOf(registrationId.toUpperCase()))
+                .providerId(oAuth2UserInfo.getId())
+                .build();
+    }
+
+    private User updateExistingUser(User existingUser, OAuth2UserInfo oauth2UserInfo) {
+        existingUser.updateProfile(oauth2UserInfo.getName(), oauth2UserInfo.getImageUrl());
+        return userRepository.save(existingUser);
     }
 }

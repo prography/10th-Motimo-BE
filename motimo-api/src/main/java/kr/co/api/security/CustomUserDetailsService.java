@@ -1,7 +1,7 @@
 package kr.co.api.security;
 
+import kr.co.api.user.service.UserService;
 import kr.co.domain.user.model.User;
-import kr.co.domain.user.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,21 +10,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username);
-        return UserPrincipal.of(user);
+        User user = userService.findByEmail(username);
+        return UserPrincipal.create(user);
     }
 
     public UserDetails loadUserById(Long id) {
-        User user = userRepository.findById(id);
-        return UserPrincipal.of(user);
+        User user = userService.findById(id);
+        return UserPrincipal.create(user);
     }
 
 }

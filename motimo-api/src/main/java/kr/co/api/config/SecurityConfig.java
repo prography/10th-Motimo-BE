@@ -2,8 +2,10 @@ package kr.co.api.config;
 
 import kr.co.api.security.CustomAuthenticationEntryPoint;
 import kr.co.api.security.CustomUserDetailsService;
-import kr.co.api.security.TokenAuthenticationFilter;
-import kr.co.api.security.TokenProvider;
+import kr.co.api.security.jwt.TokenAuthenticationFilter;
+import kr.co.api.security.jwt.TokenProvider;
+import kr.co.api.security.oauth2.CustomOAuth2UserService;
+import kr.co.api.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +27,8 @@ public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
@@ -58,9 +62,15 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/webjars/**",
                                 "/health",
-                                "/v1/auth/**"
+                                "/login"
                         ).permitAll()
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
                 );
 
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

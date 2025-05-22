@@ -32,7 +32,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter  {
         try {
             String token = getTokenFromRequest(request);
             if (StringUtils.hasText(token) && tokenProvider.validateToken(token)) {
-                UUID userId = tokenProvider.getIdFromToken(token);
+                UUID userId = tokenProvider.getUserIdFromToken(token);
                 UserDetails userDetails = userDetailsService.loadUserById(userId);
 
                 UsernamePasswordAuthenticationToken authentication =

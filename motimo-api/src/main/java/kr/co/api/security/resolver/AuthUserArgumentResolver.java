@@ -37,7 +37,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             if (tokenProvider.validateToken(token)) {
-                return tokenProvider.getIdFromToken(token);
+                return tokenProvider.getUserIdFromToken(token);
             }
         }
         return null;

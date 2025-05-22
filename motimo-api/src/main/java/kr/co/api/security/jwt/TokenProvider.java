@@ -28,10 +28,11 @@ public class TokenProvider {
         this.jwtParser = Jwts.parser().verifyWith(secretKey).build();
     }
 
-    public TokenResponse createToken(UUID id, String email) {
-        String accessToken = createAccessToken(id.toString(), email);
-        // todo: refresh token
-        return new TokenResponse(accessToken);
+    public TokenResponse createToken(UUID userId) {
+        UUID tokenId = UUID.randomUUID();
+        String accessToken = createAccessToken(userId.toString(), tokenId.toString());
+        String refreshToken = createRefreshToken(userId.toString(), tokenId.toString());
+        return new TokenResponse(accessToken, refreshToken, tokenId);
     }
 
     public boolean validateToken(String token) {
@@ -44,7 +45,7 @@ public class TokenProvider {
         }
     }
 
-    public UUID getIdFromToken(String token) {
+    public UUID getUserIdFromToken(String token) {
         String userId = jwtParser.parseSignedClaims(token)
                 .getPayload()
                 .get("userId", String.class);
@@ -52,22 +53,50 @@ public class TokenProvider {
         try {
             return UUID.fromString(userId);
         } catch (IllegalArgumentException e) {
-            logger.error("Invalid UUID format in token: {}", userId);
+            logger.error("Invalid User UUID Id format in token: {}", userId);
             throw new IllegalArgumentException("토큰에서 유효하지 않은 UUID를 찾았습니다: " + userId, e);
         }
     }
 
-    private String createAccessToken(String id, String email) {
+    public UUID getTokenIdFromToken(String token) {
+        String tokenId = jwtParser.parseSignedClaims(token)
+                .getPayload()
+                .get("tokenId", String.class);
+
+        try {
+            return UUID.fromString(tokenId);
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid Token UUID Id format in token: {}", tokenId);
+            throw new IllegalArgumentException("토큰에서 유효하지 않은 UUID를 찾았습니다: " + tokenId, e);
+        }
+    }
+
+    private String createAccessToken(String userId, String tokenId) {
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + jwtProperties.getTokenExpiration());
 
         return Jwts.builder()
-                .subject(id)
+                .subject(userId)
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(now)
                 .expiration(expiredDate)
-                .claim("userId", id)
-                .claim("email", email)
+                .claim("userId", userId)
+                .claim("tokenId", tokenId)
+                .signWith(secretKey)
+                .compact();
+    }
+
+    private String createRefreshToken(String userId, String tokenId) {
+        Date now = new Date();
+        Date expiredDate = new Date(now.getTime() + jwtProperties.getRefreshTokenExpiration());
+
+        return Jwts.builder()
+                .subject(userId)
+                .issuer(jwtProperties.getIssuer())
+                .issuedAt(now)
+                .expiration(expiredDate)
+                .claim("userId", userId)
+                .claim("tokenId", tokenId)
                 .signWith(secretKey)
                 .compact();
     }

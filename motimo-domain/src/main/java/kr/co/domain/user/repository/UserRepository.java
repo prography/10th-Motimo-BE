@@ -8,5 +8,5 @@ public interface UserRepository {
     User findById(UUID id);
     User findByEmail(String email);
     User save(User user);
-    Boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
 }

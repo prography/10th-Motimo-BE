@@ -30,7 +30,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         TokenResponse token = tokenProvider.createToken(userPrincipal.getId());
         refreshTokenService.saveRefreshToken(userPrincipal.getId(), token.tokenId(), token.refreshToken());
 
-        // JSON 응답으로 토큰 반환
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.setStatus(HttpServletResponse.SC_OK);

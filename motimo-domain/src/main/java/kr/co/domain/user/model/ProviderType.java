@@ -1,6 +1,6 @@
 package kr.co.domain.user.model;
 
-public enum Provider {
+public enum ProviderType {
     LOCAL,
     GOOGLE,
     KAKAO

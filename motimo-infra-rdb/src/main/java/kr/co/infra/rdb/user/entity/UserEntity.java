@@ -1,7 +1,7 @@
 package kr.co.infra.rdb.user.entity;
 
 import jakarta.persistence.*;
-import kr.co.domain.user.model.Provider;
+import kr.co.domain.user.model.ProviderType;
 import kr.co.domain.user.model.Role;
 import lombok.*;
 import org.hibernate.annotations.SoftDelete;
@@ -41,8 +41,8 @@ public class UserEntity {
     private Role role;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "provider", nullable = false)
-    private Provider provider;
+    @Column(name = "provider_type", nullable = false)
+    private ProviderType providerType;
 
     @Column(name = "provider_id")
     private String providerId;

@@ -15,7 +15,7 @@ public class UserMapper {
                 .nickname(entity.getNickname())
                 .profileImageUrl(entity.getProfileImageUrl())
                 .role(entity.getRole())
-                .provider(entity.getProvider())
+                .providerType(entity.getProviderType())
                 .providerId(entity.getProviderId())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
@@ -30,7 +30,7 @@ public class UserMapper {
                 .nickname(user.getNickname())
                 .profileImageUrl(user.getProfileImageUrl())
                 .role(user.getRole())
-                .provider(user.getProvider())
+                .providerType(user.getProviderType())
                 .providerId(user.getProviderId())
                 .build();
     }

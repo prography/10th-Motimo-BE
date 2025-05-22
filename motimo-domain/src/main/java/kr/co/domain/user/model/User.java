@@ -21,7 +21,7 @@ public class User {
     @Builder.Default
     private Role role = Role.USER;
     @Builder.Default
-    private Provider provider = Provider.LOCAL;
+    private ProviderType providerType = ProviderType.LOCAL;
     private String providerId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

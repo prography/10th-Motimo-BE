@@ -1,7 +1,7 @@
 package kr.co.api.user.service;
 
 import kr.co.domain.auth.oauth2.OAuth2UserInfo;
-import kr.co.domain.user.model.Provider;
+import kr.co.domain.user.model.ProviderType;
 import kr.co.domain.user.model.Role;
 import kr.co.domain.user.model.User;
 import kr.co.domain.user.repository.UserRepository;
@@ -41,7 +41,7 @@ public class UserService {
                 .email(oAuth2UserInfo.getEmail())
                 .profileImageUrl(oAuth2UserInfo.getImageUrl())
                 .role(Role.USER)
-                .provider(Provider.valueOf(registrationId.toUpperCase()))
+                .providerType(ProviderType.valueOf(registrationId.toUpperCase()))
                 .providerId(oAuth2UserInfo.getId())
                 .build();
     }

@@ -4,17 +4,18 @@ import jakarta.persistence.*;
 import kr.co.domain.user.model.Provider;
 import kr.co.domain.user.model.Role;
 import lombok.*;
+import org.hibernate.annotations.SoftDelete;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-
 import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
+@SoftDelete(columnName = "is_deleted")
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

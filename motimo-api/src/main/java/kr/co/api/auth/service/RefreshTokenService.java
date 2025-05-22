@@ -18,14 +18,14 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public void saveRefreshToken(UUID userId, UUID tokenId, String token) {
-        RefreshToken refreshToken = RefreshToken.builder()
+    public void saveRefreshToken(UUID userId, UUID tokenId, String refreshToken) {
+        RefreshToken token = RefreshToken.builder()
                 .tokenId(tokenId)
                 .userId(userId)
-                .token(token)
+                .token(refreshToken)
                 .build();
 
-        refreshTokenRepository.save(refreshToken);
+        refreshTokenRepository.save(token);
     }
 
     public String getTokenByTokenId(UUID tokenId) {

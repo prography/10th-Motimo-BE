@@ -1,6 +1,5 @@
 package kr.co.api.security.jwt;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -24,11 +23,9 @@ class TokenProviderTest {
     private TokenProvider tokenProvider;
 
     @Test
-    @DisplayName("정상 토큰 생성 및 검증")
-    void createAndValidateToken_Success() {
+    void 토큰_정상생성() {
         // given
         UUID userId = UUID.randomUUID();
-        String email = "test@gmail.com";
         when(jwtProperties.getJwtSecret()).thenReturn(TEST_SECRET);
         when(jwtProperties.getTokenExpiration()).thenReturn(TOKEN_EXPIRATION);
         when(jwtProperties.getIssuer()).thenReturn(ISSUER);
@@ -36,17 +33,17 @@ class TokenProviderTest {
         tokenProvider = new TokenProvider(jwtProperties);
 
         // when
-        TokenResponse tokenResponse = tokenProvider.createToken(userId, email);
-        String token = tokenResponse.accessToken();
+        TokenResponse tokenResponse = tokenProvider.createToken(userId);
+        String accessToken = tokenResponse.accessToken();
 
         // then
-        assertThat(tokenProvider.validateToken(token)).isTrue();
-        assertThat(tokenProvider.getIdFromToken(token)).isEqualTo(userId);
+        assertThat(tokenProvider.validateToken(accessToken)).isTrue();
+        assertThat(tokenProvider.getUserIdFromToken(accessToken)).isEqualTo(userId);
+        assertThat(tokenProvider.getTokenIdFromToken(accessToken)).isNotNull();
     }
 
     @Test
-    @DisplayName("잘못된 토큰 검증시 실패")
-    void validateToken_InvalidToken_Fail() {
+    void 잘못된_토큰_검증시_실패() {
         // given
         String invalidToken = "invalid.jwt.token";
         when(jwtProperties.getJwtSecret()).thenReturn(TEST_SECRET);
@@ -61,19 +58,16 @@ class TokenProviderTest {
     }
 
     @Test
-    @DisplayName("만료된 토큰 검증시 실패")
-    void validateToken_ExpiredToken_Fail() {
+    void 만료된_토큰_검증시_실패() {
         // given
         UUID userId = UUID.randomUUID();
-        String email = "expired@gmail.com";
-
         JwtProperties expiredJwtProperties = mock(JwtProperties.class);
         when(expiredJwtProperties.getJwtSecret()).thenReturn(TEST_SECRET);
         when(expiredJwtProperties.getTokenExpiration()).thenReturn(-1000L);
         when(expiredJwtProperties.getIssuer()).thenReturn(ISSUER);
 
         TokenProvider expiredProvider = new TokenProvider(expiredJwtProperties);
-        String expiredToken = expiredProvider.createToken(userId, email).accessToken();
+        String expiredToken = expiredProvider.createToken(userId).accessToken();
 
         when(jwtProperties.getJwtSecret()).thenReturn(TEST_SECRET);
         tokenProvider = new TokenProvider(jwtProperties);

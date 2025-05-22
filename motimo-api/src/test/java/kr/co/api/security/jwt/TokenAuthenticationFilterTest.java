@@ -57,7 +57,7 @@ class TokenAuthenticationFilterTest {
         UUID userId = UUID.randomUUID();
         when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(tokenProvider.validateToken(token)).thenReturn(true);
-        when(tokenProvider.getIdFromToken(token)).thenReturn(userId);
+        when(tokenProvider.getUserIdFromToken(token)).thenReturn(userId);
         when(userDetailsService.loadUserById(userId)).thenReturn(userDetails);
         when(userDetails.getAuthorities()).thenReturn(Collections.emptyList());
 
@@ -66,7 +66,7 @@ class TokenAuthenticationFilterTest {
 
         // then
         verify(tokenProvider).validateToken(token);
-        verify(tokenProvider).getIdFromToken(token);
+        verify(tokenProvider).getUserIdFromToken(token);
         verify(userDetailsService).loadUserById(userId);
         verify(filterChain).doFilter(request, response);
 

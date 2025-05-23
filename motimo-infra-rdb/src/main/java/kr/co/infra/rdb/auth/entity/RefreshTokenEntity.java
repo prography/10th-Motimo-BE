@@ -8,9 +8,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "refresh_token")
+@SoftDelete(columnName = "is_deleted")
 @Getter
 @Builder
-@SoftDelete(columnName = "is_deleted")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class RefreshTokenEntity {

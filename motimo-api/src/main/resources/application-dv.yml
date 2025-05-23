@@ -3,9 +3,9 @@ spring:
     name: motimo-api
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/motimo?ssl=false
-    username:
-    password:
+    url: {DB_URL}
+    username: {DB_USERNAME}
+    password: {DB_PW}
     driver-class-name: org.postgresql.Driver
   jpa:
     database: postgresql

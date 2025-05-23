@@ -1,16 +1,5 @@
 spring:
-  application:
-    name: motimo-api
-
   datasource:
-    url: {DB_URL}
-    username: {DB_USERNAME}
-    password: {DB_PW}
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    database: postgresql
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PW}

@@ -1,6 +1,7 @@
 package kr.co.infra.rdb.user.repository;
 
 import kr.co.domain.user.exception.UserNotFoundException;
+import kr.co.domain.user.model.ProviderType;
 import kr.co.domain.user.model.User;
 import kr.co.domain.user.repository.UserRepository;
 import kr.co.infra.rdb.user.entity.UserEntity;
@@ -33,6 +34,13 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public User findByEmailAndProviderType(String email, ProviderType providerType) {
+        UserEntity userEntity = userJpaRepository.findByEmailAndProviderType(email, providerType)
+                .orElseThrow(UserNotFoundException::new);
+        return UserMapper.toDomain(userEntity);
+    }
+
+    @Override
     public User save(User user) {
         UserEntity entity = UserMapper.toEntity(user);
         UserEntity saved = userJpaRepository.save(entity);
@@ -40,7 +48,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsByEmail(String email) {
-        return userJpaRepository.existsByEmail(email);
+    public boolean existsByEmailAndProviderType(String email, ProviderType providerType) {
+        return userJpaRepository.existsByEmailAndProviderType(email, providerType);
     }
 }

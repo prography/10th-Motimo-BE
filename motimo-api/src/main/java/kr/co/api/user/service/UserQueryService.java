@@ -1,5 +1,6 @@
 package kr.co.api.user.service;
 
+import kr.co.domain.user.model.ProviderType;
 import kr.co.domain.user.model.User;
 import kr.co.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,29 +12,22 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UserService {
+public class UserQueryService {
     private final UserRepository userRepository;
 
-    @Transactional
-    public void register(User user) {
-        userRepository.save(user);
+    public User findById(UUID id) {
+        return userRepository.findById(id);
     }
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    public User findById(UUID id) {
-        return userRepository.findById(id);
+    public User findByEmailAndProviderType(String email, ProviderType providerType) {
+        return userRepository.findByEmailAndProviderType(email, providerType);
     }
 
-    @Transactional
-    public void updateProfile(User user, String newNickname, String newProfileUrl) {
-        user.updateProfile(newNickname, newProfileUrl);
-        userRepository.save(user);
-    }
-
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+    public boolean existsByEmailAndProviderType(String email, ProviderType providerType) {
+        return userRepository.existsByEmailAndProviderType(email, providerType);
     }
 }

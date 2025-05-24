@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.co.api.auth.service.RefreshTokenService;
+import kr.co.api.auth.service.RefreshTokenCommandService;
 import kr.co.api.security.UserPrincipal;
 import kr.co.api.security.jwt.TokenProvider;
 import kr.co.api.security.jwt.TokenResponse;
@@ -20,7 +20,7 @@ import java.io.IOException;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenCommandService refreshTokenCommandService;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -28,7 +28,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                                         Authentication authentication) throws IOException, ServletException {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         TokenResponse token = tokenProvider.createToken(userPrincipal.getId());
-        refreshTokenService.saveRefreshToken(userPrincipal.getId(), token.tokenId(), token.refreshToken());
+        refreshTokenCommandService.saveRefreshToken(userPrincipal.getId(), token.tokenId(), token.refreshToken());
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");

@@ -8,16 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-@Transactional(readOnly = true)
-public class RefreshTokenService {
+@Transactional
+public class RefreshTokenCommandService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
+    public RefreshTokenCommandService(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    @Transactional
     public void saveRefreshToken(UUID userId, UUID tokenId, String refreshToken) {
         RefreshToken token = RefreshToken.builder()
                 .tokenId(tokenId)
@@ -28,11 +27,6 @@ public class RefreshTokenService {
         refreshTokenRepository.save(token);
     }
 
-    public String getTokenByTokenId(UUID tokenId) {
-        return refreshTokenRepository.getTokenByTokenId(tokenId);
-    }
-
-    @Transactional
     public void deleteByTokenId(UUID tokenId) {
         refreshTokenRepository.deleteByTokenId(tokenId);
     }

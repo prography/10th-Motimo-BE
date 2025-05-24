@@ -1,9 +1,11 @@
 package kr.co.api.security.oauth2;
 
-import kr.co.api.auth.service.AuthService;
 import kr.co.api.security.UserPrincipal;
-import kr.co.api.user.service.UserService;
+import kr.co.api.user.service.UserCommandService;
+import kr.co.api.user.service.UserQueryService;
 import kr.co.domain.auth.oauth2.OAuth2UserInfo;
+import kr.co.domain.user.model.ProviderType;
+import kr.co.domain.user.model.Role;
 import kr.co.domain.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -17,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final AuthService authService;
-    private final UserService userService;
+    private final UserCommandService userCommandService;
+    private final UserQueryService userQueryService;
 
     @Override
     @Transactional
@@ -29,9 +31,26 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory
                 .getOAuth2UserInfo(registrationId, oAuth2User.getAttributes());
 
-        authService.processOAuth2Login(oAuth2UserInfo, registrationId);
-        User user = userService.findByEmail(oAuth2UserInfo.getEmail());
+        String email = oAuth2UserInfo.getEmail();
+        ProviderType providerType = ProviderType.of(registrationId.toUpperCase());
+
+        User user = userQueryService.existsByEmailAndProviderType(email, providerType)
+                ? userQueryService.findByEmailAndProviderType(email, providerType)
+                : registerNewUser(oAuth2UserInfo, providerType);
 
         return UserPrincipal.create(user, oAuth2User.getAttributes());
+    }
+
+    private User registerNewUser(OAuth2UserInfo oAuth2UserInfo, ProviderType providerType) {
+        User newUser = User.builder()
+                .nickname(oAuth2UserInfo.getName())
+                .email(oAuth2UserInfo.getEmail())
+                .profileImageUrl(oAuth2UserInfo.getImageUrl())
+                .role(Role.USER)
+                .providerType(providerType)
+                .providerId(oAuth2UserInfo.getId())
+                .build();
+
+        return userCommandService.register(newUser);
     }
 }

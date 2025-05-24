@@ -12,7 +12,6 @@ import kr.co.api.security.oauth2.CustomOAuth2UserService;
 import kr.co.api.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import kr.co.api.security.resolver.AuthTokenArgumentResolver;
 import kr.co.api.security.resolver.AuthUserArgumentResolver;
-import kr.co.api.user.service.UserService;
 import kr.co.domain.auth.exception.InvalidTokenException;
 import kr.co.domain.auth.exception.TokenNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,9 +44,6 @@ class AuthControllerTest {
 
     @MockitoBean
     private AuthService authService;
-
-    @MockitoBean
-    private UserService userService;
 
     @MockitoBean
     private TokenProvider tokenProvider;

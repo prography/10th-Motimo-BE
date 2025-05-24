@@ -3,6 +3,7 @@ package kr.co.api.security.oauth2;
 import kr.co.domain.auth.oauth2.GoogleOAuth2UserInfo;
 import kr.co.domain.auth.oauth2.KakaoOAuth2UserInfo;
 import kr.co.domain.auth.oauth2.OAuth2UserInfo;
+import kr.co.domain.user.exception.UnsupportedProviderTypeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,8 +49,7 @@ class OAuth2UserInfoFactoryTest {
         // when & then
         assertThatThrownBy(() ->
                 OAuth2UserInfoFactory.getOAuth2UserInfo(unsupportedProvider, attributes)
-        ).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(unsupportedProvider + " is not supported yet.");
+        ).isInstanceOf(UnsupportedProviderTypeException.class);
     }
 
     @Test

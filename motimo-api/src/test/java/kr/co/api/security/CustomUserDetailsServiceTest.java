@@ -1,6 +1,6 @@
 package kr.co.api.security;
 
-import kr.co.api.user.service.UserService;
+import kr.co.api.user.service.UserQueryService;
 import kr.co.domain.user.exception.UserNotFoundException;
 import kr.co.domain.user.model.User;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 class CustomUserDetailsServiceTest {
 
     @Mock
-    private UserService userService;
+    private UserQueryService userQueryService;
 
     @InjectMocks
     private CustomUserDetailsService customUserDetailsService;
@@ -41,7 +41,7 @@ class CustomUserDetailsServiceTest {
                 .nickname(nickname)
                 .build();
 
-        given(userService.findByEmail(email)).willReturn(user);
+        given(userQueryService.findByEmail(email)).willReturn(user);
 
         UserDetails result = customUserDetailsService.loadUserByUsername(email);
 
@@ -54,12 +54,12 @@ class CustomUserDetailsServiceTest {
     void loadUserByUsername_notFound() {
         // given
         String email = "notfound@example.com";
-        when(userService.findByEmail(email)).thenThrow(new UserNotFoundException());
+        when(userQueryService.findByEmail(email)).thenThrow(new UserNotFoundException());
 
         // when & then
         assertThatThrownBy(() -> customUserDetailsService.loadUserByUsername(email))
                 .isInstanceOf(UserNotFoundException.class);
-        verify(userService).findByEmail(email);
+        verify(userQueryService).findByEmail(email);
     }
 
     @Test
@@ -74,13 +74,13 @@ class CustomUserDetailsServiceTest {
                 .email(email)
                 .nickname(nickname)
                 .build();
-        when(userService.findById(userId)).thenReturn(user);
+        when(userQueryService.findById(userId)).thenReturn(user);
 
         // when
         UserDetails userDetails = customUserDetailsService.loadUserById(userId);
 
         // then
-        verify(userService).findById(userId);
+        verify(userQueryService).findById(userId);
         assertThat(userDetails).isNotNull();
         assertThat(userDetails.getUsername()).isEqualTo(email);
     }
@@ -90,12 +90,12 @@ class CustomUserDetailsServiceTest {
     void loadUserById_notFound() {
         // given
         UUID userId = UUID.randomUUID();
-        when(userService.findById(userId)).thenThrow(new UserNotFoundException());
+        when(userQueryService.findById(userId)).thenThrow(new UserNotFoundException());
 
         // when & then
         assertThatThrownBy(() -> customUserDetailsService.loadUserById(userId))
                 .isInstanceOf(UserNotFoundException.class);
-        verify(userService).findById(userId);
+        verify(userQueryService).findById(userId);
     }
 
 }

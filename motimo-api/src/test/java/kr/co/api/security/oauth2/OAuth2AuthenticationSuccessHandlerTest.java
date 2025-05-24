@@ -1,7 +1,7 @@
 package kr.co.api.security.oauth2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.co.api.auth.service.RefreshTokenService;
+import kr.co.api.auth.service.RefreshTokenCommandService;
 import kr.co.api.security.UserPrincipal;
 import kr.co.api.security.jwt.TokenProvider;
 import kr.co.api.security.jwt.TokenResponse;
@@ -28,7 +28,7 @@ class OAuth2AuthenticationSuccessHandlerTest {
     private TokenProvider tokenProvider;
 
     @Mock
-    private RefreshTokenService refreshTokenService;
+    private RefreshTokenCommandService refreshTokenCommandService;
 
     @Mock
     private ObjectMapper objectMapper;
@@ -71,7 +71,7 @@ class OAuth2AuthenticationSuccessHandlerTest {
 
         // then
         verify(tokenProvider).createToken(userId);
-        verify(refreshTokenService).saveRefreshToken(userId, tokenId, refreshToken);
+        verify(refreshTokenCommandService).saveRefreshToken(userId, tokenId, refreshToken);
         verify(objectMapper).writeValueAsString(tokenResponse);
         assertThat(response.getContentAsString()).isEqualTo(expectedJsonResponse);
     }
@@ -107,7 +107,7 @@ class OAuth2AuthenticationSuccessHandlerTest {
         ).isInstanceOf(RuntimeException.class)
                 .hasMessage("토큰 생성 실패");
 
-        verify(refreshTokenService, never()).saveRefreshToken(any(), any(), any());
+        verify(refreshTokenCommandService, never()).saveRefreshToken(any(), any(), any());
     }
 
     @Test
@@ -126,7 +126,7 @@ class OAuth2AuthenticationSuccessHandlerTest {
         when(userPrincipal.getId()).thenReturn(userId);
         when(tokenProvider.createToken(userId)).thenReturn(tokenResponse);
         doThrow(new RuntimeException("refreshTokenService exception"))
-                .when(refreshTokenService).saveRefreshToken(userId, tokenId, refreshToken);
+                .when(refreshTokenCommandService).saveRefreshToken(userId, tokenId, refreshToken);
 
         // when & then
         assertThatThrownBy(() ->
@@ -135,7 +135,7 @@ class OAuth2AuthenticationSuccessHandlerTest {
                 .hasMessage("refreshTokenService exception");
 
         verify(tokenProvider).createToken(userId);
-        verify(refreshTokenService).saveRefreshToken(userId, tokenId, refreshToken);
+        verify(refreshTokenCommandService).saveRefreshToken(userId, tokenId, refreshToken);
         verify(objectMapper, never()).writeValueAsString(any());
     }
 
@@ -166,9 +166,9 @@ class OAuth2AuthenticationSuccessHandlerTest {
         oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
 
         // then
-        InOrder inOrder = inOrder(tokenProvider, refreshTokenService, objectMapper);
+        InOrder inOrder = inOrder(tokenProvider, refreshTokenCommandService, objectMapper);
         inOrder.verify(tokenProvider).createToken(userId);
-        inOrder.verify(refreshTokenService).saveRefreshToken(userId, tokenId, refreshToken);
+        inOrder.verify(refreshTokenCommandService).saveRefreshToken(userId, tokenId, refreshToken);
         inOrder.verify(objectMapper).writeValueAsString(tokenResponse);
     }
 }

@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: motimo-infra-rdb
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/motimo?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: rootpassword
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate.dialect.storage-engine: innodb

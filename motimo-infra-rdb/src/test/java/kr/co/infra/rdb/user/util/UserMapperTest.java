@@ -20,29 +20,32 @@ class UserMapperTest {
                 .id(uuid)
                 .email("test@gmail.com")
                 .nickname("tester")
-                .password("encoded_pw")
                 .build();
 
         User user = UserMapper.toDomain(entity);
 
         assertThat(user).isNotNull();
-        assertThat(user.id()).isEqualTo(entity.getId());
-        assertThat(user.email()).isEqualTo(entity.getEmail());
-        assertThat(user.nickname()).isEqualTo(entity.getNickname());
-        assertThat(user.password()).isEqualTo(entity.getPassword());
+        assertThat(user.getId()).isEqualTo(entity.getId());
+        assertThat(user.getEmail()).isEqualTo(entity.getEmail());
+        assertThat(user.getNickname()).isEqualTo(entity.getNickname());
     }
 
     @Test
     @DisplayName("User를 UserEntity로 매핑")
     void toEntity_ValidUser_ReturnsEntity() {
         UUID uuid = UUID.randomUUID();
-        User user = new User(uuid, "test@gmail.com", "tester", "encoded_pw");
+        User user = User.builder()
+                .id(uuid)
+                .email("test@gmail.com")
+                .nickname("tester")
+                .profileImageUrl("")
+                .build();
 
         UserEntity entity = UserMapper.toEntity(user);
 
         assertThat(entity).isNotNull();
-        assertThat(entity.getId()).isEqualTo(user.id());
-        assertThat(entity.getNickname()).isEqualTo(user.nickname());
-        assertThat(entity.getPassword()).isEqualTo(user.password());
+        assertThat(entity.getId()).isEqualTo(user.getId());
+        assertThat(entity.getEmail()).isEqualTo(user.getEmail());
+        assertThat(entity.getNickname()).isEqualTo(user.getNickname());
     }
 }

@@ -1,12 +1,14 @@
 package kr.co.infra.rdb.user.repository;
 
-import kr.co.infra.rdb.user.entity.UserEntity;
-import kr.co.infra.rdb.user.util.UserMapper;
+import kr.co.domain.user.exception.UserNotFoundException;
+import kr.co.domain.user.model.ProviderType;
 import kr.co.domain.user.model.User;
 import kr.co.domain.user.repository.UserRepository;
+import kr.co.infra.rdb.user.entity.UserEntity;
+import kr.co.infra.rdb.user.util.UserMapper;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
@@ -18,8 +20,24 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        return Optional.empty();
+    public User findById(UUID id) {
+        UserEntity userEntity = userJpaRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+        return UserMapper.toDomain(userEntity);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        UserEntity userEntity = userJpaRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+        return UserMapper.toDomain(userEntity);
+    }
+
+    @Override
+    public User findByEmailAndProviderType(String email, ProviderType providerType) {
+        UserEntity userEntity = userJpaRepository.findByEmailAndProviderType(email, providerType)
+                .orElseThrow(UserNotFoundException::new);
+        return UserMapper.toDomain(userEntity);
     }
 
     @Override
@@ -27,5 +45,10 @@ public class UserRepositoryImpl implements UserRepository {
         UserEntity entity = UserMapper.toEntity(user);
         UserEntity saved = userJpaRepository.save(entity);
         return UserMapper.toDomain(saved);
+    }
+
+    @Override
+    public boolean existsByEmailAndProviderType(String email, ProviderType providerType) {
+        return userJpaRepository.existsByEmailAndProviderType(email, providerType);
     }
 }

@@ -18,10 +18,10 @@ public class RefreshTokenEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "token_id", nullable = false, unique = true, columnDefinition = "BINARY(16)")
+    @Column(name = "token_id", nullable = false, unique = true)
     private UUID tokenId;
 
-    @Column(name = "user_id", nullable = false, columnDefinition = "BINARY(16)")
+    @Column(name = "user_id", nullable = false)
     private UUID userId;
 
     @Column(name = "token", nullable = false, length = 512)

@@ -3,32 +3,32 @@ spring:
     name: motimo-api
 
   datasource:
-    url: jdbc:mysql://localhost:3306/?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    url: jdbc:postgresql://localhost:5432/motimo?ssl=false
     username:
     password:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.postgresql.Driver
   jpa:
-    database: mysql
+    database: postgresql
     show-sql: true
     hibernate:
       ddl-auto: create-drop
     properties:
-      hibernate.dialect.storage-engine: innodb
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
 
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: { 구글_클라이언트_ID }
-            client-secret: { 구글_클라이언트_시크릿 }
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             redirect-uri: http://localhost:8080/login/oauth2/code/google
             scope:
               - email
               - profile
           kakao:
-            client-id: { 카카오_클라이언트_ID }
-            client-secret: { 카카오_클라이언트_시크릿 }
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             redirect-uri: http://localhost:8080/login/oauth2/code/kakao
@@ -48,6 +48,7 @@ spring:
 
 auth:
   jwt:
-    jwt-secret:
-    token-expiration:
-    issuer:
+    jwt-secret: ${JWT_SECRET_KEY}
+    token-expiration: ${ACCESS_TOKEN_EXP}
+    refresh-token-expiration: ${REFRESH_TOKEN_EXP}
+    issuer: ${ISSUER}

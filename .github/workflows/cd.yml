@@ -53,7 +53,7 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/motimo:${{ steps.git_info.outputs.commit_hash }}
           docker stop motimo || true
           docker rm motimo || true
-          docker run --env-file .env \
+          docker run -d --env-file .env \
             -e SPRING_PROFILES_ACTIVE=dv \
             --name motimo \
             -p 8080:8080 \

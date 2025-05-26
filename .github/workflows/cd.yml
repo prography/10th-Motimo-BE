@@ -54,6 +54,7 @@ jobs:
           docker stop motimo || true
           docker rm motimo || true
           docker run --env-file .env \
+            -e SPRING_PROFILES_ACTIVE=dv \
             --name motimo \
             -p 8080:8080 \
             ${{ secrets.DOCKER_USERNAME }}/motimo:latest

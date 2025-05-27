@@ -1,6 +1,7 @@
 package kr.co.infra.rdb.auth.entity;
 
 import jakarta.persistence.*;
+import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
 import lombok.*;
 import org.hibernate.annotations.SoftDelete;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RefreshTokenEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedUuidV7Value
     private UUID id;
 
     @Column(name = "token_id", nullable = false, unique = true)

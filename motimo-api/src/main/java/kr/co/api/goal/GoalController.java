@@ -21,7 +21,7 @@ public class GoalController implements GoalControllerSwagger {
         return null;
     }
 
-    @PutMapping("/{:id}")
+    @PutMapping("/{id}")
     public IdRs update(@PathVariable String id, GoalUpdateRq rq) {
         return null;
     }

@@ -1,7 +1,7 @@
 package kr.co.api.cheer;
 
 import kr.co.api.cheer.docs.CheerControllerSwagger;
-import kr.co.api.cheer.rqrs.PhraseReadRs;
+import kr.co.api.cheer.rqrs.CheerPhraseRs;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CheerController implements CheerControllerSwagger {
 
     @GetMapping
-    public PhraseReadRs readPhrase() {
+    public CheerPhraseRs readCheerPhrase() {
         return null;
     }
 }

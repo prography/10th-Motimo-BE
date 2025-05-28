@@ -17,7 +17,7 @@ public record GoalUpdateRq(
 
     @NotNull
     @Schema(description = "목표 완료 날짜", format = "date")
-    LocalDate date,
+    LocalDate dueDate,
 
     @Schema(description = "세부 목표 목록")
     List<SubGoalUpdateRq> subGoals

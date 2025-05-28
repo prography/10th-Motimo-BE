@@ -1,6 +1,6 @@
 package kr.co.api.goal;
 
-import kr.co.api.common.rs.IdRs;
+import kr.co.api.common.rs.CreateIdRs;
 import kr.co.api.goal.docs.GoalControllerSwagger;
 import kr.co.api.goal.rqrs.GoalCreateRq;
 import kr.co.api.goal.rqrs.GoalListReadRs;
@@ -17,13 +17,12 @@ public class GoalController implements GoalControllerSwagger {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public IdRs create(@RequestBody GoalCreateRq rq) {
+    public CreateIdRs create(@RequestBody GoalCreateRq rq) {
         return null;
     }
 
     @PutMapping("/{id}")
-    public IdRs update(@PathVariable String id, GoalUpdateRq rq) {
-        return null;
+    public void update(@PathVariable String id, GoalUpdateRq rq) {
     }
 
     @GetMapping

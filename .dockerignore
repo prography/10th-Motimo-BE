@@ -3,3 +3,17 @@ build/
 **/build/
 out/
 !api/build/libs/
+
+# Gradle
+.gradle
+
+# IDE
+.idea
+*.iml
+
+# OS
+.DS_Store
+
+# Git
+.git
+.gitignore

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/users")
 public class UserController implements UserControllerSwagger {
 
-    @GetMapping("/joined-dates")
+    @GetMapping("/me/joined-date")
     public UserJoinedDateRs readJoinedDate() {
         return null;
     }

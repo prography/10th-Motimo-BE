@@ -65,6 +65,7 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
     - name: Deploy to server
+      working-directory: ./
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
           set -x

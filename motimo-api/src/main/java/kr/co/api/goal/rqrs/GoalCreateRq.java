@@ -17,7 +17,7 @@ public record GoalCreateRq(
 
     @NotNull
     @Schema(description = "개월 수로 기간 설정 여부")
-    boolean isMonthSetting,
+    boolean isPeriodByMonth,
 
     @Size(min = 1, max = 12)
     @Schema(description = "목표 개월 수")

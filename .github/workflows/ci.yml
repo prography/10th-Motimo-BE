@@ -21,11 +21,13 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: Set up Gradle with cache
+    - name: Set up Gradle without cache
       uses: gradle/actions/setup-gradle@v4
+      with:
+        cache-disabled: true
 
     - name: Build without tests
-      run: ./gradlew clean build -x test
+      run: ./gradlew bootJar -x test
 
   dependency-submission:
 

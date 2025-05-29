@@ -14,7 +14,7 @@ import java.util.UUID;
 public class PointController implements PointControllerSwagger {
 
     @GetMapping
-    public PointRs read(@AuthUser UUID userId) {
+    public PointRs getPoint(@AuthUser UUID userId) {
         return new PointRs(3000);
     }
 }

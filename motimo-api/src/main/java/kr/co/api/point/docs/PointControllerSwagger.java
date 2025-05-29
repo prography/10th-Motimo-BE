@@ -11,5 +11,5 @@ import java.util.UUID;
 public interface PointControllerSwagger {
 
     @Operation(summary = "현재 획득한 포인트 조회 API", description = "사용자가 획득한 포인트를 조회합니다.")
-    PointRs read(@AuthUser UUID userId);
+    PointRs getPoint(@AuthUser UUID userId);
 }

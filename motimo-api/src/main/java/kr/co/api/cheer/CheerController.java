@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CheerController implements CheerControllerSwagger {
 
     @GetMapping
-    public CheerPhraseRs readCheerPhrase() {
+    public CheerPhraseRs getCheerPhrase() {
         return new CheerPhraseRs("오늘도 파이팅이에요!");
     }
 }

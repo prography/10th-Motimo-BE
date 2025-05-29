@@ -17,16 +17,16 @@ public class GoalController implements GoalControllerSwagger {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public GoalIdRs create(@RequestBody GoalCreateRq rq) {
+    public GoalIdRs createGoal(@RequestBody GoalCreateRq rq) {
         return new GoalIdRs(UUID.randomUUID().toString());
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable String id, GoalUpdateRq rq) {
+    public void updateGoal(@PathVariable String id, GoalUpdateRq rq) {
     }
 
     @GetMapping
-    public GoalListRs readList(@AuthUser UUID userId) {
+    public GoalListRs getGoalList(@AuthUser UUID userId) {
         List<GoalItemRs> items = new ArrayList<>();
         items.add(new GoalItemRs("첫번째 목표", LocalDate.now(), 50));
         items.add(new GoalItemRs("자격증 따기", LocalDate.of(2026, 2, 10), 20));

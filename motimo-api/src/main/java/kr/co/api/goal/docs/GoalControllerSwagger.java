@@ -12,11 +12,11 @@ import java.util.UUID;
 @Tag(name = "목표 API", description = "목표 관련 API 목록입니다")
 public interface GoalControllerSwagger {
     @Operation(summary = "목표 생성 API", description = "목표를 생성합니다.")
-    GoalIdRs create(GoalCreateRq rq);
+    GoalIdRs createGoal(GoalCreateRq rq);
 
     @Operation(summary = "목표 수정 API", description = "목표를 수정합니다.")
-    void update(String id, GoalUpdateRq rq);
+    void updateGoal(String id, GoalUpdateRq rq);
 
     @Operation(summary = "목표 목록 API", description = "목표 목록을 조회합니다.")
-    GoalListRs readList(UUID userId);
+    GoalListRs getGoalList(UUID userId);
 }

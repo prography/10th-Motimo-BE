@@ -18,7 +18,7 @@ RUN ls -la /app
 FROM openjdk:21-jdk
 
 WORKDIR /app
-COPY ./motimo-api/build/libs/motimo-api-*.jar app.jar
+COPY /app/motimo-api/build/libs/motimo-api-*.jar app.jar
 
 #COPY --from=builder /app/motimo-api/build/libs/motimo-api-*.jar app.jar
 

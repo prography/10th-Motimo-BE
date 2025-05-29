@@ -22,9 +22,12 @@ jobs:
       id: git_info
       run: echo "commit_hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-    - name: Build bootJar
-      run: ./gradlew bootJar -x test
+    # - name: Build bootJar
+    #   run: ./gradlew bootJar -x test
 
+    - name: Build bootJar
+      run: ./gradlew :motimo-api:bootJar -x test
+      
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 

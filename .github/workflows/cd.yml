@@ -27,6 +27,9 @@ jobs:
 
     - name: Build bootJar
       run: ./gradlew :motimo-api:bootJar -x test
+
+    - name: Check if JAR was built
+      run: ls -al motimo-api/build/libs
       
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3

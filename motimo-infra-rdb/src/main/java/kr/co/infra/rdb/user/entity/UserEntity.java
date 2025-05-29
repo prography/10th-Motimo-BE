@@ -3,6 +3,7 @@ package kr.co.infra.rdb.user.entity;
 import jakarta.persistence.*;
 import kr.co.domain.user.model.ProviderType;
 import kr.co.domain.user.model.Role;
+import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
 import lombok.*;
 import org.hibernate.annotations.SoftDelete;
 import org.springframework.data.annotation.CreatedDate;
@@ -23,7 +24,7 @@ import java.util.UUID;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedUuidV7Value
     @Column(name = "id")
     private UUID id;
 

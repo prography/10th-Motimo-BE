@@ -1,9 +1,9 @@
 package kr.co.api.goal;
 
-import kr.co.api.common.rs.CreateIdRs;
 import kr.co.api.goal.docs.GoalControllerSwagger;
 import kr.co.api.goal.rqrs.GoalCreateRq;
-import kr.co.api.goal.rqrs.GoalListReadRs;
+import kr.co.api.goal.rqrs.GoalIdRs;
+import kr.co.api.goal.rqrs.GoalListRs;
 import kr.co.api.goal.rqrs.GoalUpdateRq;
 import kr.co.api.security.annotation.AuthUser;
 import org.springframework.http.HttpStatus;
@@ -17,8 +17,8 @@ public class GoalController implements GoalControllerSwagger {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public CreateIdRs create(@RequestBody GoalCreateRq rq) {
-        return null;
+    public GoalIdRs create(@RequestBody GoalCreateRq rq) {
+        return new GoalIdRs(UUID.randomUUID().toString());
     }
 
     @PutMapping("/{id}")
@@ -26,7 +26,7 @@ public class GoalController implements GoalControllerSwagger {
     }
 
     @GetMapping
-    public GoalListReadRs readList(@AuthUser UUID userId) {
+    public GoalListRs readList(@AuthUser UUID userId) {
         return null;
     }
 }

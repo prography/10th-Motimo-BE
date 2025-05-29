@@ -2,10 +2,9 @@ package kr.co.api.goal.rqrs;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public record GoalItemReadRs(
+public record GoalItemRs(
     @Schema(description = "목표 이름", example = "자격증 따기")
     String title,
 

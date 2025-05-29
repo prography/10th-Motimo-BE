@@ -1,8 +1,8 @@
-package kr.co.api.common.rs;
+package kr.co.api.goal.rqrs;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record CreateIdRs(
+public record GoalIdRs(
     @Schema(description = "생성된 아이디")
     String id
 ) {

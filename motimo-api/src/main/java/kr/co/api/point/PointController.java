@@ -1,7 +1,7 @@
 package kr.co.api.point;
 
 import kr.co.api.point.docs.PointControllerSwagger;
-import kr.co.api.point.rqrs.PointReadRs;
+import kr.co.api.point.rqrs.PointRs;
 import kr.co.api.security.annotation.AuthUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +14,7 @@ import java.util.UUID;
 public class PointController implements PointControllerSwagger {
 
     @GetMapping
-    public PointReadRs read(@AuthUser UUID userId) {
+    public PointRs read(@AuthUser UUID userId) {
         return null;
     }
 }

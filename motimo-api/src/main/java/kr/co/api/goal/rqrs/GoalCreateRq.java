@@ -1,14 +1,13 @@
 package kr.co.api.goal.rqrs;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public record GoalCreateRq(
     @NotNull
@@ -28,11 +27,7 @@ public record GoalCreateRq(
     LocalDate dueDate,
 
     @Schema(description = "세부 목표 목록")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     List<SubGoalCreateRq> subGoals
 ) {
-    public GoalCreateRq {
-        if (Objects.isNull(subGoals)) {
-            subGoals = new ArrayList<>();
-        }
-    }
 }

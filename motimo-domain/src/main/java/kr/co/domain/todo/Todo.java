@@ -21,9 +21,6 @@ public class Todo {
     @Builder.Default
     private boolean completed = false;
     private TodoResult result;
-    private Emotion emotion;
-    private String resultContent;
-    private String resultImageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

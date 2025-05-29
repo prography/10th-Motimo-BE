@@ -1,7 +1,6 @@
 package kr.co.infra.rdb.todo.entity;
 
 import jakarta.persistence.*;
-import kr.co.domain.todo.TodoResult;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
 import lombok.*;
 import org.hibernate.annotations.SoftDelete;
@@ -31,17 +30,18 @@ public class TodoEntity {
     @Column(name = "sub_goal_id")
     private UUID subGoalId;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "date")
-    private LocalDate date;
+    @Column(name = "date", nullable = false)
+    @Builder.Default
+    private LocalDate date = LocalDate.now();
 
     @Column(name = "completed")
     private boolean completed;
 
     @Embedded
-    private TodoResult result;
+    private TodoResultEmbeddable result;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)

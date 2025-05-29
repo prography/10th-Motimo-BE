@@ -1,14 +1,14 @@
 package kr.co.api.goal;
 
 import kr.co.api.goal.docs.GoalControllerSwagger;
-import kr.co.api.goal.rqrs.GoalCreateRq;
-import kr.co.api.goal.rqrs.GoalIdRs;
-import kr.co.api.goal.rqrs.GoalListRs;
-import kr.co.api.goal.rqrs.GoalUpdateRq;
+import kr.co.api.goal.rqrs.*;
 import kr.co.api.security.annotation.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -27,6 +27,12 @@ public class GoalController implements GoalControllerSwagger {
 
     @GetMapping
     public GoalListRs readList(@AuthUser UUID userId) {
-        return null;
+        List<GoalItemRs> items = new ArrayList<>();
+        items.add(new GoalItemRs("첫번째 목표", LocalDate.now(), 50));
+        items.add(new GoalItemRs("자격증 따기", LocalDate.of(2026, 2, 10), 20));
+        items.add(new GoalItemRs("노래 만들기", LocalDate.now(), 100));
+        return new GoalListRs(
+            items
+        );
     }
 }

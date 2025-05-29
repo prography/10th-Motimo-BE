@@ -12,6 +12,6 @@ public class CheerController implements CheerControllerSwagger {
 
     @GetMapping
     public CheerPhraseRs readCheerPhrase() {
-        return null;
+        return new CheerPhraseRs("오늘도 파이팅이에요!");
     }
 }

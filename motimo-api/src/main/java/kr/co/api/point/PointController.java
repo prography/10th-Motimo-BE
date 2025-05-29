@@ -15,6 +15,6 @@ public class PointController implements PointControllerSwagger {
 
     @GetMapping
     public PointRs read(@AuthUser UUID userId) {
-        return null;
+        return new PointRs(3000);
     }
 }

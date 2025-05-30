@@ -6,3 +6,11 @@ spring:
     hikari:
       maximum-pool-size: 5
       minimum-idle: 3
+  jpa:
+    properties:
+      hibernate.transaction.jta.platform: org.hibernate.service.jta.JtaPlatform
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    com.fasterxml.jackson.databind: DEBUG

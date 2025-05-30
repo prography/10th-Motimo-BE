@@ -56,3 +56,4 @@ auth:
     token-expiration: ${ACCESS_TOKEN_EXP}
     refresh-token-expiration: ${REFRESH_TOKEN_EXP}
     issuer: ${ISSUER}
+

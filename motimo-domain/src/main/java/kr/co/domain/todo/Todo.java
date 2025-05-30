@@ -1,5 +1,7 @@
 package kr.co.domain.todo;
 
+import kr.co.domain.common.exception.AccessDeniedException;
+import kr.co.domain.todo.exception.TodoErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +18,10 @@ public class Todo {
     @Builder.Default
     private UUID id = null;
     private UUID subGoalId;
+    private UUID authorId;
     private String title;
-    private LocalDate date;
+    @Builder.Default
+    private LocalDate date = LocalDate.now();
     @Builder.Default
     private boolean completed = false;
     private TodoResult result;
@@ -32,6 +36,16 @@ public class Todo {
     public void complete(TodoResult todoResult) {
         this.completed = true;
         this.result = todoResult;
+    }
+
+    public void cancelCompletion() {
+        this.completed = false;
+    }
+
+    public void validateAuthor(UUID userId) {
+        if (!this.authorId.equals(userId)) {
+            throw new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED);
+        }
     }
 }
 

@@ -27,8 +27,11 @@ public class TodoEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "sub_goal_id")
+    @Column(name = "sub_goal_id", nullable = false)
     private UUID subGoalId;
+
+    @Column(name = "author_id", nullable = false)
+    private UUID authorId;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -38,7 +41,8 @@ public class TodoEntity {
     private LocalDate date = LocalDate.now();
 
     @Column(name = "completed")
-    private boolean completed;
+    @Builder.Default
+    private boolean completed = false;
 
     @Embedded
     private TodoResultEmbeddable result;

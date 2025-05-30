@@ -90,3 +90,28 @@ jobs:
               -p 8080:8080 \
               ${{ secrets.DOCKER_USERNAME }}/motimo:latest
           EOF
+
+      - name: Deploy to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
+            set -x
+
+            # 이전 이미지 및 컨테이너 정리
+            docker stop motimo || true
+            docker rm motimo || true
+
+            # 안 쓰는 이미지 및 볼륨 정리 
+            docker image prune -f
+            docker container prune -f
+            docker volume prune -f
+
+            # 새 이미지 풀링
+            docker pull ${{ secrets.DOCKER_USERNAME }}/motimo:${{ needs.build.outputs.commit_hash }}
+
+            # 새 컨테이너 실행
+            docker run -d --env-file .env \
+              -e SPRING_PROFILES_ACTIVE=dv \
+              --name motimo \
+              -p 8080:8080 \
+              ${{ secrets.DOCKER_USERNAME }}/motimo:latest
+          EOF

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum TodoErrorCode implements ErrorCode {
     TODO_NOT_FOUND("todo를 찾을 수 없습니다.", 404),
+    TODO_ACCESS_DENIED("해당 TODO에 대한 권한이 없습니다.", 403),
     ;
 
     private final String message;

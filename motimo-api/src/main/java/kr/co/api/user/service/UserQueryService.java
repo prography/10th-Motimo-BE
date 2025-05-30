@@ -13,6 +13,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserQueryService {
+
     private final UserRepository userRepository;
 
     public User findById(UUID id) {

@@ -26,8 +26,8 @@ class OAuth2UserInfoFactoryTest {
     @ParameterizedTest
     @MethodSource("provideValidOAuth2UserInfo")
     void 여러_PROVIDER를_통해_OAuth2UserInfo를_생성한다(String provider, Map<String, Object> attributes,
-                                       Class<? extends OAuth2UserInfo> expectedClass,
-                                       String expectedId, String expectedEmail, String expectedName, String expectedImagUrl) {
+            Class<? extends OAuth2UserInfo> expectedClass,
+            String expectedId, String expectedEmail, String expectedName, String expectedImagUrl) {
         // given
         // when
         OAuth2UserInfo result = OAuth2UserInfoFactory.getOAuth2UserInfo(provider, attributes);

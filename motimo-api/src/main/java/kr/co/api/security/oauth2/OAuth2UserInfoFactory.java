@@ -10,14 +10,13 @@ import java.util.Map;
 
 public class OAuth2UserInfoFactory {
 
-    protected static OAuth2UserInfo getOAuth2UserInfo(String registrationId, Map<String, Object> attributes) {
+    protected static OAuth2UserInfo getOAuth2UserInfo(String registrationId,
+            Map<String, Object> attributes) {
         if (registrationId.equalsIgnoreCase(ProviderType.GOOGLE.name())) {
             return new GoogleOAuth2UserInfo(attributes);
-        }
-        else if (registrationId.equalsIgnoreCase(ProviderType.KAKAO.name())) {
+        } else if (registrationId.equalsIgnoreCase(ProviderType.KAKAO.name())) {
             return new KakaoOAuth2UserInfo(attributes);
-        }
-        else {
+        } else {
             throw new UnsupportedProviderTypeException();
         }
     }

@@ -34,7 +34,8 @@ public class AuthService {
         }
 
         TokenResponse newToken = tokenProvider.createToken(userId);
-        refreshTokenCommandService.saveRefreshToken(userId, newToken.tokenId(), newToken.refreshToken());
+        refreshTokenCommandService.saveRefreshToken(userId, newToken.tokenId(),
+                newToken.refreshToken());
         refreshTokenCommandService.deleteByTokenId(tokenId);
         return newToken;
     }

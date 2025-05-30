@@ -5,8 +5,7 @@ import kr.co.domain.user.exception.UnsupportedProviderTypeException;
 public enum ProviderType {
     LOCAL,
     GOOGLE,
-    KAKAO
-    ;
+    KAKAO;
 
     public static ProviderType of(String provider) {
         try {

@@ -11,6 +11,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 public class RefreshToken {
+
     @Builder.Default
     private UUID id = null;
     @NonNull

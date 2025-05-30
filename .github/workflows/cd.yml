@@ -1,10 +1,12 @@
 name: Motimo Deploy with Docker
 
-on:
-  workflow_run:
-    workflows: ["Motimo CI with Gradle"]
-    types:
-      - completed
+on: {}
+# 해당 워크플로우는 ci와 cd가 분리되었을 때 사용합니다 현재는 서버에서 이미지 빌드를 하지 않도록 ci/cd를 통합하였습니다.
+# on:
+#   workflow_run:
+#     workflows: ["Motimo CI with Gradle"]
+#     types:
+#       - completed
 
 jobs:
   docker-deploy:

@@ -8,11 +8,13 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.UUID;
 import kr.co.domain.common.exception.AccessDeniedException;
 import kr.co.domain.todo.Todo;
+import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,6 +60,16 @@ class TodoCommandServiceTest {
     }
 
     @Test
+    void 없는_투두_아이디로_투두결과_제출시_예외반환() {
+        // given
+        when(todoRepository.findById(todoId)).thenThrow(new TodoNotFoundException());
+
+        // when & then
+        assertThatThrownBy(() -> todoCommandService.cancelTodoResult(userId, todoId))
+                .isInstanceOf(TodoNotFoundException.class);
+    }
+
+    @Test
     void 작성자가_아닌_유저가_투두결과_제출_취소_요청시_예외반환() {
         // given
         Todo todo = mock(Todo.class);
@@ -85,6 +97,16 @@ class TodoCommandServiceTest {
 
         // then
         verify(todoRepository).deleteById(todoId);
+    }
+
+    @Test
+    void 없는_투두를_삭제할_경우_예외반환() {
+        // given
+        when(todoRepository.findById(todoId)).thenThrow(new TodoNotFoundException());
+
+        // when & then
+        assertThatThrownBy(() -> todoCommandService.deleteById(userId, todoId))
+                .isInstanceOf(TodoNotFoundException.class);
     }
 
     @Test

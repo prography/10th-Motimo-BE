@@ -32,7 +32,7 @@ public class GoalController implements GoalControllerSwagger {
         items.add(new GoalItemRs("자격증 따기", LocalDate.of(2026, 2, 10), 20));
         items.add(new GoalItemRs("노래 만들기", LocalDate.now(), 100));
         return new GoalListRs(
-            items
+                items
         );
     }
 }

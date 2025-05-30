@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class UserCommandService {
+
     private final UserRepository userRepository;
 
     public User register(User user) {

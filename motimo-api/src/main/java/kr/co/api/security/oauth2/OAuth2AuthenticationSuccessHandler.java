@@ -25,10 +25,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws IOException, ServletException {
+            Authentication authentication) throws IOException, ServletException {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         TokenResponse token = tokenProvider.createToken(userPrincipal.getId());
-        refreshTokenCommandService.saveRefreshToken(userPrincipal.getId(), token.tokenId(), token.refreshToken());
+        refreshTokenCommandService.saveRefreshToken(userPrincipal.getId(), token.tokenId(),
+                token.refreshToken());
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");

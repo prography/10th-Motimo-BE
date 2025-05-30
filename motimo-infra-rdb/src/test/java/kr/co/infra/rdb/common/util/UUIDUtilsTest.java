@@ -61,6 +61,7 @@ class UUIDUtilsTest {
     @Nested
     @DisplayName("클럭 시퀀스 테스트")
     class ClockSequenceTests {
+
         @Test
         void 같은_밀리초_내에서_클럭_시퀀스가_증가하는지_확인() {
             // given

@@ -8,7 +8,9 @@ import lombok.experimental.UtilityClass;
 public class UserMapper {
 
     public static User toDomain(UserEntity entity) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
         return User.builder()
                 .id(entity.getId())
                 .email(entity.getEmail())
@@ -23,7 +25,9 @@ public class UserMapper {
     }
 
     public static UserEntity toEntity(User user) {
-        if (user == null) return null;
+        if (user == null) {
+            return null;
+        }
         return UserEntity.builder()
                 .id(user.getId())
                 .email(user.getEmail())

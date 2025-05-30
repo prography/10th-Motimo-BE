@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("User Service Query 테스트")
 class UserQueryServiceTest {
+
     @Mock
     private UserRepository userRepository;
 
@@ -69,7 +70,8 @@ class UserQueryServiceTest {
                 .providerType(providerType)
                 .build();
 
-        when(userRepository.findByEmailAndProviderType(email, providerType)).thenReturn(expectedUser);
+        when(userRepository.findByEmailAndProviderType(email, providerType)).thenReturn(
+                expectedUser);
 
         // when
         User actualUser = userQueryService.findByEmailAndProviderType(email, providerType);
@@ -88,7 +90,8 @@ class UserQueryServiceTest {
         String email = "notfound@gmail.com";
         ProviderType providerType = ProviderType.of(provider);
 
-        when(userRepository.findByEmailAndProviderType(email, providerType)).thenThrow(UserNotFoundException.class);
+        when(userRepository.findByEmailAndProviderType(email, providerType)).thenThrow(
+                UserNotFoundException.class);
 
         // when & then
         assertThatThrownBy(() -> userQueryService.findByEmailAndProviderType(email, providerType))

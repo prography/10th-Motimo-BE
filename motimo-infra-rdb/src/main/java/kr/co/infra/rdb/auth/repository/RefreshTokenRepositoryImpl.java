@@ -11,6 +11,7 @@ import java.util.UUID;
 
 @Repository
 public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
+
     private final RefreshTokenJpaRepository refreshTokenJpaRepository;
 
     public RefreshTokenRepositoryImpl(RefreshTokenJpaRepository refreshTokenJpaRepository) {

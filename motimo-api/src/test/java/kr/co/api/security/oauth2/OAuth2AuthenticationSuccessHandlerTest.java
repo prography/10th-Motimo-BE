@@ -51,11 +51,11 @@ class OAuth2AuthenticationSuccessHandlerTest {
         String refreshToken = "test-refresh-token";
         TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken, tokenId);
         String expectedJsonResponse = """
-        {
-            "accessToken": "%s",
-            "refreshToken": "%s"
-        }
-        """.formatted(accessToken, refreshToken);
+                {
+                    "accessToken": "%s",
+                    "refreshToken": "%s"
+                }
+                """.formatted(accessToken, refreshToken);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -67,7 +67,8 @@ class OAuth2AuthenticationSuccessHandlerTest {
         when(objectMapper.writeValueAsString(tokenResponse)).thenReturn(expectedJsonResponse);
 
         // when
-        oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
+        oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response,
+                authentication);
 
         // then
         verify(tokenProvider).createToken(userId);
@@ -86,7 +87,8 @@ class OAuth2AuthenticationSuccessHandlerTest {
 
         // when & then
         assertThatThrownBy(() ->
-                oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication)
+                oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response,
+                        authentication)
         ).isInstanceOf(ClassCastException.class);
     }
 
@@ -103,7 +105,8 @@ class OAuth2AuthenticationSuccessHandlerTest {
 
         // when & then
         assertThatThrownBy(() ->
-                oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication)
+                oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response,
+                        authentication)
         ).isInstanceOf(RuntimeException.class)
                 .hasMessage("토큰 생성 실패");
 
@@ -130,7 +133,8 @@ class OAuth2AuthenticationSuccessHandlerTest {
 
         // when & then
         assertThatThrownBy(() ->
-                oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication)
+                oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response,
+                        authentication)
         ).isInstanceOf(RuntimeException.class)
                 .hasMessage("refreshTokenService exception");
 
@@ -148,11 +152,11 @@ class OAuth2AuthenticationSuccessHandlerTest {
         String refreshToken = "test-refresh-token";
         TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken, tokenId);
         String expectedJsonResponse = """
-        {
-            "accessToken": "%s",
-            "refreshToken": "%s"
-        }
-        """.formatted(accessToken, refreshToken);
+                {
+                    "accessToken": "%s",
+                    "refreshToken": "%s"
+                }
+                """.formatted(accessToken, refreshToken);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -163,7 +167,8 @@ class OAuth2AuthenticationSuccessHandlerTest {
         when(objectMapper.writeValueAsString(tokenResponse)).thenReturn(expectedJsonResponse);
 
         // when
-        oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
+        oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response,
+                authentication);
 
         // then
         InOrder inOrder = inOrder(tokenProvider, refreshTokenCommandService, objectMapper);

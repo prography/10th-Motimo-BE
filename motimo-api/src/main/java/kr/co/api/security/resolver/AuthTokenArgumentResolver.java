@@ -29,9 +29,9 @@ public class AuthTokenArgumentResolver implements HandlerMethodArgumentResolver 
 
     @Override
     public UUID resolveArgument(MethodParameter parameter,
-                                ModelAndViewContainer mavContainer,
-                                NativeWebRequest webRequest,
-                                WebDataBinderFactory binderFactory) throws Exception {
+            ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest,
+            WebDataBinderFactory binderFactory) throws Exception {
 
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);

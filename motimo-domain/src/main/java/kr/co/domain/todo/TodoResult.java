@@ -7,6 +7,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class TodoResult {
+
     private Emotion emotion;
     private String resultContent;
     private String resultImageUrl;

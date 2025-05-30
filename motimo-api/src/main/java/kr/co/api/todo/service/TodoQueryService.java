@@ -13,6 +13,7 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class TodoQueryService {
+
     private final TodoRepository todoRepository;
 
     public Todo getTodo(UUID id) {

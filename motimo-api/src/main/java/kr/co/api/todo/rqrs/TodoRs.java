@@ -16,7 +16,8 @@ public record TodoRs(
         @Schema(description = "투두 완료 날짜", type = "date")
         LocalDate date
 ) {
-        public static TodoRs of(Todo todo) {
-                return new TodoRs(todo.getId(), todo.getTitle(), todo.getDate());
-        }
+
+    public static TodoRs of(Todo todo) {
+        return new TodoRs(todo.getId(), todo.getTitle(), todo.getDate());
+    }
 }

@@ -24,7 +24,8 @@ public class TodoController implements TodoControllerSwagger {
     private final TodoCommandService todoCommandService;
     private final TodoQueryService todoQueryService;
 
-    public TodoController(TodoCommandService todoCommandService, TodoQueryService todoQueryService) {
+    public TodoController(TodoCommandService todoCommandService,
+            TodoQueryService todoQueryService) {
         this.todoCommandService = todoCommandService;
         this.todoQueryService = todoQueryService;
     }
@@ -38,9 +39,9 @@ public class TodoController implements TodoControllerSwagger {
     @PostMapping(value = "/{id}/result", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public void summitResult(@AuthUser UUID userId,
-                             @PathVariable UUID id,
-                             @RequestBody @Valid TodoResultRq request,
-                             @RequestPart(required = false) MultipartFile file) {
+            @PathVariable UUID id,
+            @RequestBody @Valid TodoResultRq request,
+            @RequestPart(required = false) MultipartFile file) {
         todoCommandService.submitTodoResult(userId, id, request, file);
     }
 
@@ -53,12 +54,13 @@ public class TodoController implements TodoControllerSwagger {
 
     @GetMapping("/sub-goal/{subGoalId}")
     public CustomSlice<TodoRs> getTodosBySubGoal(@PathVariable UUID subGoalId,
-                                              @RequestParam("page") int page, @RequestParam("size") int size) {
+            @RequestParam("page") int page, @RequestParam("size") int size) {
         return todoQueryService.getTodosBySubGoal(subGoalId, page, size).map(TodoRs::of);
     }
 
     @GetMapping("/me")
-    public CustomSlice<TodoRs> getMyTodos(@AuthUser UUID userId, @RequestParam("page") int page, @RequestParam("size") int size) {
+    public CustomSlice<TodoRs> getMyTodos(@AuthUser UUID userId, @RequestParam("page") int page,
+            @RequestParam("size") int size) {
         return todoQueryService.getTodosByUser(userId, page, size).map(TodoRs::of);
     }
 

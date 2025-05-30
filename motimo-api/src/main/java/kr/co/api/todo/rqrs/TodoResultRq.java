@@ -12,4 +12,5 @@ public record TodoResultRq(
         @Schema(description = "투두 내용", example = "영어 단어를 10개를 외웠다.")
         String content
 ) {
+
 }

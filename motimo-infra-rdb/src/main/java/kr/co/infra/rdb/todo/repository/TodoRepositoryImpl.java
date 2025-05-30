@@ -19,6 +19,7 @@ import java.util.UUID;
 @Repository
 @RequiredArgsConstructor
 public class TodoRepositoryImpl implements TodoRepository {
+
     private final TodoJpaRepository todoJpaRepository;
 
     @Override
@@ -39,7 +40,8 @@ public class TodoRepositoryImpl implements TodoRepository {
     public CustomSlice<Todo> findAllBySubGoalId(UUID subGoalId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         LocalDate today = LocalDate.now();
-        Slice<TodoEntity> todoEntities = todoJpaRepository.findAllBySubGoalIdForTodayAndIncomplete(subGoalId, today, pageable);
+        Slice<TodoEntity> todoEntities = todoJpaRepository.findAllBySubGoalIdForTodayAndIncomplete(
+                subGoalId, today, pageable);
         List<Todo> todos = todoEntities.getContent().stream()
                 .map(TodoMapper::toDomain)
                 .toList();

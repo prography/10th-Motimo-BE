@@ -16,6 +16,7 @@ import java.util.UUID;
 @Transactional
 @RequiredArgsConstructor
 public class TodoCommandService {
+
     private final TodoRepository todoRepository;
 
     public void createTodo(UUID userId, UUID subGoalId, String title, LocalDate date) {
@@ -28,7 +29,8 @@ public class TodoCommandService {
         todoRepository.save(todo);
     }
 
-    public void submitTodoResult(UUID userId, UUID id, @Valid TodoResultRq request, MultipartFile file) {
+    public void submitTodoResult(UUID userId, UUID id, @Valid TodoResultRq request,
+            MultipartFile file) {
         // todo: 이미지 업로드 포함해 결과 제출 로직 구현
     }
 

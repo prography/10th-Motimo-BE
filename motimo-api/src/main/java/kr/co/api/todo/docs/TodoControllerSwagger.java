@@ -22,6 +22,7 @@ import java.util.UUID;
 
 @Tag(name = "TODO API", description = "TODO 관련 API 목록입니다")
 public interface TodoControllerSwagger {
+
     @Operation(summary = "TODO 생성", description = "새로운 TODO를 생성합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "TODO 생성 성공"),

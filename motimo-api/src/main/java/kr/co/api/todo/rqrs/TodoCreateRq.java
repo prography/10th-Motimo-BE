@@ -20,4 +20,5 @@ public record TodoCreateRq(
         @Schema(description = "투두 완료 날짜", format = "date")
         LocalDate date
 ) {
+
 }

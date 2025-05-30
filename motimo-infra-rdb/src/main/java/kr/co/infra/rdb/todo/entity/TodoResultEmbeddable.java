@@ -13,6 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class TodoResultEmbeddable {
+
     @Enumerated(EnumType.STRING)
     @Column(name = "emotion")
     private Emotion emotion;

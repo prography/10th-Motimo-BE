@@ -38,7 +38,9 @@ public class TodoMapper {
     }
 
     private static TodoResult toTodoResult(TodoResultEmbeddable embeddable) {
-        if (embeddable == null) return null;
+        if (embeddable == null) {
+            return null;
+        }
         return new TodoResult(
                 embeddable.getEmotion(),
                 embeddable.getResultContent(),
@@ -47,7 +49,9 @@ public class TodoMapper {
     }
 
     private static TodoResultEmbeddable toTodoResultEmbeddable(TodoResult result) {
-        if (result == null) return null;
+        if (result == null) {
+            return null;
+        }
         return new TodoResultEmbeddable(
                 result.getEmotion(),
                 result.getResultContent(),

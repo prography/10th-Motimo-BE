@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public interface TodoJpaRepository extends JpaRepository<TodoEntity, UUID> {
+
     // TODO: query 더 최적화해보기...
     @Query(value = """
             SELECT * FROM todo t 
@@ -23,7 +24,9 @@ public interface TodoJpaRepository extends JpaRepository<TodoEntity, UUID> {
                 END ASC
             """, nativeQuery = true)
     Slice<TodoEntity> findAllBySubGoalIdForTodayAndIncomplete(@Param("subGoalId") UUID subGoalId,
-                                         @Param("today") LocalDate today, Pageable pageable);
+            @Param("today") LocalDate today, Pageable pageable);
+
     Slice<TodoEntity> findAllBySubGoalId(UUID subGoalId, Pageable pageable);
+
     Slice<TodoEntity> findAllByAuthorId(UUID userId, Pageable pageable);
 }

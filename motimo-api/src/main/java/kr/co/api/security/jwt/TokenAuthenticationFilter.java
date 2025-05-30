@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class TokenAuthenticationFilter extends OncePerRequestFilter  {
+public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(TokenAuthenticationFilter.class);
     private final TokenProvider tokenProvider;
@@ -27,8 +27,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter  {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
         try {
             String token = getTokenFromRequest(request);
             if (StringUtils.hasText(token) && tokenProvider.validateToken(token)) {
@@ -36,8 +36,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter  {
                 UserDetails userDetails = userDetailsService.loadUserById(userId);
 
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        new UsernamePasswordAuthenticationToken(userDetails, null,
+                                userDetails.getAuthorities());
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

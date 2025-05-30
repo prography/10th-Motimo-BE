@@ -10,4 +10,5 @@ public record TokenResponse(
         @JsonIgnore
         UUID tokenId
 ) {
+
 }

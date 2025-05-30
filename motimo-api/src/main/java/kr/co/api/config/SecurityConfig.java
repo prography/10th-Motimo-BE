@@ -79,7 +79,8 @@ public class SecurityConfig {
                         .successHandler(oAuth2AuthenticationSuccessHandler)
                 );
 
-        http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(tokenAuthenticationFilter(),
+                UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

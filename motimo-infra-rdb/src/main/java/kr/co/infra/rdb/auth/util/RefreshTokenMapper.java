@@ -6,8 +6,11 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class RefreshTokenMapper {
+
     public static RefreshToken toDomain(RefreshTokenEntity entity) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
         return RefreshToken.builder()
                 .id(entity.getId())
                 .tokenId(entity.getTokenId())
@@ -17,7 +20,9 @@ public class RefreshTokenMapper {
     }
 
     public static RefreshTokenEntity toEntity(RefreshToken refreshToken) {
-        if (refreshToken == null) return null;
+        if (refreshToken == null) {
+            return null;
+        }
         return RefreshTokenEntity.builder()
                 .id(refreshToken.getId())
                 .tokenId(refreshToken.getTokenId())

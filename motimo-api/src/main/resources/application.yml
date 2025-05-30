@@ -7,13 +7,17 @@ spring:
     username:
     password:
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 1
   jpa:
     database: postgresql
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
 
   security:
     oauth2:

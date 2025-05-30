@@ -1,16 +1,19 @@
 spring:
   application:
-    name: motimo-infra-rdb
+    name: motimo-api
 
   datasource:
-    url: jdbc:mysql://localhost:3306/motimo?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: rootpassword
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:postgresql://localhost:5432/motimo?ssl=false
+    username:
+    password:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 1
   jpa:
-    database: mysql
+    database: postgresql
     show-sql: true
-    hibernate:
-      ddl-auto: create-drop
+    #    hibernate:
+    #      ddl-auto: create-drop
     properties:
-      hibernate.dialect.storage-engine: innodb
+      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect

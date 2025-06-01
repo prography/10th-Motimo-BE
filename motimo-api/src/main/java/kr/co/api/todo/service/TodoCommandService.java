@@ -37,18 +37,21 @@ public class TodoCommandService {
         Todo todo = todoRepository.findById(id);
         todo.validateAuthor(userId);
 
-        String imageName = String.format("todo/%s/%s", id, UUID.randomUUID());
-        storageService.uploadImage(image, imageName);
+        String imageName = "";
+        if (image != null && !image.isEmpty()) {
+            imageName = String.format("todo/%s/%s", id, UUID.randomUUID());
+            storageService.uploadImage(image, imageName);
+            // 이미지 삭제 이벤트 발행 (트랜잭션 롤백 시 동작)
+            Events.publishEvent(new ImageDeletedEvent(imageName));
+        }
 
         TodoResult result = TodoResult.builder()
                 .emotion(emotion)
-                .resultContent(content)
-                .resultImageUrl(imageName)
+                .content(content)
+                .imageName(imageName)
                 .build();
 
         todo.complete(result);
-        // 이미지 삭제 이벤트 발행 (트랜잭션 롤백 시 동작)
-        Events.publishEvent(new ImageDeletedEvent(imageName));
         todoRepository.save(todo);
     }
 

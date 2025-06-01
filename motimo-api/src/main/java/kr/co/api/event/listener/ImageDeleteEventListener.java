@@ -18,13 +18,12 @@ public class ImageDeleteEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
     public void handleImageDeletedOnRollback(ImageDeletedEvent event) {
         String imageName = event.getImageName();
-        storageService.deleteImage(imageName);
-//        try {
-//            storageService.deleteImage(imageName);
-//        } catch (Exception e) {
-//            // todo: 삭제 실패 시 로깅만, 재시도 x => 추후 아웃박스 도입 고려)
-//            log.error("롤백 후 이미지 삭제 실패 {}:", e.getMessage());
-//        }
+        try {
+            storageService.deleteImage(imageName);
+        } catch (Exception e) {
+            // todo: 삭제 실패 시 로깅만, 재시도 x => 추후 아웃박스 도입 고려)
+            log.error("롤백 후 이미지 삭제 실패 {}:", e.getMessage());
+        }
     }
 
 }

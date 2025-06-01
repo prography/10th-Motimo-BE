@@ -19,12 +19,12 @@ public class SupabaseStorageService implements StorageService {
     private final SupabaseProperties properties;
 
     @Override
-    public String uploadImage(MultipartFile image, String fileName) {
+    public void uploadImage(MultipartFile image, String fileName) {
 
         if (image == null || image.isEmpty()) {
-            return null;
+            return;
         }
-        
+
         WebClient webClient = getWebClient();
         byte[] fileBytes = getBytes(image);
         String contentType = image.getContentType() != null ? image.getContentType()
@@ -38,8 +38,6 @@ public class SupabaseStorageService implements StorageService {
                     .retrieve()
                     .toBodilessEntity()
                     .block();
-            return fileName;
-
         } catch (Exception e) {
             log.error("파일 업로드 중 예외 발생", e);
             throw new StorageException(StorageErrorCode.FILE_UPLOAD_FAILED);

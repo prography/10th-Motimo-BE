@@ -24,9 +24,8 @@ public class SupabaseStorageService implements StorageService {
         if (image == null || image.isEmpty()) {
             return null;
         }
-
+        
         WebClient webClient = getWebClient();
-
         byte[] fileBytes = getBytes(image);
         String contentType = image.getContentType() != null ? image.getContentType()
                 : MediaType.APPLICATION_OCTET_STREAM_VALUE;
@@ -50,7 +49,6 @@ public class SupabaseStorageService implements StorageService {
     @Override
     public void deleteImage(String fileName) {
         WebClient webClient = getWebClient();
-
         try {
             webClient.delete()
                     .uri("/storage/v1/object/{bucket}/{fileName}", properties.getBucket(), fileName)

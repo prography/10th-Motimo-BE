@@ -42,7 +42,7 @@ public interface TodoControllerSwagger {
             @ApiResponse(responseCode = "403", description = "권한 없음"),
             @ApiResponse(responseCode = "404", description = "TODO를 찾을 수 없음")
     })
-    void summitResult(
+    void submitResult(
             @Parameter(hidden = true) UUID userId,
             @Parameter(description = "TODO ID", required = true) @PathVariable UUID id,
             @RequestBody @Valid TodoResultRq request,

@@ -1,16 +1,18 @@
 package kr.co.api.todo.service;
 
-import jakarta.validation.Valid;
-import kr.co.api.todo.rqrs.TodoResultRq;
+import java.time.LocalDate;
+import java.util.UUID;
+import kr.co.domain.common.event.Events;
+import kr.co.domain.common.event.ImageDeletedEvent;
+import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
+import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.repository.TodoRepository;
+import kr.co.infra.storage.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class TodoCommandService {
 
     private final TodoRepository todoRepository;
+    private final StorageService storageService;
 
     public void createTodo(UUID userId, UUID subGoalId, String title, LocalDate date) {
         Todo todo = Todo.builder()
@@ -29,9 +32,24 @@ public class TodoCommandService {
         todoRepository.save(todo);
     }
 
-    public void submitTodoResult(UUID userId, UUID id, @Valid TodoResultRq request,
-            MultipartFile file) {
-        // todo: 이미지 업로드 포함해 결과 제출 로직 구현
+    public void submitTodoResult(UUID userId, UUID id, Emotion emotion, String content,
+            MultipartFile image) {
+        Todo todo = todoRepository.findById(id);
+        todo.validateAuthor(userId);
+
+        String imageName = String.format("todo/%s/%s", id, UUID.randomUUID());
+        storageService.uploadImage(image, imageName);
+
+        TodoResult result = TodoResult.builder()
+                .emotion(emotion)
+                .resultContent(content)
+                .resultImageUrl(imageName)
+                .build();
+
+        todo.complete(result);
+        // 이미지 삭제 이벤트 발행 (트랜잭션 롤백 시 동작)
+        Events.publishEvent(new ImageDeletedEvent(imageName));
+        todoRepository.save(todo);
     }
 
     public void cancelTodoResult(UUID userId, UUID id) {

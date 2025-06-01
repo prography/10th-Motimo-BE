@@ -9,6 +9,6 @@ import lombok.*;
 public class TodoResult {
 
     private Emotion emotion;
-    private String resultContent;
-    private String resultImageUrl;
+    private String content;
+    private String imageName;
 }

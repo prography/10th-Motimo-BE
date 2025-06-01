@@ -43,8 +43,8 @@ public class TodoMapper {
         }
         return new TodoResult(
                 embeddable.getEmotion(),
-                embeddable.getResultContent(),
-                embeddable.getResultImageUrl()
+                embeddable.getContent(),
+                embeddable.getImageName()
         );
     }
 
@@ -54,8 +54,8 @@ public class TodoMapper {
         }
         return new TodoResultEmbeddable(
                 result.getEmotion(),
-                result.getResultContent(),
-                result.getResultImageUrl()
+                result.getContent(),
+                result.getImageName()
         );
     }
 

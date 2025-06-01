@@ -18,9 +18,9 @@ public class TodoResultEmbeddable {
     @Column(name = "emotion")
     private Emotion emotion;
 
-    @Column(name = "result_content")
-    private String resultContent;
+    @Column(name = "content")
+    private String content;
 
-    @Column(name = "result_image_url")
-    private String resultImageUrl;
+    @Column(name = "image_name")
+    private String imageName;
 }

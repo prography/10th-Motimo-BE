@@ -77,19 +77,19 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
-            set -x
-            docker pull ${{ secrets.DOCKER_USERNAME }}/motimo:${{ needs.build.outputs.commit_hash }}
-            docker stop motimo || true
-            docker rm motimo || true
-            docker run -d --env-file .env \
-              -e SPRING_PROFILES_ACTIVE=dv \
-              --name motimo \
-              -p 8080:8080 \
-              ${{ secrets.DOCKER_USERNAME }}/motimo:latest
-          EOF
+      # - name: Deploy to server
+      #   run: |
+      #     ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
+      #       set -x
+      #       docker pull ${{ secrets.DOCKER_USERNAME }}/motimo:${{ needs.build.outputs.commit_hash }}
+      #       docker stop motimo || true
+      #       docker rm motimo || true
+      #       docker run -d --env-file .env \
+      #         -e SPRING_PROFILES_ACTIVE=dv \
+      #         --name motimo \
+      #         -p 8080:8080 \
+      #         ${{ secrets.DOCKER_USERNAME }}/motimo:latest
+      #     EOF
 
       - name: Deploy to server
         run: |
@@ -105,6 +105,9 @@ jobs:
             docker container prune -f
             docker volume prune -f
 
+            docker images | grep motimo
+            docker ps -a | grep motimo
+
             # 새 이미지 풀링
             docker pull ${{ secrets.DOCKER_USERNAME }}/motimo:${{ needs.build.outputs.commit_hash }}
 
@@ -113,5 +116,6 @@ jobs:
               -e SPRING_PROFILES_ACTIVE=dv \
               --name motimo \
               -p 8080:8080 \
-              ${{ secrets.DOCKER_USERNAME }}/motimo:latest
+              ${{ secrets.DOCKER_USERNAME }}/motimo:${{ needs.build.outputs.commit_hash }}
+
           EOF

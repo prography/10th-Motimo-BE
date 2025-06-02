@@ -96,14 +96,18 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
             set -x
 
-            # 이전 이미지 및 컨테이너 정리
-            docker stop motimo || true
-            docker rm motimo || true
+            # # 이전 이미지 및 컨테이너 정리
+            # docker stop motimo || true
+            # docker rm motimo || true
 
-            # 안 쓰는 이미지 및 볼륨 정리 
-            docker image prune -f
-            docker container prune -f
-            docker volume prune -f
+            # # 안 쓰는 이미지 및 볼륨 정리 
+            # docker image prune -f
+            # docker container prune -f
+            # docker volume prune -f
+            # 현재 실행 중인 컨테이너 제외하고 모두 정리
+            docker ps -aq --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/motimo" | \
+            grep -v $(docker ps -q --filter "name=motimo") | \
+            xargs -r docker rm -f
 
             docker images | grep motimo
             docker ps -a | grep motimo

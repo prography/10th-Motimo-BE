@@ -104,10 +104,17 @@ jobs:
             # docker image prune -f
             # docker container prune -f
             # docker volume prune -f
-            # 현재 실행 중인 컨테이너 제외하고 모두 정리
-            docker ps -aq --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/motimo" | \
-            grep -v $(docker ps -q --filter "name=motimo") | \
-            xargs -r docker rm -f
+            
+            docker ps -a --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/motimo" --format "{{.ID}}" | xargs -r docker rm -f
+
+            # motimo 컨테이너 중 이름이 있는 것도 제거
+            docker stop motimo || true
+            docker rm motimo || true
+
+            # 사용하지 않는 이미지, 컨테이너, 볼륨 정리
+            docker image prune -f
+            docker container prune -f
+            docker volume prune -f
 
             docker images | grep motimo
             docker ps -a | grep motimo

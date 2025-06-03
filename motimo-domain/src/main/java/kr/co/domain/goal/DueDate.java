@@ -1,5 +1,10 @@
 package kr.co.domain.goal;
 
-public class DueDate {
+import java.time.LocalDate;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor(staticName = "of")
+public class DueDate {
+    private Integer month;
+    private LocalDate dueDate;
 }

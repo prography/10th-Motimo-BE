@@ -10,6 +10,8 @@ import kr.co.api.goal.rqrs.GoalIdRs;
 import kr.co.api.goal.rqrs.GoalItemRs;
 import kr.co.api.goal.rqrs.GoalListRs;
 import kr.co.api.goal.rqrs.GoalUpdateRq;
+import kr.co.api.goal.service.GoalCommandService;
+import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.security.annotation.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,14 +27,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/goals")
 public class GoalController implements GoalControllerSwagger {
 
+    private final GoalCommandService goalCommandService;
+    private final GoalQueryService goalQueryService;
+
+    public GoalController(final GoalCommandService goalCommandService,
+            final GoalQueryService goalQueryService) {
+        this.goalCommandService = goalCommandService;
+        this.goalQueryService = goalQueryService;
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public GoalIdRs createGoal(@RequestBody GoalCreateRq rq) {
-        return new GoalIdRs(UUID.randomUUID().toString());
+    public GoalIdRs createGoal(@AuthUser UUID userId, @RequestBody GoalCreateRq rq) {
+        return new GoalIdRs(goalCommandService.createGoal(userId, rq).toString());
     }
 
     @PutMapping("/{id}")
-    public void updateGoal(@PathVariable String id, @RequestBody GoalUpdateRq rq) {
+    public void updateGoal(@AuthUser UUID userId, @PathVariable String id,
+            @RequestBody GoalUpdateRq rq) {
     }
 
     @GetMapping

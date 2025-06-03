@@ -4,20 +4,31 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import kr.co.domain.subGoal.SubGoal;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
-@Builder
-@AllArgsConstructor
-public class Goal{
+@Getter
+public class Goal {
     private UUID id;
+    public boolean completed;
     private String title;
     private DueDate dueDate;
-    public boolean completed;
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private final UUID userId;
     public LocalDateTime completedAt;
     private List<SubGoal> subGoals;
+
+    @Builder(builderMethodName = "createGoal")
+    private Goal(UUID userId, String title, DueDate dueDate, List<SubGoal> subGoals) {
+        this.userId = userId;
+        this.title = title;
+        this.dueDate = dueDate;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.completed = false;
+        this.subGoals = subGoals;
+    }
 
     public void addSubGoal(SubGoal subGoal) {
         subGoals.add(subGoal);
@@ -31,7 +42,7 @@ public class Goal{
     }
 
     public void complete() {
-        if(subGoals.stream().allMatch(SubGoal::isCompleted)) {
+        if (subGoals.stream().allMatch(SubGoal::isCompleted)) {
             completed = true;
         } else {
             throw new IllegalArgumentException();

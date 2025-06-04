@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface TodoRepository {
 
-    Todo save(Todo toDo);
+    Todo save(Todo todo);
 
     Todo findById(UUID id);
 

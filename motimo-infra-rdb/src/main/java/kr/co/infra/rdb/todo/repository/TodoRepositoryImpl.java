@@ -23,8 +23,8 @@ public class TodoRepositoryImpl implements TodoRepository {
     private final TodoJpaRepository todoJpaRepository;
 
     @Override
-    public Todo save(Todo toDo) {
-        TodoEntity entity = TodoMapper.toEntity(toDo);
+    public Todo save(Todo todo) {
+        TodoEntity entity = TodoMapper.toEntity(todo);
         TodoEntity saved = todoJpaRepository.save(entity);
         return TodoMapper.toDomain(saved);
     }
@@ -40,7 +40,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     public CustomSlice<Todo> findAllBySubGoalId(UUID subGoalId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         LocalDate today = LocalDate.now();
-        Slice<TodoEntity> todoEntities = todoJpaRepository.findAllBySubGoalIdForTodayAndIncomplete(
+        Slice<TodoEntity> todoEntities = todoJpaRepository.findAllBySubGoalIdForTodayOrIncomplete(
                 subGoalId, today, pageable);
         List<Todo> todos = todoEntities.getContent().stream()
                 .map(TodoMapper::toDomain)

@@ -23,7 +23,7 @@ public interface TodoJpaRepository extends JpaRepository<TodoEntity, UUID> {
                     ELSE ABS(t.date - :today)
                 END ASC
             """, nativeQuery = true)
-    Slice<TodoEntity> findAllBySubGoalIdForTodayAndIncomplete(@Param("subGoalId") UUID subGoalId,
+    Slice<TodoEntity> findAllBySubGoalIdForTodayOrIncomplete(@Param("subGoalId") UUID subGoalId,
             @Param("today") LocalDate today, Pageable pageable);
 
     Slice<TodoEntity> findAllBySubGoalId(UUID subGoalId, Pageable pageable);

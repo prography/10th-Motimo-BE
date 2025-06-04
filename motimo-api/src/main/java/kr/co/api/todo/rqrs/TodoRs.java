@@ -1,10 +1,10 @@
 package kr.co.api.todo.rqrs;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import kr.co.domain.todo.Todo;
-
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
+import kr.co.domain.todo.dto.TodoSummary;
 
 public record TodoRs(
         @Schema(description = "투두 Id", example = "0197157f-aea4-77bb-8581-3213eb5bd2ae")
@@ -14,10 +14,20 @@ public record TodoRs(
         String title,
 
         @Schema(description = "투두 완료 날짜", type = "date")
-        LocalDate date
+        LocalDate date,
+
+        @Schema(description = "투두 완료 여부", example = "true")
+        boolean completed,
+
+        @Schema(description = "투두 기록 여부", example = "true")
+        boolean hasResult,
+
+        @Schema(description = "투두 생성 날짜", type = "date")
+        LocalDateTime createdAt
 ) {
 
-    public static TodoRs of(Todo todo) {
-        return new TodoRs(todo.getId(), todo.getTitle(), todo.getDate());
+    public static TodoRs of(TodoSummary todoSummary) {
+        return new TodoRs(todoSummary.id(), todoSummary.title(), todoSummary.date(),
+                todoSummary.completed(), todoSummary.hasResult(), todoSummary.createdAt());
     }
 }

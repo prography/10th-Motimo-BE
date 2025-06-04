@@ -20,8 +20,7 @@ public class Todo {
     private UUID subGoalId;
     private UUID authorId;
     private String title;
-    @Builder.Default
-    private LocalDate date = LocalDate.now();
+    private LocalDate date;
     @Builder.Default
     private boolean completed = false;
     private LocalDateTime createdAt;

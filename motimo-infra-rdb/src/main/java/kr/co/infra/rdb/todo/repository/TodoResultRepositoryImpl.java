@@ -1,7 +1,9 @@
 package kr.co.infra.rdb.todo.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.exception.TodoResultNotSubmittedException;
 import kr.co.domain.todo.repository.TodoResultRepository;
 import kr.co.infra.rdb.todo.entity.TodoResultEntity;
 import kr.co.infra.rdb.todo.util.TodoResultMapper;
@@ -25,14 +27,13 @@ public class TodoResultRepositoryImpl implements TodoResultRepository {
     public TodoResult findById(UUID id) {
         return todoResultJpaRepository.findById(id)
                 .map(TodoResultMapper::toDomain)
-                .orElseThrow(() -> new IllegalArgumentException());
+                .orElseThrow(TodoResultNotSubmittedException::new);
     }
 
     @Override
-    public TodoResult findByTodoId(UUID todoId) {
+    public Optional<TodoResult> findByTodoId(UUID todoId) {
         return todoResultJpaRepository.findByTodoId(todoId)
-                .map(TodoResultMapper::toDomain)
-                .orElse(null);
+                .map(TodoResultMapper::toDomain);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package kr.co.domain.todo.repository;
 
+import java.util.UUID;
 import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.todo.Todo;
-
-import java.util.UUID;
+import kr.co.domain.todo.dto.TodoSummary;
 
 public interface TodoRepository {
 
@@ -11,9 +11,9 @@ public interface TodoRepository {
 
     Todo findById(UUID id);
 
-    CustomSlice<Todo> findAllBySubGoalId(UUID subGoalId, int page, int size);
+    CustomSlice<TodoSummary> findAllBySubGoalId(UUID subGoalId, int page, int size);
 
-    CustomSlice<Todo> findAllByUserId(UUID userId, int page, int size);
+    CustomSlice<TodoSummary> findAllByUserId(UUID userId, int page, int size);
 
     void deleteById(UUID id);
 }

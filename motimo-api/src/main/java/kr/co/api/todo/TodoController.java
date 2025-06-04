@@ -1,26 +1,21 @@
 package kr.co.api.todo;
 
-import jakarta.validation.Valid;
 import java.util.UUID;
 import kr.co.api.security.annotation.AuthUser;
 import kr.co.api.todo.docs.TodoControllerSwagger;
-import kr.co.api.todo.rqrs.TodoCreateRq;
 import kr.co.api.todo.rqrs.TodoResultRq;
-import kr.co.api.todo.rqrs.TodoRs;
+import kr.co.api.todo.rqrs.TodoResultRs;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
-import kr.co.domain.common.pagination.CustomSlice;
-import kr.co.domain.todo.Todo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,51 +34,36 @@ public class TodoController implements TodoControllerSwagger {
         this.todoQueryService = todoQueryService;
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createTodo(@AuthUser UUID userId, @Valid @RequestBody TodoCreateRq request) {
-        todoCommandService.createTodo(userId, request.subGoalId(), request.title(), request.date());
-    }
-
-    @PostMapping(value = "/{id}/result", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/{id}/result", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public void submitResult(@AuthUser UUID userId,
             @PathVariable UUID id,
-            @RequestBody @Valid TodoResultRq request,
-            @RequestPart(required = false) MultipartFile file) {
+            @RequestPart TodoResultRq request,
+            @RequestPart(name = "file", required = false) MultipartFile file) {
         todoCommandService.submitTodoResult(userId, id, request.emotion(), request.content(), file);
     }
 
-    @GetMapping("/{id}")
-    public TodoRs getTodoDetail(@PathVariable UUID id) {
-        Todo todo = todoQueryService.getTodo(id);
-        // todo: todo result도 포함하도록 수정.
-        return TodoRs.of(todo);
+    @GetMapping("/{todoId}/result")
+    public ResponseEntity<TodoResultRs> getTodoResult(@PathVariable UUID todoId) {
+        return todoQueryService.getTodoResultByTodoId(todoId)
+                .map(TodoResultRs::of)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
     }
 
-    @GetMapping("/sub-goal/{subGoalId}")
-    public CustomSlice<TodoRs> getTodosBySubGoal(@PathVariable UUID subGoalId,
-            @RequestParam("page") int page, @RequestParam("size") int size) {
-        return todoQueryService.getTodosBySubGoal(subGoalId, page, size).map(TodoRs::of);
-    }
-
-    @GetMapping("/me")
-    public CustomSlice<TodoRs> getMyTodos(@AuthUser UUID userId, @RequestParam("page") int page,
-            @RequestParam("size") int size) {
-        return todoQueryService.getTodosByUser(userId, page, size).map(TodoRs::of);
-    }
-
-    @PatchMapping("/{id}/result/cancel")
+    @PatchMapping("/{todoId}/completion")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void cancelResult(@AuthUser UUID userId, @PathVariable UUID id) {
-        todoCommandService.cancelTodoResult(userId, id);
+    public void cancelResult(@AuthUser UUID userId, @PathVariable UUID todoId) {
+        todoCommandService.toggleTodoCompletion(userId, todoId);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{todoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteById(@AuthUser UUID userId, @PathVariable UUID id) {
-        todoCommandService.deleteById(userId, id);
+    public void deleteById(@AuthUser UUID userId, @PathVariable UUID todoId) {
+        todoCommandService.deleteById(userId, todoId);
     }
+
     // todo: 투두 결과 수정 기능 추가
     // todo: 투두 내용 수정 기능 추가
+    // todo: 투두 삭제 기능 추가
 }

@@ -24,7 +24,6 @@ public class Todo {
     private LocalDate date = LocalDate.now();
     @Builder.Default
     private boolean completed = false;
-    private TodoResult result;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -33,13 +32,8 @@ public class Todo {
         this.date = newDate;
     }
 
-    public void complete(TodoResult todoResult) {
-        this.completed = true;
-        this.result = todoResult;
-    }
-
-    public void cancelCompletion() {
-        this.completed = false;
+    public void toggleCompletion() {
+        this.completed = !this.completed;
     }
 
     public void validateAuthor(UUID userId) {

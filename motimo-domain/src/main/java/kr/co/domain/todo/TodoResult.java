@@ -1,6 +1,12 @@
 package kr.co.domain.todo;
 
-import lombok.*;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
@@ -8,7 +14,11 @@ import lombok.*;
 @AllArgsConstructor
 public class TodoResult {
 
+    private UUID id;
+    private UUID todoId;
     private Emotion emotion;
     private String content;
-    private String imageName;
+    private String fileUrl;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

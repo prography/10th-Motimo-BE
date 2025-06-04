@@ -43,10 +43,7 @@ public class TodoEntity {
     @Column(name = "completed")
     @Builder.Default
     private boolean completed = false;
-
-    @Embedded
-    private TodoResultEmbeddable result;
-
+    
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

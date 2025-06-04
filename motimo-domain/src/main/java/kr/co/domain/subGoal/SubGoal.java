@@ -5,13 +5,15 @@ import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 
+@Builder
+@Getter
 public class SubGoal {
-    public UUID id;
-    public String title;
-    public int importance;
+    private UUID id;
+    private String title;
+    private int importance;
     @Getter
-    public boolean completed;
-    public LocalDateTime completedChangedAt;
+    private boolean completed;
+    private LocalDateTime completedChangedAt;
 
     @Builder(builderMethodName = "createSubGoal")
     private SubGoal(String title, int importance) {

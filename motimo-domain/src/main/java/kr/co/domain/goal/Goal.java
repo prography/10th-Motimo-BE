@@ -7,28 +7,18 @@ import kr.co.domain.subGoal.SubGoal;
 import lombok.Builder;
 import lombok.Getter;
 
+@Builder
 @Getter
 public class Goal {
     private UUID id;
     public boolean completed;
     private String title;
     private DueDate dueDate;
-    private final LocalDateTime createdAt;
+    private UUID userId;
     private LocalDateTime updatedAt;
-    private final UUID userId;
+    private LocalDateTime createdAt;
     public LocalDateTime completedAt;
     private List<SubGoal> subGoals;
-
-    @Builder(builderMethodName = "createGoal")
-    private Goal(UUID userId, String title, DueDate dueDate, List<SubGoal> subGoals) {
-        this.userId = userId;
-        this.title = title;
-        this.dueDate = dueDate;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-        this.completed = false;
-        this.subGoals = subGoals;
-    }
 
     public void addSubGoal(SubGoal subGoal) {
         subGoals.add(subGoal);
@@ -47,5 +37,16 @@ public class Goal {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    @Builder(builderMethodName = "createGoal")
+    private Goal(UUID userId, String title, DueDate dueDate, List<SubGoal> subGoals) {
+        this.userId = userId;
+        this.title = title;
+        this.dueDate = dueDate;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.completed = false;
+        this.subGoals = subGoals;
     }
 }

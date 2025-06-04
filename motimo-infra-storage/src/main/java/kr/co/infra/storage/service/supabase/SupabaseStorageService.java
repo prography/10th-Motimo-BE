@@ -19,15 +19,15 @@ public class SupabaseStorageService implements StorageService {
     private final SupabaseProperties properties;
 
     @Override
-    public void uploadImage(MultipartFile image, String fileName) {
+    public String store(MultipartFile file, String fileName) {
 
-        if (image == null || image.isEmpty()) {
-            return;
+        if (file == null || file.isEmpty()) {
+            return null;
         }
 
         WebClient webClient = getWebClient();
-        byte[] fileBytes = getBytes(image);
-        String contentType = image.getContentType() != null ? image.getContentType()
+        byte[] fileBytes = getBytes(file);
+        String contentType = file.getContentType() != null ? file.getContentType()
                 : MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
         try {
@@ -38,6 +38,11 @@ public class SupabaseStorageService implements StorageService {
                     .retrieve()
                     .toBodilessEntity()
                     .block();
+
+            return String.format("%s/storage/v1/object/%s/%s",
+                    properties.getUrl(),
+                    properties.getBucket(),
+                    fileName);
         } catch (Exception e) {
             log.error("파일 업로드 중 예외 발생", e);
             throw new StorageException(StorageErrorCode.FILE_UPLOAD_FAILED);
@@ -45,11 +50,11 @@ public class SupabaseStorageService implements StorageService {
     }
 
     @Override
-    public void deleteImage(String fileName) {
+    public void delete(String fileUrl) {
         WebClient webClient = getWebClient();
         try {
             webClient.delete()
-                    .uri("/storage/v1/object/{bucket}/{fileName}", properties.getBucket(), fileName)
+                    .uri(fileUrl)
                     .retrieve()
                     .toBodilessEntity()
                     .block();

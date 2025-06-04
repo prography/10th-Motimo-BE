@@ -66,7 +66,10 @@ public class TodoRepositoryImpl implements TodoRepository {
                         todoEntity.subGoalId.eq(subGoalId)
                                 .and(todoEntity.completed.eq(false).or(todoEntity.date.eq(today)))
                 )
-                .orderBy(priorityOrder.asc())
+                .orderBy(
+                        priorityOrder.asc(),
+                        todoEntity.date.asc().nullsLast()
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
@@ -99,7 +102,10 @@ public class TodoRepositoryImpl implements TodoRepository {
                 .from(todoEntity)
                 .leftJoin(todoResultEntity).on(todoResultEntity.todoId.eq(todoEntity.id))
                 .where(todoEntity.authorId.eq(userId))
-                .orderBy(priorityOrder.asc())
+                .orderBy(
+                        priorityOrder.asc(),
+                        todoEntity.date.asc().nullsLast()
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
@@ -110,6 +116,11 @@ public class TodoRepositoryImpl implements TodoRepository {
                 .toList();
 
         return new CustomSlice<>(paged, hasNext);
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return todoJpaRepository.existsById(id);
     }
 
     @Override

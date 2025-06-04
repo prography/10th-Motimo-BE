@@ -5,6 +5,7 @@ import java.util.UUID;
 import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.dto.TodoSummary;
+import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.domain.todo.repository.TodoResultRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class TodoQueryService {
 
     private final TodoRepository todoRepository;
     private final TodoResultRepository todoResultRepository;
-    
+
     public CustomSlice<TodoSummary> getTodosBySubGoal(UUID subGoalId, int page, int size) {
         return todoRepository.findAllBySubGoalId(subGoalId, page, size);
     }
@@ -28,6 +29,9 @@ public class TodoQueryService {
     }
 
     public Optional<TodoResult> getTodoResultByTodoId(UUID todoId) {
+        if (!todoRepository.existsById(todoId)) {
+            throw new TodoNotFoundException();
+        }
         return todoResultRepository.findByTodoId(todoId);
     }
 }

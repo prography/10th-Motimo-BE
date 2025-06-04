@@ -15,5 +15,7 @@ public interface TodoRepository {
 
     CustomSlice<TodoSummary> findAllByUserId(UUID userId, int page, int size);
 
+    boolean existsById(UUID id);
+
     void deleteById(UUID id);
 }

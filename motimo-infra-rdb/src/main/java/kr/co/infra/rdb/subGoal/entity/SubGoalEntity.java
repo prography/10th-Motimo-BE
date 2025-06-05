@@ -10,7 +10,6 @@ import java.util.UUID;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
 import kr.co.infra.rdb.goal.entity.GoalEntity;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +17,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "sub_goals")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class SubGoalEntity {
 
     @Id

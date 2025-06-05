@@ -16,10 +16,6 @@ public enum Emotion {
         this.value = value;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     @JsonCreator
     public static Emotion from(String value) {
         return Arrays.stream(values())

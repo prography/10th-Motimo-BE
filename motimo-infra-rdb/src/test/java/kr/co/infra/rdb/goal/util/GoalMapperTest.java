@@ -2,7 +2,6 @@ package kr.co.infra.rdb.goal.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 import kr.co.domain.goal.DueDate;
@@ -26,7 +25,7 @@ class GoalMapperTest {
         Goal goal = Goal.createGoal()
                 .userId(userId)
                 .title("goal title")
-                .dueDate(DueDate.of(3, LocalDate.now()))
+                .dueDate(DueDate.of(3))
                 .subGoals(new ArrayList<>())
                 .build();
 

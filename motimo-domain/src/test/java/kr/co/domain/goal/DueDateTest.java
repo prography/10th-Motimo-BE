@@ -12,7 +12,7 @@ public class DueDateTest {
     void 개월수로_생성시_마감_날짜가_계산된다() {
         final int month = 4;
 
-        DueDate dueDate = new DueDate(month);
+        DueDate dueDate = DueDate.of(month);
         LocalDate calculatedDueDate = LocalDate.now().plusMonths(month);
 
         assertThat(dueDate.getMonth()).isEqualTo(month);

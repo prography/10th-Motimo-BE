@@ -5,14 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(staticName = "of")
+@AllArgsConstructor
 public class DueDate {
     private Integer month;
     private LocalDate dueDate;
 
-    public DueDate(int month) {
-        this.month = month;
+    public static DueDate of(int month) {
         LocalDate currentDate = LocalDate.now();
-        this.dueDate = currentDate.plusMonths(month);
+        return new DueDate(month, currentDate.plusMonths(month));
+    }
+
+    public static DueDate of(LocalDate localDate) {
+        return new DueDate(null, localDate);
     }
 }

@@ -19,6 +19,6 @@ public class DueDateEmbeddable {
     }
 
     public DueDate toDomain() {
-        return DueDate.of(month, dueDate);
+        return new DueDate(month, dueDate);
     }
 }

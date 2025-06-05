@@ -6,7 +6,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import kr.co.api.goal.service.GoalCommandService;
@@ -42,21 +41,13 @@ class GoalCommandServiceTest {
         final UUID uuid = UUID.randomUUID();
         final String goalTitle = "goal title";
 
-        List<SubGoal> subGoals = new ArrayList<>();
-        subGoals.add(SubGoal
-                .createSubGoal()
-                .title("sub goal title")
-                .importance(1)
-                .build());
+        final List<SubGoal> subGoals = List.of(
+                SubGoal.createSubGoal().title("sub goal title").importance(1).build());
 
-        DueDate dueDate = DueDate.of(2);
+        final DueDate dueDate = DueDate.of(2);
 
-        Goal testGoal = Goal.createGoal()
-                .userId(uuid)
-                .title(goalTitle)
-                .dueDate(dueDate)
-                .subGoals(subGoals)
-                .build();
+        Goal testGoal = Goal.createGoal().userId(uuid).title(goalTitle).dueDate(dueDate)
+                .subGoals(subGoals).build();
 
         when(goalRepository.save(any(Goal.class))).thenReturn(testGoal);
 

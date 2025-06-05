@@ -16,7 +16,7 @@ public class GoalMapper {
                 .id(entity.getId())
                 .userId(entity.getUserId())
                 .title(entity.getTitle())
-                .dueDate(entity.getDueDate())
+                .dueDate(entity.getDueDate().toDomain())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .completed(entity.isCompleted())
@@ -32,7 +32,7 @@ public class GoalMapper {
         return new GoalEntity(
                 goal.getUserId(),
                 goal.getTitle(),
-                goal.getDueDate(),
+                DueDateEmbeddable.from(goal.getDueDate()),
                 subGoalEntities
         );
     }

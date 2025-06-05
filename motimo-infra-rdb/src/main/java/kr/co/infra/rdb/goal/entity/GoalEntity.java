@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import kr.co.domain.goal.DueDate;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
 import kr.co.infra.rdb.subGoal.entity.SubGoalEntity;
 import lombok.AccessLevel;
@@ -33,7 +32,7 @@ public class GoalEntity {
     private String title;
 
     @Embedded
-    private DueDate dueDate;
+    private DueDateEmbeddable dueDate;
 
     private LocalDateTime createdAt;
 
@@ -46,7 +45,7 @@ public class GoalEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubGoalEntity> subGoals = new ArrayList<>();
 
-    protected GoalEntity(UUID userId, String title, DueDate dueDate, List<SubGoalEntity> subGoals) {
+    protected GoalEntity(UUID userId, String title, DueDateEmbeddable dueDate, List<SubGoalEntity> subGoals) {
         this.userId = userId;
         this.title = title;
         this.dueDate = dueDate;

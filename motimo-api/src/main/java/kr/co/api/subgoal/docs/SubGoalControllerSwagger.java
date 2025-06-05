@@ -25,7 +25,7 @@ public interface SubGoalControllerSwagger {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
     void createTodo(
-            @Parameter(description = "USER ID", required = true) UUID userId,
+            UUID userId,
             @Parameter(description = "세부 목표 ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID subGoalId,
             @RequestBody @Schema(implementation = TodoCreateRq.class) TodoCreateRq request

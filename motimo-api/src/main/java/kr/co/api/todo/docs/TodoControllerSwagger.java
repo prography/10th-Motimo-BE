@@ -26,9 +26,9 @@ public interface TodoControllerSwagger {
             @ApiResponse(responseCode = "404", description = "TODO를 찾을 수 없음")
     })
     void submitResult(
-            @Parameter(description = "USER ID", required = true) UUID userId,
+            UUID userId,
             @Parameter(description = "TODO ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
-            @PathVariable UUID id,
+            @PathVariable UUID todoId,
             @RequestPart @Schema(implementation = TodoResultRq.class) TodoResultRq request,
             @RequestPart(name = "file", required = false) MultipartFile file
     );
@@ -51,9 +51,9 @@ public interface TodoControllerSwagger {
             @ApiResponse(responseCode = "404", description = "TODO를 찾을 수 없음")
     })
     void toggleTodoCompletion(
-            @Parameter(description = "USER ID", required = true) UUID userId,
+            UUID userId,
             @Parameter(description = "TODO ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
-            @PathVariable UUID id
+            @PathVariable UUID todoId
     );
 
     @Operation(summary = "투두 삭제", description = "특정 투두를 삭제합니다.")
@@ -63,8 +63,8 @@ public interface TodoControllerSwagger {
             @ApiResponse(responseCode = "404", description = "TODO를 찾을 수 없음")
     })
     void deleteById(
-            @Parameter UUID userId,
+            UUID userId,
             @Parameter(description = "TODO ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
-            @PathVariable UUID id
+            @PathVariable UUID todoId
     );
 }

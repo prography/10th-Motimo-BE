@@ -22,7 +22,7 @@ public interface UserControllerSwagger {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
     CustomSlice<TodoRs> getMyTodos(
-            @Parameter(description = "USER ID", required = true) UUID userId,
+            UUID userId,
             @Parameter(description = "페이지 번호", required = true, example = "0")
             @RequestParam("page") int page,
             @Parameter(description = "페이지 크기", required = true, example = "10")

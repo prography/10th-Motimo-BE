@@ -1,5 +1,7 @@
 package kr.co.infra.rdb.todo.repository;
 
+import static com.querydsl.core.types.ExpressionUtils.anyOf;
+
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
@@ -64,7 +66,10 @@ public class TodoRepositoryImpl implements TodoRepository {
                 .leftJoin(todoResultEntity).on(todoResultEntity.todoId.eq(todoEntity.id))
                 .where(
                         todoEntity.subGoalId.eq(subGoalId)
-                                .and(todoEntity.completed.eq(false).or(todoEntity.date.eq(today)))
+                                .and(anyOf(
+                                        todoEntity.completed.eq(false),
+                                        todoEntity.date.eq(today)
+                                ))
                 )
                 .orderBy(
                         priorityOrder.asc(),

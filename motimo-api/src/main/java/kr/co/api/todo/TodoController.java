@@ -34,13 +34,14 @@ public class TodoController implements TodoControllerSwagger {
         this.todoQueryService = todoQueryService;
     }
 
-    @PostMapping(path = "/{id}/result", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/{todoId}/result", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public void submitResult(@AuthUser UUID userId,
-            @PathVariable UUID id,
+            @PathVariable UUID todoId,
             @RequestPart TodoResultRq request,
             @RequestPart(name = "file", required = false) MultipartFile file) {
-        todoCommandService.submitTodoResult(userId, id, request.emotion(), request.content(), file);
+        todoCommandService.submitTodoResult(userId, todoId, request.emotion(), request.content(),
+                file);
     }
 
     @GetMapping("/{todoId}/result")

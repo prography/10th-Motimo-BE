@@ -46,8 +46,8 @@ public class TodoResultEntity {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "file_url")
-    private String fileUrl;
+    @Column(name = "file_path")
+    private String filePath;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)

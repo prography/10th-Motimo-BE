@@ -39,19 +39,19 @@ public class TodoCommandService {
         Todo todo = todoRepository.findById(todoId);
         todo.validateAuthor(userId);
 
-        String fileUrl = "";
+        String filePath = "";
         if (file != null && !file.isEmpty()) {
-            String filename = String.format("todo/%s/%s", todoId, UUID.randomUUID());
-            fileUrl = storageService.store(file, filename);
+            filePath = String.format("todo/%s/%s", todoId, UUID.randomUUID());
+            storageService.store(file, filePath);
             // 이미지 삭제 이벤트 발행 (트랜잭션 롤백 시 동작)
-            Events.publishEvent(new FileDeletedEvent(fileUrl));
+            Events.publishEvent(new FileDeletedEvent(filePath));
         }
 
         TodoResult record = TodoResult.builder()
                 .todoId(todoId)
                 .emotion(emotion)
                 .content(content)
-                .fileUrl(fileUrl)
+                .filePath(filePath)
                 .build();
 
         todoResultRepository.save(record);

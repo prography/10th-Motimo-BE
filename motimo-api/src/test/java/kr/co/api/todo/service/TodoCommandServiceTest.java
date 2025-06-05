@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -150,7 +151,7 @@ class TodoCommandServiceTest {
             assertThat(savedResult.getTodoId()).isEqualTo(todoId);
             assertThat(savedResult.getEmotion()).isEqualTo(emotion);
             assertThat(savedResult.getContent()).isEqualTo(content);
-            assertThat(savedResult.getFileUrl()).isEqualTo("");
+            assertThat(savedResult.getFilePath()).isEqualTo("");
 
             verify(storageService, never()).store(any(), any());
             mockedEvents.verify(() -> Events.publishEvent(any()), never());
@@ -173,7 +174,7 @@ class TodoCommandServiceTest {
             verify(todoResultRepository).save(resultCaptor.capture());
 
             TodoResult savedResult = resultCaptor.getValue();
-            assertThat(savedResult.getFileUrl()).isEqualTo("");
+            assertThat(savedResult.getFilePath()).isEqualTo("");
 
             verify(storageService, never()).store(any(), any());
             mockedEvents.verify(() -> Events.publishEvent(any()), never());
@@ -185,23 +186,29 @@ class TodoCommandServiceTest {
             String filename = "image.jpg";
             MultipartFile file = new MockMultipartFile("file", filename, "image/jpeg",
                     "file".getBytes());
-            String fileUrl = "https://example.com/file.jpg";
+
+            UUID fixedUuid = UUID.fromString("8ec9c39f-ae45-4c1a-b38f-0af834a88a4c");
+            String filePath = String.format("todo/%s/%s", todoId, fixedUuid);
             Emotion emotion = Emotion.PROUD;
             String content = "투두 완료!";
 
             when(todoRepository.findById(todoId)).thenReturn(todo);
-            when(storageService.store(any(MultipartFile.class), anyString())).thenReturn(fileUrl);
+            doNothing().when(storageService).store(any(MultipartFile.class), anyString());
 
-            // when
-            todoCommandService.submitTodoResult(userId, todoId, emotion, content, file);
+            try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class)) {
+                mockedUUID.when(UUID::randomUUID).thenReturn(fixedUuid);
 
-            // then
-            ArgumentCaptor<TodoResult> resultCaptor = ArgumentCaptor.forClass(TodoResult.class);
-            verify(todoResultRepository).save(resultCaptor.capture());
+                // when
+                todoCommandService.submitTodoResult(userId, todoId, emotion, content, file);
 
-            TodoResult savedResult = resultCaptor.getValue();
-            assertThat(savedResult.getFileUrl()).isEqualTo(fileUrl);
-            mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)));
+                // then
+                ArgumentCaptor<TodoResult> resultCaptor = ArgumentCaptor.forClass(TodoResult.class);
+                verify(todoResultRepository).save(resultCaptor.capture());
+
+                TodoResult savedResult = resultCaptor.getValue();
+                assertThat(savedResult.getFilePath()).isEqualTo(filePath);
+                mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)));
+            }
         }
 
         @Test
@@ -239,8 +246,8 @@ class TodoCommandServiceTest {
             MultipartFile file = new MockMultipartFile("file", "filename.jpg", "image/jpeg",
                     "file".getBytes());
             when(todoRepository.findById(todoId)).thenReturn(todo);
-            when(storageService.store(eq(file), anyString()))
-                    .thenThrow(new StorageException(StorageErrorCode.FILE_UPLOAD_FAILED));
+            doThrow(new StorageException(StorageErrorCode.FILE_UPLOAD_FAILED))
+                    .when(storageService).store(eq(file), anyString());
 
             // when & then
             assertThatThrownBy(() -> todoCommandService.submitTodoResult(userId, todoId,

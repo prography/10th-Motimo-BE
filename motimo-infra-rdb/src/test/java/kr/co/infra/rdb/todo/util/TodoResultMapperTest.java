@@ -25,7 +25,7 @@ class TodoResultMapperTest {
                 .todoId(todoId)
                 .emotion(Emotion.PROUD)
                 .content("투두 완료!")
-                .fileUrl("https://example.com/image.jpg")
+                .filePath("/image.jpg")
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
@@ -38,7 +38,7 @@ class TodoResultMapperTest {
         assertThat(result.getTodoId()).isEqualTo(todoId);
         assertThat(result.getEmotion()).isEqualTo(Emotion.PROUD);
         assertThat(result.getContent()).isEqualTo("투두 완료!");
-        assertThat(result.getFileUrl()).isEqualTo("https://example.com/image.jpg");
+        assertThat(result.getFilePath()).isEqualTo("/image.jpg");
         assertThat(result.getCreatedAt()).isEqualTo(now);
         assertThat(result.getUpdatedAt()).isEqualTo(now);
     }
@@ -55,7 +55,7 @@ class TodoResultMapperTest {
                 .todoId(todoId)
                 .emotion(Emotion.PROUD)
                 .content("투두 완료!")
-                .fileUrl("https://example.com/image.jpg")
+                .filePath("/image.jpg")
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
@@ -68,7 +68,7 @@ class TodoResultMapperTest {
         assertThat(entity.getTodoId()).isEqualTo(todoId);
         assertThat(entity.getEmotion()).isEqualTo(Emotion.PROUD);
         assertThat(entity.getContent()).isEqualTo("투두 완료!");
-        assertThat(entity.getFileUrl()).isEqualTo("https://example.com/image.jpg");
+        assertThat(entity.getFilePath()).isEqualTo("/image.jpg");
         assertThat(entity.getCreatedAt()).isEqualTo(now);
         assertThat(entity.getUpdatedAt()).isEqualTo(now);
     }

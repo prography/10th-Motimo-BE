@@ -13,7 +13,7 @@ public class TodoResultMapper {
                 .todoId(entity.getTodoId())
                 .emotion(entity.getEmotion())
                 .content(entity.getContent())
-                .fileUrl(entity.getFileUrl())
+                .filePath(entity.getFilePath())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();
@@ -25,7 +25,7 @@ public class TodoResultMapper {
                 .todoId(domain.getTodoId())
                 .emotion(domain.getEmotion())
                 .content(domain.getContent())
-                .fileUrl(domain.getFileUrl())
+                .filePath(domain.getFilePath())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())
                 .build();

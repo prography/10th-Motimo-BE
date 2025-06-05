@@ -18,7 +18,7 @@ public class TodoResult {
     private UUID todoId;
     private Emotion emotion;
     private String content;
-    private String fileUrl;
+    private String filePath;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

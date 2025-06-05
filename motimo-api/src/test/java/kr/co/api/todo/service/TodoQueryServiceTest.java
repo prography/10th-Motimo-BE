@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import kr.co.api.todo.rqrs.TodoResultRs;
 import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoResult;
@@ -20,6 +21,7 @@ import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.domain.todo.repository.TodoResultRepository;
+import kr.co.infra.storage.service.StorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -40,6 +42,9 @@ class TodoQueryServiceTest {
 
     @Mock
     private TodoResultRepository todoResultRepository;
+
+    @Mock
+    private StorageService storageService;
 
     @InjectMocks
     private TodoQueryService todoQueryService;
@@ -144,22 +149,21 @@ class TodoQueryServiceTest {
                     .todoId(todoId)
                     .emotion(Emotion.PROUD)
                     .content("투두 완료!")
-                    .fileUrl("https://example.com/file.jpg")
+                    .filePath("todo/file.jpg")
                     .build();
 
             when(todoResultRepository.findByTodoId(todoId)).thenReturn(Optional.of(mockResult));
             when(todoRepository.existsById(todoId)).thenReturn(true);
 
             // when
-            Optional<TodoResult> result = todoQueryService.getTodoResultByTodoId(todoId);
+            Optional<TodoResultRs> result = todoQueryService.getTodoResultByTodoId(todoId);
 
             // then
             assertThat(result).isNotNull();
             assertThat(result).isPresent();
-            assertThat(result.get().getTodoId()).isEqualTo(todoId);
-            assertThat(result.get().getEmotion()).isEqualTo(Emotion.PROUD);
-            assertThat(result.get().getContent()).isEqualTo("투두 완료!");
-            assertThat(result.get().getFileUrl()).isEqualTo("https://example.com/file.jpg");
+            assertThat(result.get().todoId()).isEqualTo(todoId);
+            assertThat(result.get().emotion()).isEqualTo(Emotion.PROUD);
+            assertThat(result.get().content()).isEqualTo("투두 완료!");
             verify(todoResultRepository).findByTodoId(todoId);
         }
 
@@ -171,7 +175,7 @@ class TodoQueryServiceTest {
             when(todoRepository.existsById(todoId)).thenReturn(true);
 
             // when
-            Optional<TodoResult> result = todoQueryService.getTodoResultByTodoId(todoId);
+            Optional<TodoResultRs> result = todoQueryService.getTodoResultByTodoId(todoId);
 
             // then
             assertThat(result).isEmpty();

@@ -22,8 +22,8 @@ public record TodoResultRs(
         String fileUrl
 ) {
 
-    public static TodoResultRs of(TodoResult result) {
+    public static TodoResultRs of(TodoResult result, String fileUrl) {
         return new TodoResultRs(result.getId(), result.getTodoId(), result.getEmotion(),
-                result.getContent(), result.getFileUrl());
+                result.getContent(), fileUrl);
     }
 }

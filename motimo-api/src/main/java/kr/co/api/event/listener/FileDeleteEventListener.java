@@ -17,9 +17,9 @@ public class FileDeleteEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
     public void handleFileDeletedOnRollback(FileDeletedEvent event) {
-        String fileUrl = event.getFileUrl();
+        String filePath = event.getFilePath();
         try {
-            storageService.delete(fileUrl);
+            storageService.delete(filePath);
         } catch (Exception e) {
             // todo: 삭제 실패 시 로깅만, 재시도 x => 추후 아웃박스 도입 고려)
             log.error("롤백 후 파일 삭제 실패 {}:", e.getMessage());

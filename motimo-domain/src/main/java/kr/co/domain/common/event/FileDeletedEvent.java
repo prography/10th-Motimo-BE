@@ -5,10 +5,10 @@ import lombok.Getter;
 @Getter
 public class FileDeletedEvent extends Event {
 
-    String fileUrl;
+    String filePath;
 
-    public FileDeletedEvent(String fileUrl) {
+    public FileDeletedEvent(String filePath) {
         super();
-        this.fileUrl = fileUrl;
+        this.filePath = filePath;
     }
 }

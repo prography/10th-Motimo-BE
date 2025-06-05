@@ -19,10 +19,10 @@ public class SupabaseStorageService implements StorageService {
     private final SupabaseProperties properties;
 
     @Override
-    public String store(MultipartFile file, String fileName) {
+    public void store(MultipartFile file, String filePath) {
 
         if (file == null || file.isEmpty()) {
-            return null;
+            throw new StorageException(StorageErrorCode.INVALID_FILE);
         }
 
         WebClient webClient = getWebClient();
@@ -32,17 +32,13 @@ public class SupabaseStorageService implements StorageService {
 
         try {
             webClient.post()
-                    .uri("/storage/v1/object/{bucket}/{filename}", properties.getBucket(), fileName)
+                    .uri("/storage/v1/object/{bucket}/{filePath}", properties.getBucket(), filePath)
                     .contentType(MediaType.parseMediaType(contentType))
                     .bodyValue(fileBytes)
                     .retrieve()
                     .toBodilessEntity()
                     .block();
 
-            return String.format("%s/storage/v1/object/%s/%s",
-                    properties.getUrl(),
-                    properties.getBucket(),
-                    fileName);
         } catch (Exception e) {
             log.error("파일 업로드 중 예외 발생", e);
             throw new StorageException(StorageErrorCode.FILE_UPLOAD_FAILED);
@@ -50,8 +46,14 @@ public class SupabaseStorageService implements StorageService {
     }
 
     @Override
-    public void delete(String fileUrl) {
+    public String getFileUrl(String filePath) {
+        return generateFileUrl(filePath);
+    }
+
+    @Override
+    public void delete(String filePath) {
         WebClient webClient = getWebClient();
+        String fileUrl = generateFileUrl(filePath);
         try {
             webClient.delete()
                     .uri(fileUrl)
@@ -78,5 +80,10 @@ public class SupabaseStorageService implements StorageService {
                 .defaultHeader("apikey", properties.getApiKey())
                 .defaultHeader("Authorization", "Bearer " + properties.getApiKey())
                 .build();
+    }
+
+    private String generateFileUrl(String filePath) {
+        return String.format("%s/storage/v1/object/%s/%s", properties.getUrl(),
+                properties.getBucket(), filePath);
     }
 }

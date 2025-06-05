@@ -47,7 +47,6 @@ public class TodoController implements TodoControllerSwagger {
     @GetMapping("/{todoId}/result")
     public ResponseEntity<TodoResultRs> getTodoResult(@PathVariable UUID todoId) {
         return todoQueryService.getTodoResultByTodoId(todoId)
-                .map(TodoResultRs::of)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.noContent().build());
     }

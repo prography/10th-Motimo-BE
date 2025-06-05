@@ -47,14 +47,14 @@ public class TodoCommandService {
             Events.publishEvent(new FileDeletedEvent(filePath));
         }
 
-        TodoResult record = TodoResult.builder()
+        TodoResult result = TodoResult.builder()
                 .todoId(todoId)
                 .emotion(emotion)
                 .content(content)
                 .filePath(filePath)
                 .build();
 
-        todoResultRepository.save(record);
+        todoResultRepository.save(result);
     }
 
     public void toggleTodoCompletion(UUID userId, UUID todoId) {

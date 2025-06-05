@@ -46,7 +46,7 @@ class GoalCommandServiceTest {
 
         final DueDate dueDate = DueDate.of(2);
 
-        Goal testGoal = Goal.createGoal().userId(uuid).title(goalTitle).dueDate(dueDate)
+        final Goal testGoal = Goal.createGoal().userId(uuid).title(goalTitle).dueDate(dueDate)
                 .subGoals(subGoals).build();
 
         when(goalRepository.save(any(Goal.class))).thenReturn(testGoal);

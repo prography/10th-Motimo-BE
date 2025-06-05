@@ -4,13 +4,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import kr.co.domain.subGoal.SubGoal;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Goal {
     private UUID id;
     public boolean completed;

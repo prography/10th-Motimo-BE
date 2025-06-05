@@ -50,7 +50,7 @@ public interface TodoControllerSwagger {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
             @ApiResponse(responseCode = "404", description = "TODO를 찾을 수 없음")
     })
-    void cancelResult(
+    void toggleTodoCompletion(
             @Parameter(description = "USER ID", required = true) UUID userId,
             @Parameter(description = "TODO ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID id

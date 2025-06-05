@@ -53,7 +53,7 @@ public class TodoController implements TodoControllerSwagger {
 
     @PatchMapping("/{todoId}/completion")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void cancelResult(@AuthUser UUID userId, @PathVariable UUID todoId) {
+    public void toggleTodoCompletion(@AuthUser UUID userId, @PathVariable UUID todoId) {
         todoCommandService.toggleTodoCompletion(userId, todoId);
     }
 

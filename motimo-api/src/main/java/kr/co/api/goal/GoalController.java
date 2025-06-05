@@ -39,7 +39,7 @@ public class GoalController implements GoalControllerSwagger {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public GoalIdRs createGoal(@AuthUser UUID userId, @RequestBody GoalCreateRq rq) {
-        return new GoalIdRs(goalCommandService.createGoal(userId, rq).toString());
+        return new GoalIdRs(goalCommandService.createGoal(userId, rq.title(), rq.getDueDate(), rq.getSubGoals()).toString());
     }
 
     @PutMapping("/{id}")

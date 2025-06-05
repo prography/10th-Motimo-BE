@@ -1,16 +1,19 @@
 package kr.co.domain.todo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import kr.co.domain.common.exception.AccessDeniedException;
+import kr.co.domain.todo.exception.TodoErrorCode;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("Todo 도메인 테스트")
 public class TodoTest {
 
     private UUID authorId;
@@ -32,7 +35,7 @@ public class TodoTest {
     }
 
     @Test
-    void 투두_제목_및_date_수정() {
+    void update_호출시_투두_제목과_투두_날짜가_변경된다() {
         // given
         String updateTitle = "새로운 투두";
         LocalDate updateDate = LocalDate.of(2025, 5, 31);
@@ -46,41 +49,37 @@ public class TodoTest {
     }
 
     @Test
-    void 투두_완료() {
+    void toggleCompletion_호출시_completed값이_토글된다() {
         // given
-        TodoResult result = new TodoResult(Emotion.HAPPY, "Great progress!", "http://image.url");
-
+        Todo todo = Todo.builder()
+                .completed(false)
+                .authorId(UUID.randomUUID())
+                .subGoalId(UUID.randomUUID())
+                .build();
         // when
-        todo.complete(result);
+        todo.toggleCompletion();
 
         // then
         assertThat(todo.isCompleted()).isTrue();
-        assertThat(todo.getResult()).isEqualTo(result);
-    }
-
-    @Test
-    void 투두_완료_취소() {
-        // given
-        // when
-        todo.complete(new TodoResult(Emotion.SAD, "Sad result", "img"));
-        todo.cancelCompletion();
-
-        // then
+        todo.toggleCompletion();
         assertThat(todo.isCompleted()).isFalse();
     }
 
     @Test
-    void 투두를_작성한_사람인지_확인_작성한_사람의_Id() {
-        assertDoesNotThrow(() -> todo.validateAuthor(authorId));
+    void 작성자가_아닌지_확인시_일치할_경우_정상_동작() {
+        // given
+        // when & then
+        assertThatCode(() -> todo.validateAuthor(authorId)).doesNotThrowAnyException();
     }
 
     @Test
-    void 투두를_작성한_사람인지_확인_작성하지_않은_사람의_Id() {
+    void 작성자가_아닌지_확인시_불일치할_경우_예외_발생() {
         // given
         UUID otherUserId = UUID.randomUUID();
-        
         // when & then
         assertThatThrownBy(() -> todo.validateAuthor(otherUserId))
-                .isInstanceOf(AccessDeniedException.class);
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage(TodoErrorCode.TODO_ACCESS_DENIED.getMessage());
     }
+
 }

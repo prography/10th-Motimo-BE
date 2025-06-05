@@ -36,14 +36,13 @@ public class TodoEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "date", nullable = false)
-    @Builder.Default
-    private LocalDate date = LocalDate.now();
+    @Column(name = "date")
+    private LocalDate date;
 
     @Column(name = "completed")
     @Builder.Default
     private boolean completed = false;
-    
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

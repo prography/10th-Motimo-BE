@@ -1,7 +1,6 @@
 package kr.co.domain.todo;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.Arrays;
 
 public enum Emotion {
@@ -17,7 +16,6 @@ public enum Emotion {
         this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
         return value;
     }

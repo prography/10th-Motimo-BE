@@ -42,6 +42,6 @@ public class SubGoalController implements SubGoalControllerSwagger {
     @GetMapping("/{subGoalId}/todos")
     public CustomSlice<TodoRs> getTodosBySubGoal(@PathVariable UUID subGoalId,
             @RequestParam("page") int page, @RequestParam("size") int size) {
-        return todoQueryService.getTodosBySubGoal(subGoalId, page, size).map(TodoRs::of);
+        return todoQueryService.getTodosBySubGoal(subGoalId, page, size).map(TodoRs::from);
     }
 }

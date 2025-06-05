@@ -26,7 +26,7 @@ public record TodoRs(
         LocalDateTime createdAt
 ) {
 
-    public static TodoRs of(TodoSummary todoSummary) {
+    public static TodoRs from(TodoSummary todoSummary) {
         return new TodoRs(todoSummary.id(), todoSummary.title(), todoSummary.date(),
                 todoSummary.completed(), todoSummary.hasResult(), todoSummary.createdAt());
     }

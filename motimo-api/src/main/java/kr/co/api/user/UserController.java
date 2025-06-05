@@ -24,6 +24,6 @@ public class UserController implements UserControllerSwagger {
     @GetMapping("/me/todos")
     public CustomSlice<TodoRs> getMyTodos(@AuthUser UUID userId, @RequestParam("page") int page,
             @RequestParam("size") int size) {
-        return todoQueryService.getTodosByUser(userId, page, size).map(TodoRs::of);
+        return todoQueryService.getTodosByUser(userId, page, size).map(TodoRs::from);
     }
 }

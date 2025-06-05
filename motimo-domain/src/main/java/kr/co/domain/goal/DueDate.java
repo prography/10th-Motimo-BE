@@ -9,4 +9,10 @@ import lombok.Getter;
 public class DueDate {
     private Integer month;
     private LocalDate dueDate;
+
+    public DueDate(int month) {
+        this.month = month;
+        LocalDate currentDate = LocalDate.now();
+        this.dueDate = currentDate.plusMonths(month);
+    }
 }

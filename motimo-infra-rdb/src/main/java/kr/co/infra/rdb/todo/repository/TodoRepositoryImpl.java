@@ -73,7 +73,8 @@ public class TodoRepositoryImpl implements TodoRepository {
                 )
                 .orderBy(
                         priorityOrder.asc(),
-                        todoEntity.date.asc().nullsLast()
+                        todoEntity.date.asc().nullsLast(),
+                        todoEntity.createdAt.asc()
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)

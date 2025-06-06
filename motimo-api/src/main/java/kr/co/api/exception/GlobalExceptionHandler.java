@@ -22,6 +22,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(500, "서버 내부 오류가 발생했습니다."));
+                .body(new ErrorResponse(500, ex.getMessage()));
     }
 }

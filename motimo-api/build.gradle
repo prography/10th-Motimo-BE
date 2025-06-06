@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation project(':motimo-domain')
     implementation project(':motimo-infra-rdb')
+    implementation project(':motimo-infra-storage')
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'

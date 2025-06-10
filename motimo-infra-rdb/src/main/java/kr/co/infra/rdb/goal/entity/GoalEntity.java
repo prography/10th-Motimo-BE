@@ -16,9 +16,13 @@ import kr.co.infra.rdb.subGoal.entity.SubGoalEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SoftDelete;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
 @Table(name = "goals")
+@SoftDelete(columnName = "is_deleted")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GoalEntity {
@@ -54,4 +58,5 @@ public class GoalEntity {
         this.completed = false;
         this.subGoals = subGoals;
     }
+
 }

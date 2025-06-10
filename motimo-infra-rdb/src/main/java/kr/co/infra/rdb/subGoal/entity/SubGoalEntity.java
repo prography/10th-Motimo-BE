@@ -12,9 +12,11 @@ import kr.co.infra.rdb.goal.entity.GoalEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SoftDelete;
 
 @Entity
 @Table(name = "sub_goals")
+@SoftDelete(columnName = "is_deleted")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubGoalEntity {

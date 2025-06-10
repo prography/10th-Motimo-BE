@@ -49,7 +49,7 @@ public class GoalEntity {
     private LocalDateTime completedAt;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SubGoalEntity> subGoals = new ArrayList<>();
+    private final List<SubGoalEntity> subGoals = new ArrayList<>();
 
     protected GoalEntity(UUID id, UUID userId, String title, DueDateEmbeddable dueDate, boolean completed) {
         this.id = id;
@@ -64,10 +64,6 @@ public class GoalEntity {
     private void goalCompleted() {
         this.completed = true;
         this.completedAt = LocalDateTime.now();
-    }
-
-    protected void setSubGoals(List<SubGoalEntity> subGoals) {
-        this.subGoals = subGoals;
     }
 
 }

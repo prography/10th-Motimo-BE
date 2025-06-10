@@ -38,8 +38,9 @@ public class SubGoalEntity {
 
     private LocalDateTime completedChangedAt;
 
-    protected SubGoalEntity(UUID userId, String title, int importance) {
+    protected SubGoalEntity(UUID userId, GoalEntity goal, String title, int importance) {
         this.userId = userId;
+        this.goal = goal;
         this.title = title;
         this.importance = importance;
         this.completed = false;

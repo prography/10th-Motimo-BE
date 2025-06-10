@@ -77,33 +77,47 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
-            set -x
-            docker pull ${{ secrets.DOCKER_USERNAME }}/motimo:${{ needs.build.outputs.commit_hash }}
-            docker stop motimo || true
-            docker rm motimo || true
-            docker run -d --env-file .env \
-              -e SPRING_PROFILES_ACTIVE=dv \
-              --name motimo \
-              -p 8080:8080 \
-              ${{ secrets.DOCKER_USERNAME }}/motimo:latest
-          EOF
+      # - name: Deploy to server
+      #   run: |
+      #     ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
+      #       set -x
+      #       docker pull ${{ secrets.DOCKER_USERNAME }}/motimo:${{ needs.build.outputs.commit_hash }}
+      #       docker stop motimo || true
+      #       docker rm motimo || true
+      #       docker run -d --env-file .env \
+      #         -e SPRING_PROFILES_ACTIVE=dv \
+      #         --name motimo \
+      #         -p 8080:8080 \
+      #         ${{ secrets.DOCKER_USERNAME }}/motimo:latest
+      #     EOF
 
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
             set -x
 
-            # 이전 이미지 및 컨테이너 정리
+            # # 이전 이미지 및 컨테이너 정리
+            # docker stop motimo || true
+            # docker rm motimo || true
+
+            # # 안 쓰는 이미지 및 볼륨 정리 
+            # docker image prune -f
+            # docker container prune -f
+            # docker volume prune -f
+            
+            docker ps -a --filter "ancestor=${{ secrets.DOCKER_USERNAME }}/motimo" --format "{{.ID}}" | xargs -r docker rm -f
+
+            # motimo 컨테이너 중 이름이 있는 것도 제거
             docker stop motimo || true
             docker rm motimo || true
 
-            # 안 쓰는 이미지 및 볼륨 정리 
+            # 사용하지 않는 이미지, 컨테이너, 볼륨 정리
             docker image prune -f
             docker container prune -f
             docker volume prune -f
+
+            docker images | grep motimo
+            docker ps -a | grep motimo
 
             # 새 이미지 풀링
             docker pull ${{ secrets.DOCKER_USERNAME }}/motimo:${{ needs.build.outputs.commit_hash }}
@@ -111,7 +125,9 @@ jobs:
             # 새 컨테이너 실행
             docker run -d --env-file .env \
               -e SPRING_PROFILES_ACTIVE=dv \
+              -e JAVA_OPTS="-Xms256m -Xmx512m -XX:+UseG1GC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:/logs/gc.log" \
               --name motimo \
               -p 8080:8080 \
-              ${{ secrets.DOCKER_USERNAME }}/motimo:latest
+              ${{ secrets.DOCKER_USERNAME }}/motimo:${{ needs.build.outputs.commit_hash }}
+
           EOF

@@ -56,7 +56,8 @@ public class SecurityConfig {
                 )
                 .userDetailsService(customUserDetailsService)
                 .exceptionHandling(exceptionHandler ->
-                        new CustomAuthenticationEntryPoint())
+                        exceptionHandler.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/v3/api-docs/**",

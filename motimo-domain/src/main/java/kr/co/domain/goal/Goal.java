@@ -13,7 +13,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Goal {
-    private UUID id;
+    private UUID id = null;
     public boolean completed;
     private String title;
     private DueDate dueDate;

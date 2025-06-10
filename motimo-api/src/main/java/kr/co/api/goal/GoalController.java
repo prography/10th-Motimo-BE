@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import kr.co.api.goal.docs.GoalControllerSwagger;
+import kr.co.api.goal.dto.GoalCreateDto;
 import kr.co.api.goal.rqrs.GoalCreateRq;
 import kr.co.api.goal.rqrs.GoalIdRs;
 import kr.co.api.goal.rqrs.GoalItemRs;
@@ -39,7 +40,7 @@ public class GoalController implements GoalControllerSwagger {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public GoalIdRs createGoal(@AuthUser UUID userId, @RequestBody GoalCreateRq rq) {
-        return new GoalIdRs(goalCommandService.createGoal(userId, rq.title(), rq.getDueDate(), rq.getSubGoals()).toString());
+        return new GoalIdRs(goalCommandService.createGoal(userId, GoalCreateDto.from(rq)).toString());
     }
 
     @PutMapping("/{id}")

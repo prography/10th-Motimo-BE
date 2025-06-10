@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.UUID;
+import kr.co.api.goal.dto.GoalCreateDto;
+import kr.co.api.goal.dto.SubGoalCreateDto;
 import kr.co.api.goal.service.GoalCommandService;
 import kr.co.domain.goal.DueDate;
 import kr.co.domain.goal.Goal;
@@ -35,24 +37,24 @@ class GoalCommandServiceTest {
     @Captor
     private ArgumentCaptor<Goal> goalCaptor;
 
+    final String goalTitle = "goal title";
+
     @Test
     void 목표_정상_생성() {
         // given
         final UUID uuid = UUID.randomUUID();
-        final String goalTitle = "goal title";
 
-        final List<SubGoal> subGoals = List.of(
-                SubGoal.createSubGoal().title("sub goal title").importance(1).build());
+        List<SubGoalCreateDto> subGoalDtos = List.of(
+                new SubGoalCreateDto("sub goal title", 3)
+        );
 
-        final DueDate dueDate = DueDate.of(2);
+        GoalCreateDto dto = new GoalCreateDto(goalTitle, true, 3, null, subGoalDtos);
 
-        final Goal testGoal = Goal.createGoal().userId(uuid).title(goalTitle).dueDate(dueDate)
-                .subGoals(subGoals).build();
-
+        Goal testGoal = createTestGoal(uuid);
         when(goalRepository.save(any(Goal.class))).thenReturn(testGoal);
 
         // when
-        goalCommandService.createGoal(uuid, goalTitle, dueDate, subGoals);
+        goalCommandService.createGoal(uuid, dto);
 
         // then
         verify(goalRepository).save(goalCaptor.capture());
@@ -63,5 +65,13 @@ class GoalCommandServiceTest {
         assertThat(savedGoal.getSubGoals()).hasSize(1);
         verify(goalRepository, times(1)).save(any(Goal.class));
 
+    }
+
+    private Goal createTestGoal(UUID userId) {
+        final List<SubGoal> subGoals = List.of(
+                SubGoal.createSubGoal().title("sub goal title").importance(1).build());
+        final DueDate dueDate = DueDate.of(2);
+        return  Goal.createGoal().userId(userId).title(goalTitle).dueDate(dueDate)
+                .subGoals(subGoals).build();
     }
 }

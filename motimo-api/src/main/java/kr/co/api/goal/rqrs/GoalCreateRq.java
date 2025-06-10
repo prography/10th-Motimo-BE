@@ -7,8 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
-import kr.co.domain.goal.DueDate;
-import kr.co.domain.subGoal.SubGoal;
 
 public record GoalCreateRq(
         @NotNull
@@ -31,18 +29,5 @@ public record GoalCreateRq(
         @JsonSetter(nulls = Nulls.AS_EMPTY)
         List<SubGoalCreateRq> subGoals
 ) {
-
-    public DueDate getDueDate() {
-        if (isPeriodByMonth) {
-            return DueDate.of(this.month);
-        }
-        return DueDate.of(this.dueDate);
-    }
-
-    public List<SubGoal> getSubGoals() {
-        return subGoals().stream()
-                .map(subGoal -> SubGoal.createSubGoal().title(subGoal.title())
-                        .importance(subGoal.importance()).build()).toList();
-    }
 
 }

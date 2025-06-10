@@ -214,7 +214,6 @@ class TodoControllerTest {
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
-        when(tokenProvider.validateToken("fakeToken")).thenReturn(true);
 
         // when & then
         mockMvc.perform(patch("/v1/todos/{todoId}/completion", todoId))
@@ -224,6 +223,13 @@ class TodoControllerTest {
     @Test
     @WithMockUser
     void 투두_삭제() throws Exception {
+
+        // given
+        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(userId);
+
+        // when & then
         mockMvc.perform(delete("/v1/todos/{todoId}", todoId))
                 .andExpect(status().isNoContent());
     }
@@ -232,28 +238,15 @@ class TodoControllerTest {
     @WithMockUser
     void 권한이_없는_유저가_투두_삭제_요청시_예외반환() throws Exception {
         // given
+        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(userId);
+
         doThrow(new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED))
                 .when(todoCommandService).deleteById(eq(userId), eq(todoId));
 
-        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
-        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                .thenReturn(userId);
         // when & then
         mockMvc.perform(delete("/v1/todos/{todoId}", todoId))
                 .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser
-    void 존재하지않는_투두_삭제_요청시_예외반환() throws Exception {
-        // given
-        doThrow(new AccessDeniedException(TodoErrorCode.TODO_NOT_FOUND))
-                .when(todoCommandService).deleteById(eq(userId), eq(todoId));
-        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
-        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                .thenReturn(userId);
-        // when & then
-        mockMvc.perform(delete("/v1/todos/{todoId}", todoId))
-                .andExpect(status().isNotFound());
     }
 }

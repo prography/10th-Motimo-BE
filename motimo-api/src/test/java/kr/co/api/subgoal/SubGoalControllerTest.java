@@ -1,6 +1,7 @@
 package kr.co.api.subgoal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -89,6 +90,9 @@ class SubGoalControllerTest {
         // given
         TodoCreateRq request = new TodoCreateRq("투두", LocalDate.now());
         String requestJson = objectMapper.writeValueAsString(request);
+        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(userId);
 
         // when & then
         mockMvc.perform(post("/v1/sub-goals/{subGoalId}/todo", subGoalId)
@@ -114,7 +118,9 @@ class SubGoalControllerTest {
         );
 
         CustomSlice<TodoSummary> expectedSlice = new CustomSlice<>(todoSummaries, false);
-
+        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(userId);
         when(todoQueryService.getTodosBySubGoal(subGoalId, page, size))
                 .thenReturn(expectedSlice);
 

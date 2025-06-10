@@ -28,12 +28,16 @@ public class GoalMapper {
         List<SubGoalEntity> subGoalEntities = goal.getSubGoals().stream()
                 .map(subGoal -> SubGoalMapper.toEntity(goal.getUserId(), subGoal))
                 .collect(Collectors.toList());
-
-        return new GoalEntity(
+        GoalEntity goalEntity = new GoalEntity(
+                goal.getId(),
                 goal.getUserId(),
                 goal.getTitle(),
                 DueDateEmbeddable.from(goal.getDueDate()),
-                subGoalEntities
+                goal.isCompleted()
         );
+
+        goalEntity.setSubGoals(subGoalEntities);
+
+        return goalEntity;
     }
 }

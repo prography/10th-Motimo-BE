@@ -5,6 +5,7 @@ import kr.co.api.security.CustomUserDetailsService;
 import kr.co.api.security.jwt.TokenAuthenticationFilter;
 import kr.co.api.security.jwt.TokenProvider;
 import kr.co.api.security.oauth2.CustomOAuth2UserService;
+import kr.co.api.security.oauth2.OAuth2AuthenticationFailureHandler;
 import kr.co.api.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,7 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
@@ -55,7 +57,8 @@ public class SecurityConfig {
                 )
                 .userDetailsService(customUserDetailsService)
                 .exceptionHandling(exceptionHandler ->
-                        exceptionHandler.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                        exceptionHandler.authenticationEntryPoint(
+                                new CustomAuthenticationEntryPoint())
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
@@ -78,6 +81,7 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService)
                         )
                         .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
                 );
 
         http.addFilterBefore(tokenAuthenticationFilter(),

@@ -1,24 +1,9 @@
 spring:
   application:
     name: motimo-api
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/motimo?ssl=false
-    username:
-    password:
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 2
-      minimum-idle: 1
-  jpa:
-    database: postgresql
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-
-
+  profiles:
+    include:
+      - database
   security:
     oauth2:
       client:
@@ -57,3 +42,9 @@ auth:
     refresh-token-expiration: ${REFRESH_TOKEN_EXP}
     issuer: ${ISSUER}
 
+supabase:
+  storage:
+    url: ${SUPABASE_URL}
+    region: ${SUPABASE_REGION}
+    bucket: ${SUPABASE_BUCKET}
+    api-key: ${SUPABASE_API_KEY}

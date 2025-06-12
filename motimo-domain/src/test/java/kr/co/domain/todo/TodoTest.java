@@ -1,0 +1,85 @@
+package kr.co.domain.todo;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import kr.co.domain.common.exception.AccessDeniedException;
+import kr.co.domain.todo.exception.TodoErrorCode;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+@DisplayName("Todo 도메인 테스트")
+public class TodoTest {
+
+    private UUID authorId;
+    private Todo todo;
+
+    @BeforeEach
+    void setUp() {
+        authorId = UUID.randomUUID();
+        todo = Todo.builder()
+                .id(UUID.randomUUID())
+                .subGoalId(UUID.randomUUID())
+                .authorId(authorId)
+                .title("오늘의 투두")
+                .date(LocalDate.of(2025, 5, 30))
+                .completed(false)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    @Test
+    void update_호출시_투두_제목과_투두_날짜가_변경된다() {
+        // given
+        String updateTitle = "새로운 투두";
+        LocalDate updateDate = LocalDate.of(2025, 5, 31);
+
+        // when
+        todo.update(updateTitle, updateDate);
+
+        // then
+        assertThat(todo.getTitle()).isEqualTo(updateTitle);
+        assertThat(todo.getDate()).isEqualTo(updateDate);
+    }
+
+    @Test
+    void toggleCompletion_호출시_completed값이_토글된다() {
+        // given
+        Todo todo = Todo.builder()
+                .completed(false)
+                .authorId(UUID.randomUUID())
+                .subGoalId(UUID.randomUUID())
+                .build();
+        // when
+        todo.toggleCompletion();
+
+        // then
+        assertThat(todo.isCompleted()).isTrue();
+        todo.toggleCompletion();
+        assertThat(todo.isCompleted()).isFalse();
+    }
+
+    @Test
+    void 작성자가_아닌지_확인시_일치할_경우_정상_동작() {
+        // given
+        // when & then
+        assertThatCode(() -> todo.validateAuthor(authorId)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void 작성자가_아닌지_확인시_불일치할_경우_예외_발생() {
+        // given
+        UUID otherUserId = UUID.randomUUID();
+        // when & then
+        assertThatThrownBy(() -> todo.validateAuthor(otherUserId))
+                .isInstanceOf(AccessDeniedException.class)
+                .hasMessage(TodoErrorCode.TODO_ACCESS_DENIED.getMessage());
+    }
+
+}

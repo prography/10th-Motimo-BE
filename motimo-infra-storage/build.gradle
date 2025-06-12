@@ -1,0 +1,10 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management'
+}
+
+dependencies {
+    implementation project(':motimo-domain')
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
+}

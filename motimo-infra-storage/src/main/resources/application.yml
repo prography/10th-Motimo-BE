@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: motimo-infra-storage
+  servlet:
+    multipart:
+      enabled: true
+#supabase:
+#  storage:
+#    url: https://sxdhigsohdeltlfacjvm.supabase.co
+#    region: ap-northeast-2
+#    bucket: test-bucket
+#    api-key: 945685b850980f7de8176f09566076de
+#    secret-key: 180fa526eb14047c17d5958f3b7e4adc4f6b7a14af8807c921f59476301aaa3f

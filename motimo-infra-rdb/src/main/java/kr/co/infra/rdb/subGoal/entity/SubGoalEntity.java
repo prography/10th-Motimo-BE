@@ -13,6 +13,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
 @Table(name = "sub_goals")
@@ -28,8 +30,6 @@ public class SubGoalEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private GoalEntity goal;
 
-    private UUID userId;
-
     private String title;
 
     private int importance;
@@ -38,8 +38,13 @@ public class SubGoalEntity {
 
     private LocalDateTime completedChangedAt;
 
-    protected SubGoalEntity(UUID userId, GoalEntity goal, String title, int importance) {
-        this.userId = userId;
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    protected SubGoalEntity(GoalEntity goal, String title, int importance) {
         this.goal = goal;
         this.title = title;
         this.importance = importance;

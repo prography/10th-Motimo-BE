@@ -25,7 +25,7 @@ public class GoalRepositoryImpl implements GoalRepository {
         GoalEntity savedGoalEntity = goalJpaRepository.save(GoalMapper.toEntity(goal));
 
         List<SubGoalEntity> subGoalEntities = goal.getSubGoals().stream()
-                .map(subGoal -> SubGoalMapper.toEntity(goal.getUserId(), savedGoalEntity, subGoal))
+                .map(subGoal -> SubGoalMapper.toEntity(savedGoalEntity, subGoal))
                 .toList();
         subGoalJpaRepository.saveAll(subGoalEntities);
 

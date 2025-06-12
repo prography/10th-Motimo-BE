@@ -44,17 +44,25 @@ class GoalMapperTest {
     void SubGoal을_SubGoalEntity로_변환() {
         UUID userId = UUID.randomUUID();
 
+        Goal goal = Goal.createGoal()
+                .userId(userId)
+                .title("goal title")
+                .dueDate(DueDate.of(3))
+                .subGoals(new ArrayList<>())
+                .build();
+
+        GoalEntity goalEntity = GoalMapper.toEntity(goal);
+
         SubGoal subGoal = SubGoal.createSubGoal()
                 .title("goal title")
                 .importance(1)
                 .build();
 
-        SubGoalEntity entity = SubGoalMapper.toEntity(userId, subGoal);
+        SubGoalEntity entity = SubGoalMapper.toEntity(goalEntity, subGoal);
 
         assertThat(entity).isNotNull();
         assertThat(entity.getTitle()).isEqualTo(subGoal.getTitle());
         assertThat(entity.getImportance()).isEqualTo(subGoal.getImportance());
-        assertThat(entity.getUserId()).isEqualTo(userId);
         assertThat(entity.isCompleted()).isFalse();
         assertThat(entity.getCompletedChangedAt()).isNull();
     }

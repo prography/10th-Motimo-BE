@@ -9,7 +9,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import kr.co.domain.common.pagination.CustomSlice;
+import kr.co.domain.todo.Emotion;
+import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.dto.TodoSummary;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.infra.rdb.config.QueryDslConfig;
@@ -66,81 +67,72 @@ class TodoRepositoryImplTest {
 
     private void setupTestData() {
         // 완료되지 않은 투두
-        createTodo("오늘 미완료 투두", false, today, subGoalId, userId, false);
-        createTodo("내일 미완료 투두", false, tomorrow, subGoalId, userId, false);
-        createTodo("어제 미완료 투두", false, yesterday, subGoalId, userId, false);
-        createTodo("미완료 투두 날짜없음", false, null, subGoalId, userId, false);
+        createTodo("오늘 미완료 투두", TodoStatus.INCOMPLETE, today, subGoalId, userId, false);
+        createTodo("내일 미완료 투두", TodoStatus.INCOMPLETE, tomorrow, subGoalId, userId, false);
+        createTodo("어제 미완료 투두", TodoStatus.INCOMPLETE, yesterday, subGoalId, userId, false);
+        createTodo("미완료 투두 날짜없음", TodoStatus.INCOMPLETE, null, subGoalId, userId, false);
 
         // 오늘 완료된 투두 (우선순위: 1 - 결과 없음, 우선순위: 2 - 결과 있음)
-        createTodo("오늘 완료 투두 결과없음", true, today, subGoalId, userId, false);
-        createTodo("오늘 완료 투두 결과있음", true, today, subGoalId, userId, true);
+        createTodo("오늘 완료 투두 결과없음", TodoStatus.COMPLETE, today, subGoalId, userId, false);
+        createTodo("오늘 완료 투두 결과있음", TodoStatus.COMPLETE, today, subGoalId, userId, true);
 
         // 과거에 완료된 투두
-        createTodo("과거 완료 투두", true, yesterday, subGoalId, userId, false);
+        createTodo("과거 완료 투두", TodoStatus.COMPLETE, yesterday, subGoalId, userId, false);
 
         // 다른 세부목표의 투두
         UUID otherSubGoalId = UUID.randomUUID();
-        createTodo("다른 세부목표 오늘 미완료투두", false, today, otherSubGoalId, userId, false);
-        createTodo("다른 세부목표 오늘 완료투두", true, today, otherSubGoalId, userId, false);
+        createTodo("다른 세부목표 오늘 미완료투두", TodoStatus.INCOMPLETE, today, otherSubGoalId, userId, false);
+        createTodo("다른 세부목표 오늘 완료투두", TodoStatus.COMPLETE, today, otherSubGoalId, userId, false);
 
         // 다른 유저의 투두
         UUID otherUserId = UUID.randomUUID();
-        createTodo("다른 유저 투두", false, today, otherSubGoalId, otherUserId, false);
+        createTodo("다른 유저 투두", TodoStatus.INCOMPLETE, today, otherSubGoalId, otherUserId, false);
     }
 
-    private void createTodo(String title, boolean completed, LocalDate date,
+    private void createTodo(String title, TodoStatus status, LocalDate date,
             UUID subGoalId, UUID userId, boolean hasResult) {
-        TodoEntity todo = TodoEntity.builder()
-                .title(title)
-                .completed(completed)
-                .date(date)
-                .subGoalId(subGoalId)
-                .authorId(userId)
-                .createdAt(LocalDateTime.now())
-                .build();
+
+        TodoEntity todo = new TodoEntity(
+                null,  // id - 자동 생성됨
+                subGoalId,
+                userId,  // authorId
+                title,
+                date,
+                status,
+                LocalDateTime.now(),  // createdAt
+                null   // updatedAt - JPA가 자동으로 설정
+        );
 
         testEntityManager.persist(todo);
 
         if (hasResult) {
             testEntityManager.flush();
-            TodoResultEntity result = TodoResultEntity.builder()
-                    .todoId(todo.getId())
-                    .build();
+            TodoResultEntity result = new TodoResultEntity(
+                    null,
+                    todo.getId(),
+                    Emotion.PROUD,
+                    "투두 완료!",
+                    "image",
+                    LocalDateTime.now(),
+                    null
+            );
             testEntityManager.persist(result);
         }
         testEntityManager.flush();
     }
 
     @Test
-    void findAllBySubGoalId_조건에_맞는_값만_조회되고_정렬된다() {
+    void 완료되지않은_상태거나_오늘의_투두들만_조회되고_정렬된다() {
         // when
-        CustomSlice<TodoSummary> result = todoRepository.findAllBySubGoalId(subGoalId, 0, 10);
+        List<TodoSummary> todos = todoRepository.findIncompleteOrTodayTodosBySubGoalId(subGoalId);
 
         // then
-        List<TodoSummary> todos = result.content();
 
         assertThat(todos).hasSize(6); // 완료되지 않은 것 4 + 오늘인 것만 2
         assertThat(todos)
                 .extracting(TodoSummary::title)
                 .containsExactly("어제 미완료 투두", "오늘 미완료 투두", "내일 미완료 투두", "미완료 투두 날짜없음",
                         "오늘 완료 투두 결과없음", "오늘 완료 투두 결과있음");
-    }
-
-    @Test
-    void findAllByUserId_정렬조건과_페이징이_적용된다() {
-        // when
-        CustomSlice<TodoSummary> result = todoRepository.findAllByUserId(userId, 0, 4);
-
-        // then
-        List<TodoSummary> todos = result.content();
-
-        assertThat(todos).hasSize(4);
-        assertThat(result.hasNext()).isTrue(); // 총 8개 → 다음 페이지 존재
-
-        // 정렬: completed false 우선 → 날짜 빠른 순 → null은 마지막
-        assertThat(todos)
-                .extracting(TodoSummary::title)
-                .containsExactly("어제 미완료 투두", "오늘 미완료 투두", "다른 세부목표 오늘 미완료투두", "내일 미완료 투두");
     }
 }
 

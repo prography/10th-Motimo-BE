@@ -8,7 +8,7 @@ import lombok.experimental.UtilityClass;
 public class TodoResultMapper {
 
     public static TodoResult toDomain(TodoResultEntity entity) {
-        return TodoResult.builder()
+        return TodoResult.createTodoResult()
                 .id(entity.getId())
                 .todoId(entity.getTodoId())
                 .emotion(entity.getEmotion())
@@ -20,15 +20,15 @@ public class TodoResultMapper {
     }
 
     public static TodoResultEntity toEntity(TodoResult domain) {
-        return TodoResultEntity.builder()
-                .id(domain.getId())
-                .todoId(domain.getTodoId())
-                .emotion(domain.getEmotion())
-                .content(domain.getContent())
-                .filePath(domain.getFilePath())
-                .createdAt(domain.getCreatedAt())
-                .updatedAt(domain.getUpdatedAt())
-                .build();
+        return new TodoResultEntity(
+                domain.getId(),
+                domain.getTodoId(),
+                domain.getEmotion(),
+                domain.getContent(),
+                domain.getFilePath(),
+                domain.getCreatedAt(),
+                domain.getUpdatedAt()
+        );
     }
 
 }

@@ -1,7 +1,7 @@
 package kr.co.domain.todo.repository;
 
+import java.util.List;
 import java.util.UUID;
-import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.dto.TodoSummary;
 
@@ -11,9 +11,9 @@ public interface TodoRepository {
 
     Todo findById(UUID id);
 
-    CustomSlice<TodoSummary> findAllBySubGoalId(UUID subGoalId, int page, int size);
+    List<TodoSummary> findIncompleteOrTodayTodosBySubGoalId(UUID subGoalId);
 
-    CustomSlice<TodoSummary> findAllByUserId(UUID userId, int page, int size);
+    List<TodoSummary> findAllByUserId(UUID userId);
 
     boolean existsById(UUID id);
 

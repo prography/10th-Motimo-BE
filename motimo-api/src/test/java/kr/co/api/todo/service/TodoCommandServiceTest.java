@@ -22,6 +22,7 @@ import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.exception.TodoErrorCode;
+import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.domain.todo.repository.TodoResultRepository;
 import kr.co.infra.storage.exception.StorageErrorCode;
@@ -38,12 +39,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class TodoCommandServiceTest {
 
+    private static final Logger log = LoggerFactory.getLogger(TodoCommandServiceTest.class);
     @Mock
     private TodoRepository todoRepository;
 
@@ -312,6 +316,67 @@ class TodoCommandServiceTest {
                     () -> todoCommandService.toggleTodoCompletion(otherUserId, todoId))
                     .isInstanceOf(AccessDeniedException.class)
                     .hasMessage(TodoErrorCode.TODO_ACCESS_DENIED.getMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("투두 업데이트 테스트")
+    class TodoUpdateTest {
+
+        Todo todo;
+        String newTitle;
+        LocalDate newDate;
+
+        @BeforeEach
+        void setUp() {
+            todo = Todo
+                    .builder()
+                    .authorId(userId)
+                    .title("투두!")
+                    .date(LocalDate.of(2025, 6, 1))
+                    .build();
+            newTitle = "새로운 투두!";
+            newDate = LocalDate.of(2025, 6, 14);
+        }
+
+        @Test
+        void 투두_업데이트_성공() {
+            // given
+            when(todoRepository.findById(todoId)).thenReturn(todo);
+
+            // when
+            todoCommandService.updateTodo(userId, todoId, newTitle, newDate);
+
+            // then
+            assertThat(todo.getTitle()).isEqualTo(newTitle);
+            assertThat(todo.getDate()).isEqualTo(newDate);
+            verify(todoRepository).save(todo);
+        }
+
+        @Test
+        void 없는_투두에_대한_업데이트_요청시_예외반환() {
+            // given
+            when(todoRepository.findById(todoId)).thenThrow(new TodoNotFoundException());
+
+            // when & then
+            assertThatThrownBy(
+                    () -> todoCommandService.updateTodo(userId, todoId, newTitle, newDate))
+                    .isInstanceOf(TodoNotFoundException.class)
+                    .hasMessage(TodoErrorCode.TODO_NOT_FOUND.getMessage());
+        }
+
+        @Test
+        void 투두_대한_권한이_없는_유저인경우_예외반환() {
+            // given
+            UUID otherUserId = UUID.randomUUID();
+            when(todoRepository.findById(todoId)).thenReturn(todo);
+
+            // when & then
+            assertThatThrownBy(
+                    () -> todoCommandService.updateTodo(otherUserId, todoId, newTitle, newDate))
+                    .isInstanceOf(AccessDeniedException.class)
+                    .hasMessage(TodoErrorCode.TODO_ACCESS_DENIED.getMessage());
+            verify(todoRepository).findById(todoId);
         }
     }
 

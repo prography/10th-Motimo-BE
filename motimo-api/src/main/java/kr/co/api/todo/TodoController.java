@@ -5,6 +5,7 @@ import kr.co.api.security.annotation.AuthUser;
 import kr.co.api.todo.docs.TodoControllerSwagger;
 import kr.co.api.todo.rqrs.TodoResultRq;
 import kr.co.api.todo.rqrs.TodoResultRs;
+import kr.co.api.todo.rqrs.TodoUpdateRq;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -57,6 +60,13 @@ public class TodoController implements TodoControllerSwagger {
         todoCommandService.toggleTodoCompletion(userId, todoId);
     }
 
+    @PutMapping("/{todoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateTodo(@AuthUser UUID userId, @PathVariable UUID todoId,
+            @RequestBody TodoUpdateRq request) {
+        todoCommandService.updateTodo(userId, todoId, request.title(), request.date());
+    }
+
     @DeleteMapping("/{todoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@AuthUser UUID userId, @PathVariable UUID todoId) {
@@ -64,6 +74,5 @@ public class TodoController implements TodoControllerSwagger {
     }
 
     // todo: 투두 결과 수정 기능 추가
-    // todo: 투두 내용 수정 기능 추가
     // todo: 투두 삭제 기능 추가
 }

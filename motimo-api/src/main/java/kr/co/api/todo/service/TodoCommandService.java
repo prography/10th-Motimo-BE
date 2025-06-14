@@ -64,6 +64,13 @@ public class TodoCommandService {
         todoRepository.save(todo);
     }
 
+    public void updateTodo(UUID userId, UUID todoId, String title, LocalDate date) {
+        Todo todo = todoRepository.findById(todoId);
+        todo.validateAuthor(userId);
+        todo.update(title, date);
+        todoRepository.save(todo);
+    }
+
     public void deleteById(UUID userId, UUID todoId) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateAuthor(userId);

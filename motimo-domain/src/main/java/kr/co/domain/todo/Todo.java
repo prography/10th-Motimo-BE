@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@Builder
+@Builder(builderMethodName = "createTodo")
 @AllArgsConstructor
 public class Todo {
 
@@ -22,7 +22,7 @@ public class Todo {
     private String title;
     private LocalDate date;
     @Builder.Default
-    private boolean completed = false;
+    private TodoStatus status = TodoStatus.INCOMPLETE;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -32,7 +32,9 @@ public class Todo {
     }
 
     public void toggleCompletion() {
-        this.completed = !this.completed;
+        this.status = (this.status == TodoStatus.INCOMPLETE)
+                ? TodoStatus.COMPLETE
+                : TodoStatus.INCOMPLETE;
     }
 
     public void validateAuthor(UUID userId) {

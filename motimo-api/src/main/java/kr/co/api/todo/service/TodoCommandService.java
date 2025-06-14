@@ -25,7 +25,7 @@ public class TodoCommandService {
     private final StorageService storageService;
 
     public void createTodo(UUID userId, UUID subGoalId, String title, LocalDate date) {
-        Todo todo = Todo.builder()
+        Todo todo = Todo.createTodo()
                 .authorId(userId)
                 .subGoalId(subGoalId)
                 .title(title)
@@ -47,7 +47,7 @@ public class TodoCommandService {
             Events.publishEvent(new FileDeletedEvent(filePath));
         }
 
-        TodoResult result = TodoResult.builder()
+        TodoResult result = TodoResult.createTodoResult()
                 .todoId(todoId)
                 .emotion(emotion)
                 .content(content)

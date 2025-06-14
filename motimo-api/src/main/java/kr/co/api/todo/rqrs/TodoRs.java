@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.dto.TodoSummary;
 
 public record TodoRs(
@@ -16,8 +17,8 @@ public record TodoRs(
         @Schema(description = "투두 완료 날짜", type = "date")
         LocalDate date,
 
-        @Schema(description = "투두 완료 여부", example = "true")
-        boolean completed,
+        @Schema(description = "투두 상태", example = "COMPLETE")
+        TodoStatus status,
 
         @Schema(description = "투두 기록 여부", example = "true")
         boolean hasResult,
@@ -28,6 +29,6 @@ public record TodoRs(
 
     public static TodoRs from(TodoSummary todoSummary) {
         return new TodoRs(todoSummary.id(), todoSummary.title(), todoSummary.date(),
-                todoSummary.completed(), todoSummary.hasResult(), todoSummary.createdAt());
+                todoSummary.status(), todoSummary.hasResult(), todoSummary.createdAt());
     }
 }

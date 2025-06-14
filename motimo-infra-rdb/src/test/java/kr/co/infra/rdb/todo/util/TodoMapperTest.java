@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import kr.co.domain.todo.Todo;
+import kr.co.domain.todo.TodoStatus;
 import kr.co.infra.rdb.todo.entity.TodoEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,16 +23,16 @@ public class TodoMapperTest {
         LocalDate date = LocalDate.now();
         LocalDateTime now = LocalDateTime.now();
 
-        TodoEntity entity = TodoEntity.builder()
-                .id(id)
-                .subGoalId(subGoalId)
-                .authorId(authorId)
-                .title("투두 제목")
-                .date(date)
-                .completed(true)
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        TodoEntity entity = new TodoEntity(
+                id,
+                subGoalId,
+                authorId,
+                "투두 제목",
+                date,
+                TodoStatus.INCOMPLETE,
+                now,
+                now
+        );
 
         // when
         Todo todo = TodoMapper.toDomain(entity);
@@ -42,7 +43,7 @@ public class TodoMapperTest {
         assertThat(todo.getAuthorId()).isEqualTo(authorId);
         assertThat(todo.getTitle()).isEqualTo("투두 제목");
         assertThat(todo.getDate()).isEqualTo(date);
-        assertThat(todo.isCompleted()).isTrue();
+        assertThat(todo.getStatus()).isEqualTo(TodoStatus.INCOMPLETE);
         assertThat(todo.getCreatedAt()).isEqualTo(now);
         assertThat(todo.getUpdatedAt()).isEqualTo(now);
     }
@@ -56,13 +57,13 @@ public class TodoMapperTest {
         LocalDate date = LocalDate.now();
         LocalDateTime now = LocalDateTime.now();
 
-        Todo domain = Todo.builder()
+        Todo domain = Todo.createTodo()
                 .id(id)
                 .subGoalId(subGoalId)
                 .authorId(authorId)
                 .title("투두 제목")
                 .date(date)
-                .completed(true)
+                .status(TodoStatus.INCOMPLETE)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
@@ -76,7 +77,7 @@ public class TodoMapperTest {
         assertThat(entity.getAuthorId()).isEqualTo(authorId);
         assertThat(entity.getTitle()).isEqualTo("투두 제목");
         assertThat(entity.getDate()).isEqualTo(date);
-        assertThat(entity.isCompleted()).isTrue();
+        assertThat(entity.getStatus()).isEqualTo(TodoStatus.INCOMPLETE);
         assertThat(entity.getCreatedAt()).isEqualTo(now);
         assertThat(entity.getUpdatedAt()).isEqualTo(now);
     }

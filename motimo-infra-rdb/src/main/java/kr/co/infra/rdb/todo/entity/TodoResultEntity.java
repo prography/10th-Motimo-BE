@@ -12,8 +12,6 @@ import java.util.UUID;
 import kr.co.domain.todo.Emotion;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
@@ -26,9 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "todo_result")
 @SoftDelete(columnName = "is_deleted")
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class TodoResultEntity {
 
     @Id
@@ -57,4 +53,14 @@ public class TodoResultEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public TodoResultEntity(UUID id, UUID todoId, Emotion emotion, String content, String filePath,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.todoId = todoId;
+        this.emotion = emotion;
+        this.content = content;
+        this.filePath = filePath;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

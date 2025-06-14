@@ -1,9 +1,10 @@
 package kr.co.api.todo.service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import kr.co.api.todo.rqrs.TodoResultRs;
-import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.todo.dto.TodoSummary;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
@@ -22,12 +23,13 @@ public class TodoQueryService {
     private final TodoResultRepository todoResultRepository;
     private final StorageService storageService;
 
-    public CustomSlice<TodoSummary> getTodosBySubGoal(UUID subGoalId, int page, int size) {
-        return todoRepository.findAllBySubGoalId(subGoalId, page, size);
+    public List<TodoSummary> getIncompleteOrTodayTodosBySubGoalId(UUID subGoalId) {
+        LocalDate today = LocalDate.now();
+        return todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId, today);
     }
 
-    public CustomSlice<TodoSummary> getTodosByUser(UUID userId, int page, int size) {
-        return todoRepository.findAllByUserId(userId, page, size);
+    public List<TodoSummary> getTodosByUserId(UUID userId) {
+        return todoRepository.findAllByUserId(userId);
     }
 
     public Optional<TodoResultRs> getTodoResultByTodoId(UUID todoId) {

@@ -8,29 +8,29 @@ import lombok.experimental.UtilityClass;
 public class TodoMapper {
 
     public static Todo toDomain(TodoEntity entity) {
-        return Todo.builder()
+        return Todo.createTodo()
                 .id(entity.getId())
                 .subGoalId(entity.getSubGoalId())
                 .authorId(entity.getAuthorId())
                 .title(entity.getTitle())
                 .date(entity.getDate())
-                .completed(entity.isCompleted())
+                .status(entity.getStatus())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();
     }
 
     public static TodoEntity toEntity(Todo domain) {
-        return TodoEntity.builder()
-                .id(domain.getId())
-                .subGoalId(domain.getSubGoalId())
-                .authorId(domain.getAuthorId())
-                .title(domain.getTitle())
-                .date(domain.getDate())
-                .completed(domain.isCompleted())
-                .createdAt(domain.getCreatedAt())
-                .updatedAt(domain.getUpdatedAt())
-                .build();
+        return new TodoEntity(
+                domain.getId(),
+                domain.getSubGoalId(),
+                domain.getAuthorId(),
+                domain.getTitle(),
+                domain.getDate(),
+                domain.getStatus(),
+                domain.getCreatedAt(),
+                domain.getUpdatedAt()
+        );
     }
 
 }

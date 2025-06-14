@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import kr.co.api.todo.rqrs.TodoResultRs;
-import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.dto.TodoSummary;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
@@ -27,8 +27,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -61,33 +59,26 @@ class TodoQueryServiceTest {
     }
 
     @Nested
-    @DisplayName("세부 목표 아이디로 투두 리스트 조회 테스트")
+    @DisplayName("세부 목표 아이디로 미완료 상태이거나 오늘의 투두 리스트 조회 테스트")
     class GetTodosBySubGoalTest {
 
-        @ParameterizedTest
-        @CsvSource({
-                "0, 10, 5, false",
-                "0, 5, 6, true",
-                "1, 10, 3, false",
-                "2, 20, 0, false"
-        })
-        void 세부목표_ID로_투두_리스트_조회(int page, int size, int resultSize, boolean hasNext) {
+        @Test
+        void 세부목표_ID로_투두_리스트_조회() {
             // given
-            List<TodoSummary> mockSummaries = createMockTodoSummaries(resultSize);
-            CustomSlice<TodoSummary> mockSlice = new CustomSlice<>(mockSummaries, hasNext);
+            LocalDate today = LocalDate.now();
+            List<TodoSummary> mockSummaries = createMockTodoSummaries(3);
 
-            when(todoRepository.findAllBySubGoalId(subGoalId, page, size))
-                    .thenReturn(mockSlice);
+            when(todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId, today))
+                    .thenReturn(mockSummaries);
 
             // when
-            CustomSlice<TodoSummary> result = todoQueryService.getTodosBySubGoal(subGoalId, page,
-                    size);
+            List<TodoSummary> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
+                    subGoalId);
 
             // then
-            assertThat(result).isNotNull();
-            assertThat(result.content()).hasSize(resultSize);
-            assertThat(result.hasNext()).isEqualTo(hasNext);
-            verify(todoRepository).findAllBySubGoalId(subGoalId, page, size);
+            assertThat(todos).isNotNull();
+            assertThat(todos).hasSize(3);
+            verify(todoRepository).findIncompleteOrDateTodosBySubGoalId(subGoalId, today);
         }
 
     }
@@ -102,19 +93,16 @@ class TodoQueryServiceTest {
             int page = 0;
             int size = 10;
             List<TodoSummary> mockSummaries = createMockTodoSummaries(3);
-            CustomSlice<TodoSummary> mockSlice = new CustomSlice<>(mockSummaries, false);
 
-            when(todoRepository.findAllByUserId(userId, page, size))
-                    .thenReturn(mockSlice);
+            when(todoRepository.findAllByUserId(userId)).thenReturn(mockSummaries);
 
             // when
-            CustomSlice<TodoSummary> result = todoQueryService.getTodosByUser(userId, page, size);
+            List<TodoSummary> todos = todoQueryService.getTodosByUserId(userId);
 
             // then
-            assertThat(result).isNotNull();
-            assertThat(result.content()).hasSize(3);
-            assertThat(result.hasNext()).isEqualTo(false);
-            verify(todoRepository).findAllByUserId(userId, 0, 10);
+            assertThat(todos).isNotNull();
+            assertThat(todos).hasSize(3);
+            verify(todoRepository).findAllByUserId(userId);
         }
 
         @Test
@@ -123,17 +111,15 @@ class TodoQueryServiceTest {
             int page = 0;
             int size = 10;
             UUID nonExistsUserId = UUID.randomUUID();
-            CustomSlice<TodoSummary> emptySlice = new CustomSlice<>(Collections.emptyList(), false);
-            when(todoRepository.findAllByUserId(nonExistsUserId, page, size))
-                    .thenReturn(emptySlice);
+            List<TodoSummary> emptyList = Collections.emptyList();
+            when(todoRepository.findAllByUserId(nonExistsUserId)).thenReturn(emptyList);
 
             // when
-            CustomSlice<TodoSummary> result = todoQueryService.getTodosByUser(
-                    nonExistsUserId, page, size);
+            List<TodoSummary> todos = todoQueryService.getTodosByUserId(nonExistsUserId);
 
             // then
-            assertThat(result.content()).isEmpty();
-            verify(todoRepository).findAllByUserId(nonExistsUserId, page, size);
+            assertThat(todos).isEmpty();
+            verify(todoRepository).findAllByUserId(nonExistsUserId);
         }
     }
 
@@ -144,7 +130,7 @@ class TodoQueryServiceTest {
         @Test
         void 투두_ID로_결과_조회() {
             // given
-            TodoResult mockResult = TodoResult.builder()
+            TodoResult mockResult = TodoResult.createTodoResult()
                     .id(UUID.randomUUID())
                     .todoId(todoId)
                     .emotion(Emotion.PROUD)
@@ -201,7 +187,7 @@ class TodoQueryServiceTest {
                     UUID.randomUUID(),
                     "테스트 투두",
                     LocalDate.now(),
-                    false,
+                    TodoStatus.INCOMPLETE,
                     LocalDateTime.now(),
                     false));
         }

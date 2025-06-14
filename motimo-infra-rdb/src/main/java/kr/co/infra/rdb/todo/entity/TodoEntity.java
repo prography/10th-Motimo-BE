@@ -1,25 +1,31 @@
 package kr.co.infra.rdb.todo.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import kr.co.domain.todo.TodoStatus;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "todo")
 @SoftDelete(columnName = "is_deleted")
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class TodoEntity {
 
     @Id
@@ -39,9 +45,9 @@ public class TodoEntity {
     @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "completed")
-    @Builder.Default
-    private boolean completed = false;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private TodoStatus status;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
@@ -51,4 +57,15 @@ public class TodoEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public TodoEntity(UUID id, UUID subGoalId, UUID authorId, String title, LocalDate date,
+            TodoStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.subGoalId = subGoalId;
+        this.authorId = authorId;
+        this.title = title;
+        this.date = date;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

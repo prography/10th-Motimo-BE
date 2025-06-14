@@ -7,7 +7,7 @@ CREATE TABLE goals
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     completed    BOOLEAN NOT NULL,
     completed_at TIMESTAMP,
-    month        INTEGER,
+    "month"        INTEGER,
     due_date     date,
     is_deleted   BOOLEAN NOT NULL
 );

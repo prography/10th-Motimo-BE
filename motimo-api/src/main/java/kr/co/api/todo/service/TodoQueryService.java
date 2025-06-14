@@ -24,7 +24,8 @@ public class TodoQueryService {
     private final StorageService storageService;
 
     public List<TodoSummary> getIncompleteOrTodayTodosBySubGoalId(UUID subGoalId) {
-        return todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId, LocalDate.now());
+        LocalDate today = LocalDate.now();
+        return todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId, today);
     }
 
     public List<TodoSummary> getTodosByUserId(UUID userId) {

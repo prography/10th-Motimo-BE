@@ -1,5 +1,6 @@
 package kr.co.domain.todo.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import kr.co.domain.todo.Todo;
@@ -11,7 +12,7 @@ public interface TodoRepository {
 
     Todo findById(UUID id);
 
-    List<TodoSummary> findIncompleteOrTodayTodosBySubGoalId(UUID subGoalId);
+    List<TodoSummary> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date);
 
     List<TodoSummary> findAllByUserId(UUID userId);
 

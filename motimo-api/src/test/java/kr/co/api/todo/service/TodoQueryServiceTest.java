@@ -65,9 +65,10 @@ class TodoQueryServiceTest {
         @Test
         void 세부목표_ID로_투두_리스트_조회() {
             // given
+            LocalDate today = LocalDate.now();
             List<TodoSummary> mockSummaries = createMockTodoSummaries(3);
 
-            when(todoRepository.findIncompleteOrTodayTodosBySubGoalId(subGoalId))
+            when(todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId, today))
                     .thenReturn(mockSummaries);
 
             // when
@@ -77,7 +78,7 @@ class TodoQueryServiceTest {
             // then
             assertThat(todos).isNotNull();
             assertThat(todos).hasSize(3);
-            verify(todoRepository).findIncompleteOrTodayTodosBySubGoalId(subGoalId);
+            verify(todoRepository).findIncompleteOrDateTodosBySubGoalId(subGoalId, today);
         }
 
     }

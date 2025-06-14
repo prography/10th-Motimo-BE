@@ -43,10 +43,9 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public List<TodoSummary> findIncompleteOrTodayTodosBySubGoalId(UUID subGoalId) {
+    public List<TodoSummary> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date) {
         QTodoEntity todoEntity = QTodoEntity.todoEntity;
         QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
-        LocalDate today = LocalDate.now();
         NumberExpression<Integer> priorityOrder = getPriorityOrder(todoEntity, todoResultEntity);
 
         return jpaQueryFactory
@@ -64,7 +63,7 @@ public class TodoRepositoryImpl implements TodoRepository {
                         todoEntity.subGoalId.eq(subGoalId)
                                 .and(anyOf(
                                         todoEntity.status.ne(TodoStatus.COMPLETE),
-                                        todoEntity.date.eq(today)
+                                        todoEntity.date.eq(date)
                                 ))
                 )
                 .orderBy(

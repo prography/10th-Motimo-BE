@@ -124,7 +124,8 @@ class TodoRepositoryImplTest {
     @Test
     void 완료되지않은_상태거나_오늘의_투두들만_조회되고_정렬된다() {
         // when
-        List<TodoSummary> todos = todoRepository.findIncompleteOrTodayTodosBySubGoalId(subGoalId);
+        List<TodoSummary> todos = todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId,
+                today);
 
         // then
 

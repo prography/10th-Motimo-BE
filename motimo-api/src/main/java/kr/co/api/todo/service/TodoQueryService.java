@@ -1,5 +1,6 @@
 package kr.co.api.todo.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,7 +24,7 @@ public class TodoQueryService {
     private final StorageService storageService;
 
     public List<TodoSummary> getIncompleteOrTodayTodosBySubGoalId(UUID subGoalId) {
-        return todoRepository.findIncompleteOrTodayTodosBySubGoalId(subGoalId);
+        return todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId, LocalDate.now());
     }
 
     public List<TodoSummary> getTodosByUserId(UUID userId) {

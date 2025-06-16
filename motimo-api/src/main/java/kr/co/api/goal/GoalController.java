@@ -40,7 +40,7 @@ public class GoalController implements GoalControllerSwagger {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public GoalIdRs createGoal(@AuthUser UUID userId, @RequestBody GoalCreateRq rq) {
-        return new GoalIdRs(goalCommandService.createGoal(userId, GoalCreateDto.from(rq)).toString());
+        return new GoalIdRs(goalCommandService.createGoal(userId, GoalCreateDto.from(rq)));
     }
 
     @PutMapping("/{id}")
@@ -50,6 +50,17 @@ public class GoalController implements GoalControllerSwagger {
 
     @GetMapping
     public GoalListRs getGoalList(@AuthUser UUID userId) {
+        List<GoalItemRs> items = new ArrayList<>();
+        items.add(new GoalItemRs("첫번째 목표", LocalDate.now(), 50));
+        items.add(new GoalItemRs("자격증 따기", LocalDate.of(2026, 2, 10), 20));
+        items.add(new GoalItemRs("노래 만들기", LocalDate.now(), 100));
+        return new GoalListRs(
+                items
+        );
+    }
+
+    @GetMapping("/{goalId}/sub-goals")
+    public GoalListRs getSubGoalList(@AuthUser UUID userId, @PathVariable String goalId) {
         List<GoalItemRs> items = new ArrayList<>();
         items.add(new GoalItemRs("첫번째 목표", LocalDate.now(), 50));
         items.add(new GoalItemRs("자격증 따기", LocalDate.of(2026, 2, 10), 20));

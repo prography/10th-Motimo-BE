@@ -20,16 +20,15 @@ class TodoResultMapperTest {
         UUID todoId = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        TodoResultEntity entity = TodoResultEntity.builder()
-                .id(id)
-                .todoId(todoId)
-                .emotion(Emotion.PROUD)
-                .content("투두 완료!")
-                .filePath("/image.jpg")
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
-
+        TodoResultEntity entity = new TodoResultEntity(
+                id,
+                todoId,
+                Emotion.PROUD,
+                "투두 완료!",
+                "/image.jpg",
+                now,
+                now
+        );
         // when
         TodoResult result = TodoResultMapper.toDomain(entity);
 
@@ -50,7 +49,7 @@ class TodoResultMapperTest {
         UUID todoId = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
-        TodoResult domain = TodoResult.builder()
+        TodoResult domain = TodoResult.createTodoResult()
                 .id(id)
                 .todoId(todoId)
                 .emotion(Emotion.PROUD)

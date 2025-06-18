@@ -2,6 +2,8 @@ package kr.co.domain.subGoal;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import kr.co.domain.common.exception.AccessDeniedException;
+import kr.co.domain.subGoal.exception.SubGoalErrorCode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +14,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SubGoal {
     private UUID id;
+    private UUID goalId;
+    private UUID userId;
     private String title;
     private int importance;
     @Getter

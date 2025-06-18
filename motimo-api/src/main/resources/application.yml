@@ -48,3 +48,8 @@ supabase:
     region: ${SUPABASE_REGION}
     bucket: ${SUPABASE_BUCKET}
     api-key: ${SUPABASE_API_KEY}
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    com.fasterxml.jackson.databind: DEBUG

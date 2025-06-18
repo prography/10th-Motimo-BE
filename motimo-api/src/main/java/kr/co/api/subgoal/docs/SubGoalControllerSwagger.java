@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
 import kr.co.api.subgoal.rqrs.TodoCreateRq;
+import kr.co.api.todo.rqrs.TodoIdRs;
 import kr.co.api.todo.rqrs.TodoRs;
 import kr.co.domain.common.pagination.CustomSlice;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +25,7 @@ public interface SubGoalControllerSwagger {
             @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
     })
-    void createTodo(
+    TodoIdRs createTodo(
             UUID userId,
             @Parameter(description = "세부 목표 ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID subGoalId,

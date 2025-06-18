@@ -18,6 +18,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Tag(name = "세부 목표 API", description = "세부 목표 관련 API 목록입니다")
 public interface SubGoalControllerSwagger {
 
+    @Operation(summary = "세부 목표 완료/완료 취소 API", description = "세부 목표를 완료/완료 취소 합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "완료/취소 처리 성공"),
+            @ApiResponse(responseCode = "403", description = "완료 처리 권한 없음"),
+            @ApiResponse(responseCode = "404", description = "세부 목표를 찾을 수 없음")
+    })
+    void subGoalCompleteToggle(UUID userId, @PathVariable UUID subGoalId);
+
     @Operation(summary = "TODO 생성", description = "세부 목표에 새로운 TODO를 생성합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "TODO 생성 성공"),

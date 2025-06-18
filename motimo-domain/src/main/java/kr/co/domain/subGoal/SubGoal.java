@@ -33,4 +33,10 @@ public class SubGoal {
         completed = !completed;
         completedChangedAt = LocalDateTime.now();
     }
+
+    public void userChecked(UUID userId) {
+        if(!userId.equals(this.userId)) {
+            throw new AccessDeniedException(SubGoalErrorCode.SUB_GOAL_ACCESS_DENIED);
+        }
+    }
 }

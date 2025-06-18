@@ -33,6 +33,8 @@ public class SubGoalEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private GoalEntity goal;
 
+    private UUID userId;
+
     private String title;
 
     private int importance;
@@ -49,8 +51,18 @@ public class SubGoalEntity {
 
     protected SubGoalEntity(GoalEntity goal, String title, int importance) {
         this.goal = goal;
+        this.userId = goal.getUserId();
         this.title = title;
         this.importance = importance;
         this.completed = false;
+    }
+
+    public void update(String title, int importance, boolean completed) {
+        this.title = title;
+        this.importance = importance;
+        this.completed = completed;
+        if(completed) {
+            this.completedChangedAt = LocalDateTime.now();
+        }
     }
 }

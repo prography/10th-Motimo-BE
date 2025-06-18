@@ -328,8 +328,7 @@ class TodoCommandServiceTest {
 
         @BeforeEach
         void setUp() {
-            todo = Todo
-                    .builder()
+            todo = Todo.createTodo()
                     .authorId(userId)
                     .title("투두!")
                     .date(LocalDate.of(2025, 6, 1))

@@ -21,6 +21,7 @@ import kr.co.domain.common.exception.AccessDeniedException;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
@@ -100,7 +101,7 @@ class TodoCommandServiceTest {
             assertThat(savedTodo.getSubGoalId()).isEqualTo(subGoalId);
             assertThat(savedTodo.getTitle()).isEqualTo(title);
             assertThat(savedTodo.getDate()).isEqualTo(date);
-            assertThat(savedTodo.isCompleted()).isFalse();
+            assertThat(savedTodo.getStatus()).isEqualTo(TodoStatus.INCOMPLETE);
         }
 
         @Test
@@ -128,13 +129,13 @@ class TodoCommandServiceTest {
 
         @BeforeEach
         void setUp() {
-            todo = Todo.builder()
+            todo = Todo.createTodo()
                     .id(todoId)
                     .authorId(userId)
                     .subGoalId(subGoalId)
                     .title("Test Todo")
                     .date(LocalDate.now())
-                    .completed(false)
+                    .status(TodoStatus.INCOMPLETE)
                     .build();
         }
 
@@ -269,23 +270,21 @@ class TodoCommandServiceTest {
         @DisplayName("투두 완료 상태 토글 성공")
         void 투두_완료_상태로_토글_성공() {
             // given
-            Todo todo = Todo.builder()
+            Todo todo = Todo.createTodo()
                     .id(todoId)
                     .authorId(userId)
                     .subGoalId(subGoalId)
                     .title("Test Todo")
                     .date(LocalDate.now())
-                    .completed(false)
+                    .status(TodoStatus.INCOMPLETE)
                     .build();
             when(todoRepository.findById(todoId)).thenReturn(todo);
-            boolean preStatus = todo.isCompleted();
 
             // when
             todoCommandService.toggleTodoCompletion(userId, todoId);
 
             // then
-            assertThat(preStatus).isFalse();
-            assertThat(todo.isCompleted()).isTrue();
+            assertThat(todo.getStatus()).isEqualTo(TodoStatus.COMPLETE);
             verify(todoRepository).save(todo);
         }
 
@@ -427,13 +426,13 @@ class TodoCommandServiceTest {
         @Test
         void repository_삭제_실패_시_예외_발생() {
             // given
-            Todo todo = Todo.builder()
+            Todo todo = Todo.createTodo()
                     .id(todoId)
                     .authorId(userId)
                     .subGoalId(subGoalId)
                     .title("Test Todo")
                     .date(LocalDate.now())
-                    .completed(false)
+                    .status(TodoStatus.INCOMPLETE)
                     .build();
             when(todoRepository.findById(todoId)).thenReturn(todo);
             doThrow(new RuntimeException("Database error")).when(todoRepository).deleteById(todoId);

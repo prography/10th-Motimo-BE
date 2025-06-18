@@ -3,11 +3,15 @@ package kr.co.api.todo;
 import java.util.UUID;
 import kr.co.api.security.annotation.AuthUser;
 import kr.co.api.todo.docs.TodoControllerSwagger;
+import kr.co.api.todo.rqrs.TodoIdRs;
+import kr.co.api.todo.rqrs.TodoResultIdRs;
 import kr.co.api.todo.rqrs.TodoResultRq;
 import kr.co.api.todo.rqrs.TodoResultRs;
 import kr.co.api.todo.rqrs.TodoUpdateRq;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
+import kr.co.domain.todo.Todo;
+import kr.co.domain.todo.TodoResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,12 +43,14 @@ public class TodoController implements TodoControllerSwagger {
 
     @PostMapping(path = "/{todoId}/result", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void submitResult(@AuthUser UUID userId,
+    public TodoResultIdRs submitResult(@AuthUser UUID userId,
             @PathVariable UUID todoId,
             @RequestPart TodoResultRq request,
             @RequestPart(name = "file", required = false) MultipartFile file) {
-        todoCommandService.submitTodoResult(userId, todoId, request.emotion(), request.content(),
-                file);
+        TodoResult todoResult = todoCommandService.submitTodoResult(
+                userId, todoId, request.emotion(), request.content(), file);
+
+        return new TodoResultIdRs(todoResult.getId());
     }
 
     @GetMapping("/{todoId}/result")
@@ -56,15 +62,17 @@ public class TodoController implements TodoControllerSwagger {
 
     @PatchMapping("/{todoId}/completion")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void toggleTodoCompletion(@AuthUser UUID userId, @PathVariable UUID todoId) {
-        todoCommandService.toggleTodoCompletion(userId, todoId);
+    public TodoIdRs toggleTodoCompletion(@AuthUser UUID userId, @PathVariable UUID todoId) {
+        Todo todo = todoCommandService.toggleTodoCompletion(userId, todoId);
+        return new TodoIdRs(todo.getId());
     }
 
     @PutMapping("/{todoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateTodo(@AuthUser UUID userId, @PathVariable UUID todoId,
+    public TodoIdRs updateTodo(@AuthUser UUID userId, @PathVariable UUID todoId,
             @RequestBody TodoUpdateRq request) {
-        todoCommandService.updateTodo(userId, todoId, request.title(), request.date());
+        Todo todo = todoCommandService.updateTodo(userId, todoId, request.title(), request.date());
+        return new TodoIdRs(todo.getId());
     }
 
     @DeleteMapping("/{todoId}")

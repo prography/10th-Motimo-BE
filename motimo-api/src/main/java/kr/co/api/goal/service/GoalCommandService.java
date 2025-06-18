@@ -35,4 +35,14 @@ public class GoalCommandService {
 
         return createdGoal.getId();
     }
+
+    public void goalComplete(UUID userId, UUID goalId) {
+        Goal goal = goalRepository.findBy(goalId);
+
+        goal.userChecked(userId);
+
+        goal.complete();
+
+        goalRepository.save(goal);
+    }
 }

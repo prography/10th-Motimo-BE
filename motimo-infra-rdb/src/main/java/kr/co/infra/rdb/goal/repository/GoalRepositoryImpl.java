@@ -1,34 +1,30 @@
 package kr.co.infra.rdb.goal.repository;
 
-import java.util.List;
+import java.util.UUID;
 import kr.co.domain.goal.Goal;
+import kr.co.domain.goal.exception.GoalNotFoundException;
 import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.infra.rdb.goal.entity.GoalEntity;
 import kr.co.infra.rdb.goal.entity.GoalMapper;
-import kr.co.infra.rdb.subGoal.entity.SubGoalEntity;
-import kr.co.infra.rdb.subGoal.entity.SubGoalMapper;
-import kr.co.infra.rdb.subGoal.repository.SubGoalJpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class GoalRepositoryImpl implements GoalRepository {
     private final GoalJpaRepository goalJpaRepository;
-    private final SubGoalJpaRepository subGoalJpaRepository;
 
-    public GoalRepositoryImpl(GoalJpaRepository goalJpaRepository, SubGoalJpaRepository subGoalJpaRepository) {
+    public GoalRepositoryImpl(GoalJpaRepository goalJpaRepository) {
         this.goalJpaRepository = goalJpaRepository;
-        this.subGoalJpaRepository = subGoalJpaRepository;
     }
 
-    @Override
     public Goal save(Goal goal) {
         GoalEntity savedGoalEntity = goalJpaRepository.save(GoalMapper.toEntity(goal));
 
-        List<SubGoalEntity> subGoalEntities = goal.getSubGoals().stream()
-                .map(subGoal -> SubGoalMapper.toEntity(savedGoalEntity, subGoal))
-                .toList();
-        subGoalJpaRepository.saveAll(subGoalEntities);
-
         return GoalMapper.toDomain(savedGoalEntity);
     }
+
+    public Goal findBy(UUID id) {
+        GoalEntity goalEntity = goalJpaRepository.findById(id).orElseThrow(GoalNotFoundException::new);
+        return GoalMapper.toDomain(goalEntity);
+    }
+
 }

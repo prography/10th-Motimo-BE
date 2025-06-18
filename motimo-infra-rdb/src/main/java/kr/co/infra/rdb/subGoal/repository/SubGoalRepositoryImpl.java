@@ -27,6 +27,5 @@ public class SubGoalRepositoryImpl implements SubGoalRepository {
         SubGoalEntity subGoalEntity = subGoalJpaRepository.findById(subGoal.getId()).orElseThrow(SubGoalNotFoundException::new);
         subGoalEntity.update(subGoal.getTitle(), subGoal.getImportance(), subGoal.isCompleted());
         subGoalJpaRepository.save(subGoalEntity);
-//        return SubGoalMapper.toDomain(subGoalEntity);
     }
 }

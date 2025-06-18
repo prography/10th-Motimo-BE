@@ -64,9 +64,13 @@ public class GoalEntity {
         }
     }
 
-    private void goalCompleted() {
+    public void goalCompleted() {
         this.completed = true;
         this.completedAt = LocalDateTime.now();
+    }
+
+    public void addSubGoals(List<SubGoalEntity> subGoals) {
+        this.subGoals.addAll(subGoals);
     }
 
 }

@@ -19,7 +19,7 @@ public class SubGoalCommandService {
 
         subGoal.userChecked(userId);
 
-        subGoal.changeCompleted();
+        subGoal.toggleCompleted();
 
         subGoalRepository.update(subGoal);
     }

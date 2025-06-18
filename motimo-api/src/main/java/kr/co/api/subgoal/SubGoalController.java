@@ -37,7 +37,7 @@ public class SubGoalController implements SubGoalControllerSwagger {
         this.subGoalCommandService = subGoalCommandService;
     }
 
-    @PatchMapping("/{subGoalId}/complete/toggle")
+    @PatchMapping("/{subGoalId}/completion/toggle")
     public void subGoalCompleteToggle(@AuthUser UUID userId, @PathVariable UUID subGoalId) {
         subGoalCommandService.toggleSubGoalComplete(userId, subGoalId);
     }

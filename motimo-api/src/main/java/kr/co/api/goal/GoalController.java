@@ -16,6 +16,7 @@ import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.security.annotation.AuthUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -46,6 +47,11 @@ public class GoalController implements GoalControllerSwagger {
     @PutMapping("/{id}")
     public void updateGoal(@AuthUser UUID userId, @PathVariable String id,
             @RequestBody GoalUpdateRq rq) {
+    }
+
+    @PatchMapping("/{goalId}/completion")
+    public void goalComplete(@AuthUser UUID userId, @PathVariable UUID goalId) {
+        goalCommandService.goalComplete(userId, goalId);
     }
 
     @GetMapping

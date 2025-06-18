@@ -29,7 +29,7 @@ public class SubGoal {
         this.completed = false;
     }
 
-    public void changeCompleted() {
+    public void toggleCompleted() {
         completed = !completed;
         completedChangedAt = LocalDateTime.now();
     }

@@ -22,7 +22,7 @@ public class GoalRepositoryImpl implements GoalRepository {
         return GoalMapper.toDomain(savedGoalEntity);
     }
 
-    public Goal findBy(UUID id) {
+    public Goal findById(UUID id) {
         GoalEntity goalEntity = goalJpaRepository.findById(id).orElseThrow(GoalNotFoundException::new);
         return GoalMapper.toDomain(goalEntity);
     }

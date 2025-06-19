@@ -5,6 +5,6 @@ import kr.co.domain.goal.Goal;
 
 public interface GoalRepository {
     Goal save(Goal goal);
-    Goal findBy(UUID id);
+    Goal findById(UUID id);
 }
 

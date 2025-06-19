@@ -37,9 +37,9 @@ public class GoalCommandService {
     }
 
     public void goalComplete(UUID userId, UUID goalId) {
-        Goal goal = goalRepository.findBy(goalId);
+        Goal goal = goalRepository.findById(goalId);
 
-        goal.userChecked(userId);
+        goal.validateOwner(userId);
 
         goal.complete();
 

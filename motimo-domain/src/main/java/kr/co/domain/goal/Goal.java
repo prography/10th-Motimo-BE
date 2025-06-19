@@ -45,7 +45,7 @@ public class Goal {
         }
     }
 
-    public void userChecked(UUID userId) {
+    public void validateOwner(UUID userId) {
         if(!userId.equals(this.userId)) {
             throw new AccessDeniedException(GoalErrorCode.GOAL_ACCESS_DENIED);
         }

@@ -92,7 +92,7 @@ public class TodoRepositoryImpl implements TodoRepository {
                 ))
                 .from(todoEntity)
                 .leftJoin(todoResultEntity).on(todoResultEntity.todoId.eq(todoEntity.id))
-                .where(todoEntity.authorId.eq(userId))
+                .where(todoEntity.userId.eq(userId))
                 .orderBy(
                         priorityOrder.asc(),
                         todoEntity.date.asc().nullsLast()

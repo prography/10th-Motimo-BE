@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.util.UUID;
 import kr.co.domain.common.event.Events;
 import kr.co.domain.common.event.FileDeletedEvent;
+import kr.co.domain.common.event.FileRollbackEvent;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.exception.TodoResultNotSubmittedException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.domain.todo.repository.TodoResultRepository;
 import kr.co.infra.storage.service.StorageService;
@@ -44,7 +46,7 @@ public class TodoCommandService {
             filePath = String.format("todo/%s/%s", todoId, UUID.randomUUID());
             storageService.store(file, filePath);
             // 이미지 삭제 이벤트 발행 (트랜잭션 롤백 시 동작)
-            Events.publishEvent(new FileDeletedEvent(filePath));
+            Events.publishEvent(new FileRollbackEvent(filePath));
         }
 
         TodoResult result = TodoResult.createTodoResult()
@@ -75,6 +77,25 @@ public class TodoCommandService {
     public void deleteById(UUID userId, UUID todoId) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateOwner(userId);
+        todoResultRepository.findByTodoId(todoId)
+                .ifPresent(todoResult -> {
+                    todoResult.validateOwner(userId);
+                    deleteTodoResult(todoResult);
+                });
         todoRepository.deleteById(todoId);
+    }
+
+    public void deleteTodoResultByTodoId(UUID userId, UUID todoId) {
+        TodoResult todoResult = todoResultRepository.findByTodoId(todoId)
+                .orElseThrow(TodoResultNotSubmittedException::new);
+        todoResult.validateOwner(userId);
+        deleteTodoResult(todoResult);
+    }
+
+    private void deleteTodoResult(TodoResult todoResult) {
+        if (todoResult.getFilePath() != null && !todoResult.getFilePath().isBlank()) {
+            Events.publishEvent(new FileDeletedEvent(todoResult.getFilePath()));
+        }
+        todoResultRepository.deleteById(todoResult.getId());
     }
 }

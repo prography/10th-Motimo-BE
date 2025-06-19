@@ -86,4 +86,16 @@ public interface TodoControllerSwagger {
             @Parameter(description = "TODO ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID todoId
     );
+
+    @Operation(summary = "투두 삭제", description = "특정 투두를 삭제합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "TODO 삭제 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+            @ApiResponse(responseCode = "404", description = "TODO를 찾을 수 없음")
+    })
+    void deleteTodoResultByTodoId(
+            UUID userId,
+            @Parameter(description = "TODO ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
+            @PathVariable UUID todoId
+    );
 }

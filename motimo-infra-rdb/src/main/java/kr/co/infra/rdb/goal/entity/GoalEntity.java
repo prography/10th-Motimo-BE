@@ -65,18 +65,11 @@ public class GoalEntity {
         this.subGoals.addAll(subGoals);
     }
 
-    public void update(String title, DueDateEmbeddable dueDate, boolean completed) {
+    public void update(String title, DueDateEmbeddable dueDate, boolean completed, LocalDateTime completedAt) {
         this.title = title;
         this.dueDate = dueDate;
         this.completed = completed;
-        if(completed) {
-            goalCompleted();
-        }
-    }
-
-    private void goalCompleted() {
-        this.completed = true;
-        this.completedAt = LocalDateTime.now();
+        this.completedAt = completedAt;
     }
 
 }

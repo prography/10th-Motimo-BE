@@ -40,6 +40,7 @@ public class Goal {
     public void complete() {
         if (subGoals.stream().allMatch(SubGoal::isCompleted)) {
             completed = true;
+            completedAt = LocalDateTime.now();
         } else {
             throw new GoalCompleteFailedException();
         }

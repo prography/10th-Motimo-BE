@@ -26,7 +26,7 @@ public class GoalRepositoryImpl implements GoalRepository {
     public Goal update(Goal goal) {
         GoalEntity goalEntity = goalJpaRepository.findById(goal.getId()).orElseThrow(
                 GoalNotFoundException::new);
-        goalEntity.update(goal.getTitle(), DueDateEmbeddable.from(goal.getDueDate()), goal.isCompleted());
+        goalEntity.update(goal.getTitle(), DueDateEmbeddable.from(goal.getDueDate()), goal.isCompleted(),goal.completedAt);
         GoalEntity savedGoal = goalJpaRepository.save(goalEntity);
         return GoalMapper.toDomain(savedGoal);
     }

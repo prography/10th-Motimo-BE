@@ -90,7 +90,7 @@ class TodoCommandServiceTest {
             String title = "새로운 할일";
             LocalDate date = LocalDate.now();
             Todo expectedTodo = Todo.createTodo()
-                    .authorId(userId)
+                    .userId(userId)
                     .subGoalId(subGoalId)
                     .title(title)
                     .date(date)
@@ -105,7 +105,7 @@ class TodoCommandServiceTest {
             verify(todoRepository).save(todoCaptor.capture());
 
             Todo savedTodo = todoCaptor.getValue();
-            assertThat(savedTodo.getAuthorId()).isEqualTo(userId);
+            assertThat(savedTodo.getUserId()).isEqualTo(userId);
             assertThat(savedTodo.getSubGoalId()).isEqualTo(subGoalId);
             assertThat(savedTodo.getTitle()).isEqualTo(title);
             assertThat(savedTodo.getDate()).isEqualTo(date);
@@ -146,9 +146,9 @@ class TodoCommandServiceTest {
             emotion = Emotion.PROUD;
             content = "투두 완료!";
 
-            todo = Todo.createTodo()
+            todo = Todo.builder()
                     .id(todoId)
-                    .authorId(userId)
+                    .userId(userId)
                     .subGoalId(subGoalId)
                     .title("Test Todo")
                     .date(LocalDate.now())
@@ -264,7 +264,7 @@ class TodoCommandServiceTest {
             Todo mockTodo = mock(Todo.class);
             when(todoRepository.findById(todoId)).thenReturn(mockTodo);
             doThrow(new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED))
-                    .when(mockTodo).validateAuthor(otherUserId);
+                    .when(mockTodo).validateOwner(otherUserId);
 
             // when & then
             assertThatThrownBy(() -> todoCommandService.submitTodoResult(otherUserId, todoId,
@@ -298,9 +298,9 @@ class TodoCommandServiceTest {
         @DisplayName("투두 완료 상태 토글 성공")
         void 투두_완료_상태로_토글_성공() {
             // given
-            Todo todo = Todo.createTodo()
+            Todo todo = Todo.builder()
                     .id(todoId)
-                    .authorId(userId)
+                    .userId(userId)
                     .subGoalId(subGoalId)
                     .title("Test Todo")
                     .date(LocalDate.now())
@@ -338,7 +338,7 @@ class TodoCommandServiceTest {
             UUID otherUserId = UUID.randomUUID();
             when(todoRepository.findById(todoId)).thenReturn(todo);
             doThrow(new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED)).when(todo)
-                    .validateAuthor(otherUserId);
+                    .validateOwner(otherUserId);
 
             // when & then
             assertThatThrownBy(
@@ -359,7 +359,7 @@ class TodoCommandServiceTest {
         @BeforeEach
         void setUp() {
             todo = Todo.createTodo()
-                    .authorId(userId)
+                    .userId(userId)
                     .title("투두!")
                     .date(LocalDate.of(2025, 6, 1))
                     .build();
@@ -424,7 +424,7 @@ class TodoCommandServiceTest {
             todoCommandService.deleteById(userId, todoId);
 
             // then
-            verify(todo).validateAuthor(userId);
+            verify(todo).validateOwner(userId);
             verify(todoRepository).deleteById(todoId);
         }
 
@@ -446,7 +446,7 @@ class TodoCommandServiceTest {
             Todo todo = mock(Todo.class);
             when(todoRepository.findById(todoId)).thenReturn(todo);
             doThrow(new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED)).when(todo)
-                    .validateAuthor(otherUserId);
+                    .validateOwner(otherUserId);
 
             // when & then
             assertThatThrownBy(() -> todoCommandService.deleteById(otherUserId, todoId))
@@ -457,9 +457,9 @@ class TodoCommandServiceTest {
         @Test
         void repository_삭제_실패_시_예외_발생() {
             // given
-            Todo todo = Todo.createTodo()
+            Todo todo = Todo.builder()
                     .id(todoId)
-                    .authorId(userId)
+                    .userId(userId)
                     .subGoalId(subGoalId)
                     .title("Test Todo")
                     .date(LocalDate.now())

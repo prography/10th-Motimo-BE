@@ -2,7 +2,6 @@ package kr.co.infra.rdb.todo.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoResult;
@@ -18,16 +17,15 @@ class TodoResultMapperTest {
         // given
         UUID id = UUID.randomUUID();
         UUID todoId = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.now();
+        UUID userId = UUID.randomUUID();
 
         TodoResultEntity entity = new TodoResultEntity(
                 id,
                 todoId,
+                userId,
                 Emotion.PROUD,
                 "투두 완료!",
-                "/image.jpg",
-                now,
-                now
+                "/image.jpg"
         );
         // when
         TodoResult result = TodoResultMapper.toDomain(entity);
@@ -38,8 +36,6 @@ class TodoResultMapperTest {
         assertThat(result.getEmotion()).isEqualTo(Emotion.PROUD);
         assertThat(result.getContent()).isEqualTo("투두 완료!");
         assertThat(result.getFilePath()).isEqualTo("/image.jpg");
-        assertThat(result.getCreatedAt()).isEqualTo(now);
-        assertThat(result.getUpdatedAt()).isEqualTo(now);
     }
 
     @Test
@@ -47,16 +43,13 @@ class TodoResultMapperTest {
         // given
         UUID id = UUID.randomUUID();
         UUID todoId = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.now();
 
-        TodoResult domain = TodoResult.createTodoResult()
+        TodoResult domain = TodoResult.builder()
                 .id(id)
                 .todoId(todoId)
                 .emotion(Emotion.PROUD)
                 .content("투두 완료!")
                 .filePath("/image.jpg")
-                .createdAt(now)
-                .updatedAt(now)
                 .build();
 
         // when
@@ -68,7 +61,5 @@ class TodoResultMapperTest {
         assertThat(entity.getEmotion()).isEqualTo(Emotion.PROUD);
         assertThat(entity.getContent()).isEqualTo("투두 완료!");
         assertThat(entity.getFilePath()).isEqualTo("/image.jpg");
-        assertThat(entity.getCreatedAt()).isEqualTo(now);
-        assertThat(entity.getUpdatedAt()).isEqualTo(now);
     }
 }

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -31,6 +32,8 @@ import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.common.exception.AccessDeniedException;
 import kr.co.domain.todo.Emotion;
+import kr.co.domain.todo.Todo;
+import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,10 +109,13 @@ class TodoControllerTest {
                 }
                 """.trim().getBytes(StandardCharsets.UTF_8)
         );
+        TodoResult mockTodoResult = mock(TodoResult.class);
 
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
+        when(todoCommandService.submitTodoResult(any(), any(), any(), any(), any())).thenReturn(
+                mockTodoResult);
 
         // when & then
         mockMvc.perform(multipart("/v1/todos/{todoId}/result", todoId)
@@ -198,9 +204,11 @@ class TodoControllerTest {
     @WithMockUser
     void 투두_완료상태_토글() throws Exception {
         // given
+        Todo todo = mock(Todo.class);
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
+        when(todoCommandService.toggleTodoCompletion(any(), any())).thenReturn(todo);
 
         // when & then
         mockMvc.perform(patch("/v1/todos/{todoId}/completion", todoId))

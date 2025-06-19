@@ -9,16 +9,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder(builderMethodName = "createTodoResult")
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class TodoResult {
 
-    private UUID id;
+    @Builder.Default
+    private UUID id = null;
     private UUID todoId;
+    private UUID userId;
     private Emotion emotion;
     private String content;
     private String filePath;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @Builder(builderMethodName = "createTodoResult")
+    private TodoResult(UUID todoId, UUID userId, Emotion emotion, String content, String filePath) {
+        this.todoId = todoId;
+        this.userId = userId;
+        this.emotion = emotion;
+        this.content = content;
+        this.filePath = filePath;
+    }
 }

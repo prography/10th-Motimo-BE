@@ -26,7 +26,7 @@ public class TodoCommandService {
 
     public Todo createTodo(UUID userId, UUID subGoalId, String title, LocalDate date) {
         Todo todo = Todo.createTodo()
-                .authorId(userId)
+                .userId(userId)
                 .subGoalId(subGoalId)
                 .title(title)
                 .date(date)
@@ -37,7 +37,7 @@ public class TodoCommandService {
     public TodoResult submitTodoResult(UUID userId, UUID todoId, Emotion emotion, String content,
             MultipartFile file) {
         Todo todo = todoRepository.findById(todoId);
-        todo.validateAuthor(userId);
+        todo.validateOwner(userId);
 
         String filePath = "";
         if (file != null && !file.isEmpty()) {
@@ -49,6 +49,7 @@ public class TodoCommandService {
 
         TodoResult result = TodoResult.createTodoResult()
                 .todoId(todoId)
+                .userId(userId)
                 .emotion(emotion)
                 .content(content)
                 .filePath(filePath)
@@ -59,21 +60,21 @@ public class TodoCommandService {
 
     public Todo toggleTodoCompletion(UUID userId, UUID todoId) {
         Todo todo = todoRepository.findById(todoId);
-        todo.validateAuthor(userId);
+        todo.validateOwner(userId);
         todo.toggleCompletion();
         return todoRepository.save(todo);
     }
 
     public Todo updateTodo(UUID userId, UUID todoId, String title, LocalDate date) {
         Todo todo = todoRepository.findById(todoId);
-        todo.validateAuthor(userId);
+        todo.validateOwner(userId);
         todo.update(title, date);
         return todoRepository.save(todo);
     }
 
     public void deleteById(UUID userId, UUID todoId) {
         Todo todo = todoRepository.findById(todoId);
-        todo.validateAuthor(userId);
+        todo.validateOwner(userId);
         todoRepository.deleteById(todoId);
     }
 }

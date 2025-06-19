@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -36,6 +37,7 @@ import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
+import kr.co.domain.todo.exception.TodoResultNotSubmittedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -260,5 +262,52 @@ class TodoControllerTest {
         // when & then
         mockMvc.perform(delete("/v1/todos/{todoId}", todoId))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser
+    void 투두결과_삭제_성공() throws Exception {
+        // given
+        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(userId);
+
+        // when & then
+        mockMvc.perform(delete("/v1/todos/{todoId}/result", todoId))
+                .andExpect(status().isNoContent());
+
+        verify(todoCommandService).deleteTodoResultByTodoId(userId, todoId);
+    }
+
+    @Test
+    @WithMockUser
+    void 투두결과_삭제시_권한이_없는_경우_예외반환() throws Exception {
+        // given
+        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(userId);
+
+        doThrow(new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED))
+                .when(todoCommandService).deleteTodoResultByTodoId(eq(userId), eq(todoId));
+
+        // when & then
+        mockMvc.perform(delete("/v1/todos/{todoId}/result", todoId))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser
+    void 존재하지않는_투두결과_삭제시_예외반환() throws Exception {
+        // given
+        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(userId);
+
+        doThrow(new TodoResultNotSubmittedException())
+                .when(todoCommandService).deleteTodoResultByTodoId(eq(userId), eq(todoId));
+
+        // when & then
+        mockMvc.perform(delete("/v1/todos/{todoId}/result", todoId))
+                .andExpect(status().isNotFound());
     }
 }

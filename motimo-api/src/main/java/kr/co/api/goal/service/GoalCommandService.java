@@ -36,13 +36,13 @@ public class GoalCommandService {
         return createdGoal.getId();
     }
 
-    public void goalComplete(UUID userId, UUID goalId) {
+    public UUID goalComplete(UUID userId, UUID goalId) {
         Goal goal = goalRepository.findById(goalId);
 
         goal.validateOwner(userId);
 
         goal.complete();
 
-        goalRepository.update(goal);
+        return goalRepository.update(goal).getId();
     }
 }

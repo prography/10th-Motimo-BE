@@ -14,14 +14,14 @@ public class SubGoalCommandService {
 
     private final SubGoalRepository subGoalRepository;
 
-    public void toggleSubGoalComplete(UUID userId, UUID subGoalId) {
+    public UUID toggleSubGoalComplete(UUID userId, UUID subGoalId) {
         SubGoal subGoal = subGoalRepository.findById(subGoalId);
 
         subGoal.userChecked(userId);
 
         subGoal.toggleCompleted();
 
-        subGoalRepository.update(subGoal);
+        return subGoalRepository.update(subGoal).getId();
     }
 
 }

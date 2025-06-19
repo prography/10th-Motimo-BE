@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
+import kr.co.api.subgoal.rqrs.SubGoalIdRs;
 import kr.co.api.subgoal.rqrs.TodoCreateRq;
 import kr.co.api.todo.rqrs.TodoRs;
 import kr.co.domain.common.pagination.CustomSlice;
@@ -24,7 +25,7 @@ public interface SubGoalControllerSwagger {
             @ApiResponse(responseCode = "403", description = "완료 처리 권한 없음"),
             @ApiResponse(responseCode = "404", description = "세부 목표를 찾을 수 없음")
     })
-    void subGoalCompleteToggle(UUID userId, @PathVariable UUID subGoalId);
+    SubGoalIdRs subGoalCompleteToggle(UUID userId, @PathVariable UUID subGoalId);
 
     @Operation(summary = "TODO 생성", description = "세부 목표에 새로운 TODO를 생성합니다.")
     @ApiResponses({

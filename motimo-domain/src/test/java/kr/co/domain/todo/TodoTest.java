@@ -22,13 +22,13 @@ public class TodoTest {
     @BeforeEach
     void setUp() {
         authorId = UUID.randomUUID();
-        todo = Todo.builder()
+        todo = Todo.createTodo()
                 .id(UUID.randomUUID())
                 .subGoalId(UUID.randomUUID())
                 .authorId(authorId)
                 .title("오늘의 투두")
                 .date(LocalDate.of(2025, 5, 30))
-                .completed(false)
+                .status(TodoStatus.INCOMPLETE)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -51,8 +51,8 @@ public class TodoTest {
     @Test
     void toggleCompletion_호출시_completed값이_토글된다() {
         // given
-        Todo todo = Todo.builder()
-                .completed(false)
+        Todo todo = Todo.createTodo()
+                .status(TodoStatus.INCOMPLETE)
                 .authorId(UUID.randomUUID())
                 .subGoalId(UUID.randomUUID())
                 .build();
@@ -60,9 +60,9 @@ public class TodoTest {
         todo.toggleCompletion();
 
         // then
-        assertThat(todo.isCompleted()).isTrue();
+        assertThat(todo.getStatus()).isEqualTo(TodoStatus.COMPLETE);
         todo.toggleCompletion();
-        assertThat(todo.isCompleted()).isFalse();
+        assertThat(todo.getStatus()).isEqualTo(TodoStatus.INCOMPLETE);
     }
 
     @Test

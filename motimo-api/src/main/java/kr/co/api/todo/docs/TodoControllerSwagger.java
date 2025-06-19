@@ -8,10 +8,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
+import kr.co.api.todo.rqrs.TodoIdRs;
+import kr.co.api.todo.rqrs.TodoResultIdRs;
 import kr.co.api.todo.rqrs.TodoResultRq;
 import kr.co.api.todo.rqrs.TodoResultRs;
+import kr.co.api.todo.rqrs.TodoUpdateRq;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +29,7 @@ public interface TodoControllerSwagger {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
             @ApiResponse(responseCode = "404", description = "TODO를 찾을 수 없음")
     })
-    void submitResult(
+    TodoResultIdRs submitResult(
             UUID userId,
             @Parameter(description = "TODO ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID todoId,
@@ -48,12 +52,27 @@ public interface TodoControllerSwagger {
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "TODO 완료 상태 변경 성공"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+            @ApiResponse(responseCode = "403", description = "투두 수정에 대한 권한이 없는 사용자"),
             @ApiResponse(responseCode = "404", description = "TODO를 찾을 수 없음")
     })
-    void toggleTodoCompletion(
+    TodoIdRs toggleTodoCompletion(
             UUID userId,
             @Parameter(description = "TODO ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID todoId
+    );
+
+    @Operation(summary = "투두 업데이트", description = "투두 내용을 수정합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "투두 내용 수정 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+            @ApiResponse(responseCode = "403", description = "투두 수정에 대한 권한이 없는 사용자"),
+            @ApiResponse(responseCode = "404", description = "투두를 찾을 수 없음")
+    })
+    TodoIdRs updateTodo(
+            UUID userId,
+            @Parameter(description = "TODO ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
+            @PathVariable UUID todoId,
+            @RequestBody @Schema(implementation = TodoUpdateRq.class) TodoUpdateRq request
     );
 
     @Operation(summary = "투두 삭제", description = "특정 투두를 삭제합니다.")

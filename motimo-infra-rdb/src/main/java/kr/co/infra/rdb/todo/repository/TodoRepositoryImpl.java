@@ -9,8 +9,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.todo.Todo;
+import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.dto.TodoSummary;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
@@ -19,8 +19,6 @@ import kr.co.infra.rdb.todo.entity.QTodoResultEntity;
 import kr.co.infra.rdb.todo.entity.TodoEntity;
 import kr.co.infra.rdb.todo.util.TodoMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -45,20 +43,17 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public CustomSlice<TodoSummary> findAllBySubGoalId(UUID subGoalId, int page, int size) {
-
+    public List<TodoSummary> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date) {
         QTodoEntity todoEntity = QTodoEntity.todoEntity;
         QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
-        Pageable pageable = PageRequest.of(page, size);
-        LocalDate today = LocalDate.now();
         NumberExpression<Integer> priorityOrder = getPriorityOrder(todoEntity, todoResultEntity);
 
-        List<TodoSummary> results = jpaQueryFactory
+        return jpaQueryFactory
                 .select(Projections.constructor(TodoSummary.class,
                         todoEntity.id,
                         todoEntity.title,
                         todoEntity.date,
-                        todoEntity.completed,
+                        todoEntity.status,
                         todoEntity.createdAt,
                         todoResultEntity.id.isNotNull()
                 ))
@@ -67,8 +62,8 @@ public class TodoRepositoryImpl implements TodoRepository {
                 .where(
                         todoEntity.subGoalId.eq(subGoalId)
                                 .and(anyOf(
-                                        todoEntity.completed.eq(false),
-                                        todoEntity.date.eq(today)
+                                        todoEntity.status.ne(TodoStatus.COMPLETE),
+                                        todoEntity.date.eq(date)
                                 ))
                 )
                 .orderBy(
@@ -76,32 +71,22 @@ public class TodoRepositoryImpl implements TodoRepository {
                         todoEntity.date.asc().nullsLast(),
                         todoEntity.createdAt.asc()
                 )
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1)
                 .fetch();
-
-        boolean hasNext = results.size() > pageable.getPageSize();
-        List<TodoSummary> paged = results.stream()
-                .limit(pageable.getPageSize())
-                .toList();
-
-        return new CustomSlice<>(paged, hasNext);
     }
 
     @Override
-    public CustomSlice<TodoSummary> findAllByUserId(UUID userId, int page, int size) {
+    public List<TodoSummary> findAllByUserId(UUID userId) {
         QTodoEntity todoEntity = QTodoEntity.todoEntity;
         QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
 
-        Pageable pageable = PageRequest.of(page, size);
         NumberExpression<Integer> priorityOrder = getPriorityOrder(todoEntity, todoResultEntity);
 
-        List<TodoSummary> results = jpaQueryFactory
+        return jpaQueryFactory
                 .select(Projections.constructor(TodoSummary.class,
                         todoEntity.id,
                         todoEntity.title,
                         todoEntity.date,
-                        todoEntity.completed,
+                        todoEntity.status,
                         todoEntity.createdAt,
                         todoResultEntity.id.isNotNull()
                 ))
@@ -112,16 +97,7 @@ public class TodoRepositoryImpl implements TodoRepository {
                         priorityOrder.asc(),
                         todoEntity.date.asc().nullsLast()
                 )
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1)
                 .fetch();
-
-        boolean hasNext = results.size() > pageable.getPageSize();
-        List<TodoSummary> paged = results.stream()
-                .limit(pageable.getPageSize())
-                .toList();
-
-        return new CustomSlice<>(paged, hasNext);
     }
 
     @Override
@@ -138,8 +114,9 @@ public class TodoRepositoryImpl implements TodoRepository {
     private NumberExpression<Integer> getPriorityOrder(QTodoEntity todoEntity,
             QTodoResultEntity todoResultEntity) {
         return new CaseBuilder()
-                .when(todoEntity.completed.eq(false)).then(0)
-                .when(todoEntity.completed.eq(true).and(todoResultEntity.id.isNull())).then(1)
+                .when(todoEntity.status.eq(TodoStatus.INCOMPLETE)).then(0)
+                .when(todoEntity.status.eq(TodoStatus.COMPLETE).and(todoResultEntity.id.isNull()))
+                .then(1)
                 .otherwise(2);
     }
 }

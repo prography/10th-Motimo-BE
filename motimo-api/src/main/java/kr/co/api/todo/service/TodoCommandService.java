@@ -24,17 +24,17 @@ public class TodoCommandService {
     private final TodoResultRepository todoResultRepository;
     private final StorageService storageService;
 
-    public void createTodo(UUID userId, UUID subGoalId, String title, LocalDate date) {
-        Todo todo = Todo.builder()
+    public Todo createTodo(UUID userId, UUID subGoalId, String title, LocalDate date) {
+        Todo todo = Todo.createTodo()
                 .authorId(userId)
                 .subGoalId(subGoalId)
                 .title(title)
                 .date(date)
                 .build();
-        todoRepository.save(todo);
+        return todoRepository.save(todo);
     }
 
-    public void submitTodoResult(UUID userId, UUID todoId, Emotion emotion, String content,
+    public TodoResult submitTodoResult(UUID userId, UUID todoId, Emotion emotion, String content,
             MultipartFile file) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateAuthor(userId);
@@ -47,21 +47,28 @@ public class TodoCommandService {
             Events.publishEvent(new FileDeletedEvent(filePath));
         }
 
-        TodoResult result = TodoResult.builder()
+        TodoResult result = TodoResult.createTodoResult()
                 .todoId(todoId)
                 .emotion(emotion)
                 .content(content)
                 .filePath(filePath)
                 .build();
 
-        todoResultRepository.save(result);
+        return todoResultRepository.save(result);
     }
 
-    public void toggleTodoCompletion(UUID userId, UUID todoId) {
+    public Todo toggleTodoCompletion(UUID userId, UUID todoId) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateAuthor(userId);
         todo.toggleCompletion();
-        todoRepository.save(todo);
+        return todoRepository.save(todo);
+    }
+
+    public Todo updateTodo(UUID userId, UUID todoId, String title, LocalDate date) {
+        Todo todo = todoRepository.findById(todoId);
+        todo.validateAuthor(userId);
+        todo.update(title, date);
+        return todoRepository.save(todo);
     }
 
     public void deleteById(UUID userId, UUID todoId) {

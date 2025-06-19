@@ -24,13 +24,14 @@ import kr.co.api.config.WebConfig;
 import kr.co.api.security.CustomUserDetailsService;
 import kr.co.api.security.jwt.TokenProvider;
 import kr.co.api.security.oauth2.CustomOAuth2UserService;
+import kr.co.api.security.oauth2.OAuth2AuthenticationFailureHandler;
 import kr.co.api.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import kr.co.api.security.resolver.AuthTokenArgumentResolver;
 import kr.co.api.security.resolver.AuthUserArgumentResolver;
 import kr.co.api.subgoal.rqrs.TodoCreateRq;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
-import kr.co.domain.common.pagination.CustomSlice;
+import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.dto.TodoSummary;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,6 +72,9 @@ class SubGoalControllerTest {
     private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     @MockitoBean
+    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+
+    @MockitoBean
     private AuthTokenArgumentResolver authTokenArgumentResolver;
 
     @Autowired
@@ -106,10 +110,8 @@ class SubGoalControllerTest {
 
     @Test
     @WithMockUser
-    void 세부목표_todo_목록_조회_성공() throws Exception {
+    void 세부목표_완료되지_않은_상태거나_오늘의_todo_목록_조회_성공() throws Exception {
         // given
-        int page = 0;
-        int size = 10;
         UUID todoId1 = UUID.randomUUID();
         UUID todoId2 = UUID.randomUUID();
         List<TodoSummary> todoSummaries = Arrays.asList(
@@ -117,39 +119,31 @@ class SubGoalControllerTest {
                 createMockTodoSummary(todoId2, "투두2")
         );
 
-        CustomSlice<TodoSummary> expectedSlice = new CustomSlice<>(todoSummaries, false);
-        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
-        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
-                .thenReturn(userId);
-        when(todoQueryService.getTodosBySubGoal(subGoalId, page, size))
-                .thenReturn(expectedSlice);
+        when(todoQueryService.getIncompleteOrTodayTodosBySubGoalId(subGoalId)).thenReturn(
+                todoSummaries);
 
         // when & then
-        mockMvc.perform(get("/v1/sub-goals/{subGoalId}/todos", subGoalId)
-                        .param("page", String.valueOf(page))
-                        .param("size", String.valueOf(size))
+        mockMvc.perform(get("/v1/sub-goals/{subGoalId}/todos/incomplete-or-date", subGoalId)
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     String responseBody = result.getResponse().getContentAsString();
-                    TypeReference<CustomSlice<Map<String, Object>>> typeRef = new TypeReference<CustomSlice<Map<String, Object>>>() {
+                    TypeReference<List<Map<String, Object>>> typeRef = new TypeReference<List<Map<String, Object>>>() {
                     };
-                    CustomSlice<Map<String, Object>> actualResponse =
-                            objectMapper.readValue(responseBody, typeRef);
+                    List<Map<String, Object>> actualResponse = objectMapper.readValue(responseBody,
+                            typeRef);
 
-                    // 응답 검증
-                    assertThat(actualResponse.content().size()).isEqualTo(todoSummaries.size());
-                    assertThat(actualResponse.hasNext()).isFalse();
+                    assertThat(actualResponse.size()).isEqualTo(todoSummaries.size());
                 })
-                .andExpect(jsonPath("$.content[0].id").value(todoId1.toString()))
-                .andExpect(jsonPath("$.content[0].title").value("투두1"))
-                .andExpect(jsonPath("$.content[1].id").value(todoId2.toString()))
-                .andExpect(jsonPath("$.content[1].title").value("투두2"));
-
-        verify(todoQueryService).getTodosBySubGoal(subGoalId, page, size);
+                .andExpect(jsonPath("$[0].id").value(todoId1.toString()))
+                .andExpect(jsonPath("$[0].title").value("투두1"))
+                .andExpect(jsonPath("$[1].id").value(todoId2.toString()))
+                .andExpect(jsonPath("$[1].title").value("투두2"));
+        verify(todoQueryService).getIncompleteOrTodayTodosBySubGoalId(subGoalId);
     }
 
     private TodoSummary createMockTodoSummary(UUID id, String title) {
-        return new TodoSummary(id, title, LocalDate.now(), false, LocalDateTime.now(), false);
+        return new TodoSummary(id, title, LocalDate.now(), TodoStatus.INCOMPLETE,
+                LocalDateTime.now(), false);
     }
 }

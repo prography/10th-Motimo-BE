@@ -10,6 +10,7 @@ import kr.co.api.goal.rqrs.GoalCreateRq;
 import kr.co.api.goal.rqrs.GoalIdRs;
 import kr.co.api.goal.rqrs.GoalItemRs;
 import kr.co.api.goal.rqrs.GoalListRs;
+import kr.co.api.goal.rqrs.GoalTodoListRs;
 import kr.co.api.goal.rqrs.GoalUpdateRq;
 import kr.co.api.goal.service.GoalCommandService;
 import kr.co.api.goal.service.GoalQueryService;
@@ -45,13 +46,14 @@ public class GoalController implements GoalControllerSwagger {
     }
 
     @PutMapping("/{id}")
-    public void updateGoal(@AuthUser UUID userId, @PathVariable String id,
+    public GoalIdRs updateGoal(@AuthUser UUID userId, @PathVariable String id,
             @RequestBody GoalUpdateRq rq) {
+        return null;
     }
 
     @PatchMapping("/{goalId}/completion")
-    public void goalComplete(@AuthUser UUID userId, @PathVariable UUID goalId) {
-        goalCommandService.goalComplete(userId, goalId);
+    public GoalIdRs goalComplete(@AuthUser UUID userId, @PathVariable UUID goalId) {
+        return new GoalIdRs(goalCommandService.goalComplete(userId, goalId));
     }
 
     @GetMapping
@@ -65,14 +67,9 @@ public class GoalController implements GoalControllerSwagger {
         );
     }
 
-    @GetMapping("/{goalId}/sub-goals")
-    public GoalListRs getSubGoalList(@AuthUser UUID userId, @PathVariable String goalId) {
-        List<GoalItemRs> items = new ArrayList<>();
-        items.add(new GoalItemRs("첫번째 목표", LocalDate.now(), 50));
-        items.add(new GoalItemRs("자격증 따기", LocalDate.of(2026, 2, 10), 20));
-        items.add(new GoalItemRs("노래 만들기", LocalDate.now(), 100));
-        return new GoalListRs(
-                items
-        );
+    @GetMapping("/{goalId}/sub-goals/all")
+    public GoalTodoListRs getTodoListByGoal(UUID userId, UUID goalId) {
+        return null;
     }
+
 }

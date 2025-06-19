@@ -15,7 +15,7 @@ public class SubGoalCommandService {
     private final SubGoalRepository subGoalRepository;
 
     public void toggleSubGoalComplete(UUID userId, UUID subGoalId) {
-        SubGoal subGoal = subGoalRepository.findBy(subGoalId);
+        SubGoal subGoal = subGoalRepository.findById(subGoalId);
 
         subGoal.userChecked(userId);
 

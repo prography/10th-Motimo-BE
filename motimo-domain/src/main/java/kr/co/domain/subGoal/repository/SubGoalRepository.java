@@ -4,6 +4,7 @@ import java.util.UUID;
 import kr.co.domain.subGoal.SubGoal;
 
 public interface SubGoalRepository {
-    SubGoal findBy(UUID subGoalId);
-    void update(SubGoal subGoal);
+    SubGoal findById(UUID subGoalId);
+    SubGoal create(SubGoal subGoal);
+    SubGoal update(SubGoal subGoal);
 }

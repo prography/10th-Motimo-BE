@@ -4,7 +4,8 @@ import java.util.UUID;
 import kr.co.domain.goal.Goal;
 
 public interface GoalRepository {
-    Goal save(Goal goal);
+    Goal create(Goal goal);
+    Goal update(Goal goal);
     Goal findById(UUID id);
 }
 

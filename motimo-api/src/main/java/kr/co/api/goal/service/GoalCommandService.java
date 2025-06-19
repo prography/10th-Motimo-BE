@@ -26,7 +26,7 @@ public class GoalCommandService {
                 .importance(sub.importance())
                 .build()).toList();
 
-        Goal createdGoal = goalRepository.save(Goal.createGoal()
+        Goal createdGoal = goalRepository.create(Goal.createGoal()
                 .userId(userId)
                 .title(dto.title())
                 .dueDate(dueDate)
@@ -43,6 +43,6 @@ public class GoalCommandService {
 
         goal.complete();
 
-        goalRepository.save(goal);
+        goalRepository.update(goal);
     }
 }

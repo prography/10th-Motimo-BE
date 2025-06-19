@@ -2,6 +2,8 @@ package kr.co.domain.todo;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import kr.co.domain.common.exception.AccessDeniedException;
+import kr.co.domain.todo.exception.TodoErrorCode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,5 +33,11 @@ public class TodoResult {
         this.emotion = emotion;
         this.content = content;
         this.filePath = filePath;
+    }
+
+    public void validateOwner(UUID userId) {
+        if (!this.userId.equals(userId)) {
+            throw new AccessDeniedException(TodoErrorCode.TODO_RESULT_ACCESS_DENIED);
+        }
     }
 }

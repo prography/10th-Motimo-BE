@@ -214,7 +214,7 @@ class TodoControllerTest {
 
         // when & then
         mockMvc.perform(patch("/v1/todos/{todoId}/completion", todoId))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
     }
 
@@ -268,30 +268,32 @@ class TodoControllerTest {
     @WithMockUser
     void 투두결과_삭제_성공() throws Exception {
         // given
+        UUID todoResultId = UUID.randomUUID();
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
 
         // when & then
-        mockMvc.perform(delete("/v1/todos/{todoId}/result", todoId))
+        mockMvc.perform(delete("/v1/todos/result/{todoResultId}", todoResultId))
                 .andExpect(status().isNoContent());
 
-        verify(todoCommandService).deleteTodoResultByTodoId(userId, todoId);
+        verify(todoCommandService).deleteTodoResultById(userId, todoResultId);
     }
 
     @Test
     @WithMockUser
     void 투두결과_삭제시_권한이_없는_경우_예외반환() throws Exception {
         // given
+        UUID todoResultId = UUID.randomUUID();
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
 
-        doThrow(new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED))
-                .when(todoCommandService).deleteTodoResultByTodoId(eq(userId), eq(todoId));
+        doThrow(new AccessDeniedException(TodoErrorCode.TODO_RESULT_ACCESS_DENIED))
+                .when(todoCommandService).deleteTodoResultById(eq(userId), eq(todoResultId));
 
         // when & then
-        mockMvc.perform(delete("/v1/todos/{todoId}/result", todoId))
+        mockMvc.perform(delete("/v1/todos/result/{todoResultId}", todoResultId))
                 .andExpect(status().isForbidden());
     }
 
@@ -299,15 +301,16 @@ class TodoControllerTest {
     @WithMockUser
     void 존재하지않는_투두결과_삭제시_예외반환() throws Exception {
         // given
+        UUID todoResultId = UUID.randomUUID();
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
 
         doThrow(new TodoResultNotSubmittedException())
-                .when(todoCommandService).deleteTodoResultByTodoId(eq(userId), eq(todoId));
+                .when(todoCommandService).deleteTodoResultById(eq(userId), eq(todoResultId));
 
         // when & then
-        mockMvc.perform(delete("/v1/todos/{todoId}/result", todoId))
+        mockMvc.perform(delete("/v1/todos/result/{todoResultId}", todoResultId))
                 .andExpect(status().isNotFound());
     }
 }

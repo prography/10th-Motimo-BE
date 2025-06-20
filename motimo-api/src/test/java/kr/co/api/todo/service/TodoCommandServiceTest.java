@@ -26,6 +26,7 @@ import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
+import kr.co.domain.todo.exception.TodoResultNotSubmittedException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.domain.todo.repository.TodoResultRepository;
 import kr.co.infra.storage.exception.StorageErrorCode;
@@ -413,6 +414,161 @@ class TodoCommandServiceTest {
     }
 
     @Nested
+    @DisplayName("투두 결과 수정 테스트")
+    class UpdateTodoResultTest {
+
+        TodoResult todoResult;
+        UUID todoResultId;
+        Emotion emotion;
+        String content;
+
+        @BeforeEach
+        void setUp() {
+            todoResultId = UUID.randomUUID();
+            emotion = Emotion.PROUD;
+            content = "수정된 투두 완료!";
+
+            todoResult = mock(TodoResult.class);
+        }
+
+        @Test
+        void 파일_없이_투두결과_수정성공() {
+            // given
+            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
+            when(todoResultRepository.save(any(TodoResult.class))).thenReturn(todoResult);
+
+            // when
+            TodoResult result = todoCommandService.updateTodoResult(userId, todoResultId, emotion,
+                    content, null);
+
+            // then
+            verify(todoResult).validateOwner(userId);
+            verify(todoResult).update(emotion, content, "");
+            verify(todoResultRepository).save(todoResult);
+            verify(storageService, never()).store(any(), any());
+            mockedEvents.verify(() -> Events.publishEvent(any()), never());
+            assertThat(result).isEqualTo(todoResult);
+        }
+
+        @Test
+        void 파일을_포함한_투두결과_수정성공_수정전_파일없는_경우() {
+            // given
+            String filename = "new_image.jpg";
+            MultipartFile file = new MockMultipartFile("file", filename, "image/jpeg",
+                    "file".getBytes());
+
+            UUID fixedUuid = UUID.fromString("8ec9c39f-ae45-4c1a-b38f-0af834a88a4c");
+            String expectedFilePath = String.format("todo/%s/%s", todoId, fixedUuid);
+
+            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
+            when(todoResult.getFilePath()).thenReturn("");
+            when(todoResult.getTodoId()).thenReturn(todoId);
+            doNothing().when(storageService).store(any(MultipartFile.class), anyString());
+            when(todoResultRepository.save(any(TodoResult.class))).thenReturn(todoResult);
+
+            try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class)) {
+                mockedUUID.when(UUID::randomUUID).thenReturn(fixedUuid);
+
+                // when
+                TodoResult result = todoCommandService.updateTodoResult(userId, todoResultId,
+                        emotion,
+                        content, file);
+
+                // then
+                verify(todoResult).validateOwner(userId);
+                verify(todoResult).update(emotion, content, expectedFilePath);
+                verify(storageService).store(file, expectedFilePath);
+                verify(todoResultRepository).save(todoResult);
+                mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)),
+                        never());
+                assertThat(result).isEqualTo(todoResult);
+            }
+        }
+
+        @Test
+        void 파일을_포함한_투두결과_수정성공_수정전_파일있는_경우() {
+            // given
+            String filename = "new_image.jpg";
+            MultipartFile file = new MockMultipartFile("file", filename, "image/jpeg",
+                    "file".getBytes());
+
+            String originalFilePath = "todo/todo-id/file-uuid";
+            UUID fixedUuid = UUID.fromString("8ec9c39f-ae45-4c1a-b38f-0af834a88a4c");
+            String expectedFilePath = String.format("todo/%s/%s", todoId, fixedUuid);
+
+            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
+            when(todoResult.getFilePath()).thenReturn(originalFilePath);
+            when(todoResult.getTodoId()).thenReturn(todoId);
+            doNothing().when(storageService).store(any(MultipartFile.class), anyString());
+            when(todoResultRepository.save(any(TodoResult.class))).thenReturn(todoResult);
+
+            try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class)) {
+                mockedUUID.when(UUID::randomUUID).thenReturn(fixedUuid);
+
+                // when
+                TodoResult result = todoCommandService.updateTodoResult(userId, todoResultId,
+                        emotion,
+                        content, file);
+
+                // then
+                verify(todoResult).validateOwner(userId);
+                verify(todoResult).update(emotion, content, expectedFilePath);
+                verify(storageService).store(file, expectedFilePath);
+                verify(todoResultRepository).save(todoResult);
+                mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)));
+                assertThat(result).isEqualTo(todoResult);
+            }
+        }
+
+        @Test
+        void 존재하지_않는_투두결과_수정_요청시_예외_발생() {
+            // given
+            UUID nonExistsTodoResultId = UUID.randomUUID();
+            when(todoResultRepository.findById(nonExistsTodoResultId))
+                    .thenThrow(new TodoResultNotSubmittedException());
+
+            // when & then
+            assertThatThrownBy(
+                    () -> todoCommandService.updateTodoResult(userId, nonExistsTodoResultId,
+                            emotion, content, null))
+                    .isInstanceOf(TodoResultNotSubmittedException.class);
+        }
+
+        @Test
+        void 작성자가_아닌_경우_예외_발생() {
+            // given
+            UUID otherUserId = UUID.randomUUID();
+            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
+            doThrow(new AccessDeniedException(TodoErrorCode.TODO_RESULT_ACCESS_DENIED))
+                    .when(todoResult).validateOwner(otherUserId);
+
+            // when & then
+            assertThatThrownBy(() -> todoCommandService.updateTodoResult(otherUserId, todoResultId,
+                    emotion, content, null))
+                    .isInstanceOf(AccessDeniedException.class)
+                    .hasMessage(TodoErrorCode.TODO_RESULT_ACCESS_DENIED.getMessage());
+        }
+
+        @Test
+        void 파일_저장_실패_시_예외_발생() {
+            // given
+            MultipartFile file = new MockMultipartFile("file", "filename.jpg", "image/jpeg",
+                    "file".getBytes());
+            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
+            when(todoResult.getTodoId()).thenReturn(todoId);
+            doThrow(new StorageException(StorageErrorCode.FILE_UPLOAD_FAILED))
+                    .when(storageService).store(eq(file), anyString());
+
+            // when & then
+            assertThatThrownBy(() -> todoCommandService.updateTodoResult(userId, todoResultId,
+                    emotion, content, file))
+                    .isInstanceOf(StorageException.class)
+                    .hasMessage(StorageErrorCode.FILE_UPLOAD_FAILED.getMessage());
+        }
+    }
+
+
+    @Nested
     @DisplayName("투두 아이디로 투두 삭제 테스트")
     class DeleteByIdTest {
 
@@ -594,4 +750,83 @@ class TodoCommandServiceTest {
         }
 
     }
+
+    @Nested
+    @DisplayName("투두 결과 삭제 테스트")
+    class DeleteTodoResultTest {
+
+        TodoResult todoResult;
+        UUID todoResultId;
+
+        @BeforeEach
+        void setUp() {
+            todoResultId = UUID.randomUUID();
+            todoResult = mock(TodoResult.class);
+        }
+
+        @Test
+        void 파일_없는_투두결과_삭제_성공() {
+            // given
+            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
+            when(todoResult.getFilePath()).thenReturn("");
+            when(todoResult.getId()).thenReturn(todoResultId);
+
+            // when
+            todoCommandService.deleteTodoResultById(userId, todoResultId);
+
+            // then
+            verify(todoResult).validateOwner(userId);
+            verify(todoResultRepository).deleteById(todoResultId);
+            mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)), never());
+        }
+
+        @Test
+        void 파일_있는_투두결과_삭제_성공() {
+            // given
+            String filePath = "todo/todo-id/uuid";
+            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
+            when(todoResult.getFilePath()).thenReturn(filePath);
+            when(todoResult.getId()).thenReturn(todoResultId);
+
+            // when
+            todoCommandService.deleteTodoResultById(userId, todoResultId);
+
+            // then
+            verify(todoResult).validateOwner(userId);
+            verify(todoResultRepository).deleteById(todoResultId);
+            mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)));
+        }
+
+        @Test
+        void 존재하지_않는_투두결과_삭제_요청시_예외_발생() {
+            // given
+            UUID nonExistsTodoResultId = UUID.randomUUID();
+            when(todoResultRepository.findById(nonExistsTodoResultId))
+                    .thenThrow(new TodoResultNotSubmittedException());
+
+            // when & then
+            assertThatThrownBy(
+                    () -> todoCommandService.deleteTodoResultById(userId, nonExistsTodoResultId))
+                    .isInstanceOf(TodoResultNotSubmittedException.class);
+        }
+
+        @Test
+        void 작성자가_아닌_경우_예외_발생() {
+            // given
+            UUID otherUserId = UUID.randomUUID();
+            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
+            doThrow(new AccessDeniedException(TodoErrorCode.TODO_RESULT_ACCESS_DENIED))
+                    .when(todoResult).validateOwner(otherUserId);
+
+            // when & then
+            assertThatThrownBy(
+                    () -> todoCommandService.deleteTodoResultById(otherUserId, todoResultId))
+                    .isInstanceOf(AccessDeniedException.class)
+                    .hasMessage(TodoErrorCode.TODO_RESULT_ACCESS_DENIED.getMessage());
+
+            verify(todoResultRepository, never()).deleteById(any());
+            mockedEvents.verify(() -> Events.publishEvent(any()), never());
+        }
+    }
+
 }

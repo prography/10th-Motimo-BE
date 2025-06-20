@@ -20,8 +20,8 @@ public record TodoRs(
         @Schema(description = "투두 상태", example = "COMPLETE")
         TodoStatus status,
 
-        @Schema(description = "투두 기록 여부", example = "true")
-        boolean hasResult,
+        @Schema(description = "투두 기록 여부", nullable = true)
+        UUID todoResultId,
 
         @Schema(description = "투두 생성 날짜", type = "date")
         LocalDateTime createdAt
@@ -29,6 +29,6 @@ public record TodoRs(
 
     public static TodoRs from(TodoSummary todoSummary) {
         return new TodoRs(todoSummary.id(), todoSummary.title(), todoSummary.date(),
-                todoSummary.status(), todoSummary.hasResult(), todoSummary.createdAt());
+                todoSummary.status(), todoSummary.todoResultId(), todoSummary.createdAt());
     }
 }

@@ -11,7 +11,7 @@ public record TodoSummary(
         LocalDate date,
         TodoStatus status,
         LocalDateTime createdAt,
-        boolean hasResult
+        UUID todoResultId // nullable
 ) {
 
 }

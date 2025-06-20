@@ -144,6 +144,6 @@ class SubGoalControllerTest {
 
     private TodoSummary createMockTodoSummary(UUID id, String title) {
         return new TodoSummary(id, title, LocalDate.now(), TodoStatus.INCOMPLETE,
-                LocalDateTime.now(), false);
+                LocalDateTime.now(), UUID.randomUUID());
     }
 }

@@ -6,7 +6,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import kr.co.domain.todo.Emotion;
@@ -95,12 +94,12 @@ class TodoRepositoryImplTest {
         TodoEntity todo = new TodoEntity(
                 null,  // id - 자동 생성됨
                 subGoalId,
-                userId,  // authorId
+                userId,  // userId
                 title,
                 date,
-                status,
-                LocalDateTime.now(),  // createdAt
-                null   // updatedAt - JPA가 자동으로 설정
+                status
+//                LocalDateTime.now(),  // createdAt
+//                null   // updatedAt - JPA가 자동으로 설정
         );
 
         testEntityManager.persist(todo);
@@ -110,11 +109,10 @@ class TodoRepositoryImplTest {
             TodoResultEntity result = new TodoResultEntity(
                     null,
                     todo.getId(),
+                    userId,
                     Emotion.PROUD,
                     "투두 완료!",
-                    "image",
-                    LocalDateTime.now(),
-                    null
+                    "image"
             );
             testEntityManager.persist(result);
         }

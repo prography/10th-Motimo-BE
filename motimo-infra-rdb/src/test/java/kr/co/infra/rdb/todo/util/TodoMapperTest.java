@@ -19,19 +19,16 @@ public class TodoMapperTest {
         // given
         UUID id = UUID.randomUUID();
         UUID subGoalId = UUID.randomUUID();
-        UUID authorId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
         LocalDate date = LocalDate.now();
-        LocalDateTime now = LocalDateTime.now();
 
         TodoEntity entity = new TodoEntity(
                 id,
                 subGoalId,
-                authorId,
+                userId,
                 "투두 제목",
                 date,
-                TodoStatus.INCOMPLETE,
-                now,
-                now
+                TodoStatus.INCOMPLETE
         );
 
         // when
@@ -40,12 +37,10 @@ public class TodoMapperTest {
         //then
         assertThat(todo.getId()).isEqualTo(id);
         assertThat(todo.getSubGoalId()).isEqualTo(subGoalId);
-        assertThat(todo.getAuthorId()).isEqualTo(authorId);
+        assertThat(todo.getUserId()).isEqualTo(userId);
         assertThat(todo.getTitle()).isEqualTo("투두 제목");
         assertThat(todo.getDate()).isEqualTo(date);
         assertThat(todo.getStatus()).isEqualTo(TodoStatus.INCOMPLETE);
-        assertThat(todo.getCreatedAt()).isEqualTo(now);
-        assertThat(todo.getUpdatedAt()).isEqualTo(now);
     }
 
     @Test
@@ -53,19 +48,17 @@ public class TodoMapperTest {
         // given
         UUID id = UUID.randomUUID();
         UUID subGoalId = UUID.randomUUID();
-        UUID authorId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
         LocalDate date = LocalDate.now();
         LocalDateTime now = LocalDateTime.now();
 
-        Todo domain = Todo.createTodo()
+        Todo domain = Todo.builder()
                 .id(id)
                 .subGoalId(subGoalId)
-                .authorId(authorId)
+                .userId(userId)
                 .title("투두 제목")
                 .date(date)
                 .status(TodoStatus.INCOMPLETE)
-                .createdAt(now)
-                .updatedAt(now)
                 .build();
 
         // when
@@ -74,11 +67,9 @@ public class TodoMapperTest {
         // then
         assertThat(entity.getId()).isEqualTo(id);
         assertThat(entity.getSubGoalId()).isEqualTo(subGoalId);
-        assertThat(entity.getAuthorId()).isEqualTo(authorId);
+        assertThat(entity.getUserId()).isEqualTo(userId);
         assertThat(entity.getTitle()).isEqualTo("투두 제목");
         assertThat(entity.getDate()).isEqualTo(date);
         assertThat(entity.getStatus()).isEqualTo(TodoStatus.INCOMPLETE);
-        assertThat(entity.getCreatedAt()).isEqualTo(now);
-        assertThat(entity.getUpdatedAt()).isEqualTo(now);
     }
 }

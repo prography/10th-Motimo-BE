@@ -130,7 +130,7 @@ class TodoQueryServiceTest {
         @Test
         void 투두_ID로_결과_조회() {
             // given
-            TodoResult mockResult = TodoResult.createTodoResult()
+            TodoResult mockResult = TodoResult.builder()
                     .id(UUID.randomUUID())
                     .todoId(todoId)
                     .emotion(Emotion.PROUD)

@@ -81,5 +81,11 @@ public class TodoController implements TodoControllerSwagger {
         todoCommandService.deleteById(userId, todoId);
     }
 
-    // todo: 투두 삭제 기능 추가
+    @DeleteMapping("/{todoId}/result")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTodoResultByTodoId(@AuthUser UUID userId, @PathVariable UUID todoId) {
+        todoCommandService.deleteTodoResultByTodoId(userId, todoId);
+    }
+
+    // todo: 투두 결과 수정 기능 추가
 }

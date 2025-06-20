@@ -32,8 +32,11 @@ public class TodoResultEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "todo_id", nullable = false)
+    @Column(name = "todo_id", nullable = false, unique = true)
     private UUID todoId;
+
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "emotion")
@@ -53,14 +56,13 @@ public class TodoResultEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public TodoResultEntity(UUID id, UUID todoId, Emotion emotion, String content, String filePath,
-            LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public TodoResultEntity(UUID id, UUID todoId, UUID userId, Emotion emotion, String content,
+            String filePath) {
         this.id = id;
         this.todoId = todoId;
+        this.userId = userId;
         this.emotion = emotion;
         this.content = content;
         this.filePath = filePath;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 }

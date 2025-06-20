@@ -36,8 +36,8 @@ public class TodoEntity {
     @Column(name = "sub_goal_id", nullable = false)
     private UUID subGoalId;
 
-    @Column(name = "author_id", nullable = false)
-    private UUID authorId;
+    @Column(name = "user_id", nullable = false)
+    private UUID userId;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -57,15 +57,13 @@ public class TodoEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public TodoEntity(UUID id, UUID subGoalId, UUID authorId, String title, LocalDate date,
-            TodoStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public TodoEntity(UUID id, UUID subGoalId, UUID userId, String title, LocalDate date,
+            TodoStatus status) {
         this.id = id;
         this.subGoalId = subGoalId;
-        this.authorId = authorId;
+        this.userId = userId;
         this.title = title;
         this.date = date;
         this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 }

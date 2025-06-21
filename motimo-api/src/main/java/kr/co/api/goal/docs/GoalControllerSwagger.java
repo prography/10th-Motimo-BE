@@ -34,5 +34,5 @@ public interface GoalControllerSwagger {
     GoalListRs getGoalList(UUID userId);
 
     @Operation(summary = "목표 투두 목록 API", description = "목표에 해당하는 세부 목표와 투두 목록을 조회합니다.")
-    GoalTodoListRs getTodoListByGoal(UUID userId, @PathVariable UUID goalId);
+    GoalTodoListRs getTodoListByGoal(@PathVariable UUID goalId);
 }

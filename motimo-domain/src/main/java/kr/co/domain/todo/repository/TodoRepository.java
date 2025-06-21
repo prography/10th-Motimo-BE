@@ -8,8 +8,8 @@ import kr.co.domain.todo.dto.TodoSummary;
 
 public interface TodoRepository {
 
-    Todo save(Todo todo);
-
+    Todo create(Todo todo);
+    
     Todo findById(UUID id);
 
     List<TodoSummary> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date);
@@ -17,6 +17,8 @@ public interface TodoRepository {
     List<TodoSummary> findAllByUserId(UUID userId);
 
     boolean existsById(UUID id);
+
+    Todo update(Todo todo);
 
     void deleteById(UUID id);
 }

@@ -10,8 +10,6 @@ import kr.co.api.todo.rqrs.TodoResultRs;
 import kr.co.api.todo.rqrs.TodoUpdateRq;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
-import kr.co.domain.todo.Todo;
-import kr.co.domain.todo.TodoResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -47,10 +45,10 @@ public class TodoController implements TodoControllerSwagger {
             @PathVariable UUID todoId,
             @RequestPart TodoResultRq request,
             @RequestPart(name = "file", required = false) MultipartFile file) {
-        TodoResult todoResult = todoCommandService.submitTodoResult(
+        UUID id = todoCommandService.submitTodoResult(
                 userId, todoId, request.emotion(), request.content(), file);
 
-        return new TodoResultIdRs(todoResult.getId());
+        return new TodoResultIdRs(id);
     }
 
     @GetMapping("/{todoId}/result")
@@ -63,16 +61,16 @@ public class TodoController implements TodoControllerSwagger {
     @PatchMapping("/{todoId}/completion")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public TodoIdRs toggleTodoCompletion(@AuthUser UUID userId, @PathVariable UUID todoId) {
-        Todo todo = todoCommandService.toggleTodoCompletion(userId, todoId);
-        return new TodoIdRs(todo.getId());
+        UUID id = todoCommandService.toggleTodoCompletion(userId, todoId);
+        return new TodoIdRs(id);
     }
 
     @PutMapping("/{todoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public TodoIdRs updateTodo(@AuthUser UUID userId, @PathVariable UUID todoId,
             @RequestBody TodoUpdateRq request) {
-        Todo todo = todoCommandService.updateTodo(userId, todoId, request.title(), request.date());
-        return new TodoIdRs(todo.getId());
+        UUID id = todoCommandService.updateTodo(userId, todoId, request.title(), request.date());
+        return new TodoIdRs(id);
     }
 
     @DeleteMapping("/{todoId}")

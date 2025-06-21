@@ -1,10 +1,14 @@
 package kr.co.api.goal.rqrs;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
 import java.time.LocalDate;
+import java.util.UUID;
+import kr.co.api.goal.dto.GoalListDto;
 
 public record GoalItemRs(
+        @Schema(description = "목표 아이디")
+        UUID id,
+
         @Schema(description = "목표 이름", example = "자격증 따기")
         String title,
 
@@ -15,4 +19,12 @@ public record GoalItemRs(
         float progress
 ) {
 
+        public static GoalItemRs from(GoalListDto dto) {
+                return new GoalItemRs(
+                        dto.id(),
+                        dto.title(),
+                        dto.dueDate(),
+                        dto.progress()
+                );
+        }
 }

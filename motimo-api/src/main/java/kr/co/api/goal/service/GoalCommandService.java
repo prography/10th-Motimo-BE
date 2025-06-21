@@ -43,6 +43,6 @@ public class GoalCommandService {
 
         goal.complete();
 
-        return goalRepository.update(goal).getId();
+        return goalRepository.create(goal).getId();
     }
 }

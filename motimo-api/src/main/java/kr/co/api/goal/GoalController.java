@@ -68,7 +68,7 @@ public class GoalController implements GoalControllerSwagger {
     }
 
     @GetMapping("/{goalId}/sub-goals/all")
-    public GoalTodoListRs getTodoListByGoal(UUID userId, UUID goalId) {
+    public GoalTodoListRs getTodoListByGoal(UUID userId, @PathVariable UUID goalId) {
         return null;
     }
 

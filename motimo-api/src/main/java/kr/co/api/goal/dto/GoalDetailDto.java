@@ -9,6 +9,7 @@ public record GoalDetailDto(
         String title,
         LocalDate dueDate,
         float progress,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        boolean isJoinedGroup
 ) {
 }

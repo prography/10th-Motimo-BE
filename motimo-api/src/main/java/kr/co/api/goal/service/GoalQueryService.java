@@ -1,6 +1,7 @@
 package kr.co.api.goal.service;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import kr.co.api.goal.dto.GoalDetailDto;
 import kr.co.api.goal.dto.GoalItemDto;
@@ -20,12 +21,14 @@ public class GoalQueryService {
 
     public GoalDetailDto getGoalDetail(UUID goalId) {
         Goal goal = goalRepository.findById(goalId);
+
         return new GoalDetailDto(
                 goal.getId(),
                 goal.getTitle(),
                 goal.getDueDate().getDueDate(),
                 calculateProgress(goal.getSubGoals()),
-                goal.getCreatedAt()
+                goal.getCreatedAt(),
+                new Random().nextBoolean() // TODO: 그룹 기능 구현 시 수정
         );
     }
 

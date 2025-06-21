@@ -16,7 +16,10 @@ public record GoalDetailRs(
         LocalDate dueDate,
 
         @Schema(description = "목표 달성률 (%)", example = "24.5")
-        float progress
+        float progress,
+
+        @Schema(description = "그룹 참여 여부")
+        boolean isJoinedGroup
 ) {
 
     public static GoalDetailRs from(GoalDetailDto dto) {
@@ -24,7 +27,8 @@ public record GoalDetailRs(
                 dto.id(),
                 dto.title(),
                 dto.dueDate(),
-                dto.progress()
+                dto.progress(),
+                dto.isJoinedGroup()
         );
     }
 }

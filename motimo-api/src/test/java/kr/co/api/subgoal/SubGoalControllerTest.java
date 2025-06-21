@@ -95,12 +95,13 @@ class SubGoalControllerTest {
     void 투두_생성_성공() throws Exception {
         // given
         TodoCreateRq request = new TodoCreateRq("투두", LocalDate.now());
+        UUID todoId = UUID.randomUUID();
         Todo todo = mock(Todo.class);
         String requestJson = objectMapper.writeValueAsString(request);
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
-        when(todoCommandService.createTodo(any(), any(), any(), any())).thenReturn(todo);
+        when(todoCommandService.createTodo(any(), any(), any(), any())).thenReturn(todoId);
 
         // when & then
         mockMvc.perform(post("/v1/sub-goals/{subGoalId}/todo", subGoalId)

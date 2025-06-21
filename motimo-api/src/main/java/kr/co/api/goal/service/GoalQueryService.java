@@ -31,7 +31,7 @@ public class GoalQueryService {
                 goal.getId(),
                 goal.getTitle(),
                 goal.getDueDate().getDueDate(),
-                calculateProgress(goal.getSubGoals()),
+                goal.calculateProgress(),
                 goal.getCreatedAt(),
                 new Random().nextBoolean() // TODO: 그룹 기능 구현 시 수정
         );
@@ -43,19 +43,9 @@ public class GoalQueryService {
                 goal.getId(),
                 goal.getTitle(),
                 goal.getDueDate().getDueDate(),
-                calculateProgress(goal.getSubGoals()),
+                goal.calculateProgress(),
                 goal.getCreatedAt()
         )).toList();
-    }
-
-    private float calculateProgress(List<SubGoal> subGoals) {
-        if (subGoals.isEmpty()) {
-            return 0;
-        }
-
-        long completeCount = subGoals.stream().filter(SubGoal::isCompleted).count();
-
-        return (float) completeCount / subGoals.size() * 100;
     }
 
     public GoalTodoListDto getAllTodoByGoal(UUID goalId) {

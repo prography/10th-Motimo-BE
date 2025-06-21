@@ -52,6 +52,16 @@ public class Goal {
         }
     }
 
+    public float calculateProgress() {
+        if(subGoals.isEmpty()) {
+            return 0;
+        }
+
+        long completedSubGoalCount = subGoals.stream().filter(SubGoal::isCompleted).count();
+
+        return (float) completedSubGoalCount / subGoals.size() * 100;
+    }
+
     @Builder(builderMethodName = "createGoal")
     private Goal(UUID userId, String title, DueDate dueDate, List<SubGoal> subGoals) {
         this.userId = userId;

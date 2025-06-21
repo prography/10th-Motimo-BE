@@ -4,12 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record GoalListDto(
+public record GoalDetailDto(
         UUID id,
         String title,
         LocalDate dueDate,
         float progress,
         LocalDateTime createdAt
 ) {
-
 }

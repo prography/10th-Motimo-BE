@@ -2,7 +2,8 @@ package kr.co.api.goal.service;
 
 import java.util.List;
 import java.util.UUID;
-import kr.co.api.goal.dto.GoalListDto;
+import kr.co.api.goal.dto.GoalDetailDto;
+import kr.co.api.goal.dto.GoalItemDto;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.subGoal.SubGoal;
@@ -17,9 +18,20 @@ public class GoalQueryService {
 
     private final GoalRepository goalRepository;
 
-    public List<GoalListDto> getGoalList(UUID userId) {
+    public GoalDetailDto getGoalDetail(UUID goalId) {
+        Goal goal = goalRepository.findById(goalId);
+        return new GoalDetailDto(
+                goal.getId(),
+                goal.getTitle(),
+                goal.getDueDate().getDueDate(),
+                calculateProgress(goal.getSubGoals()),
+                goal.getCreatedAt()
+        );
+    }
+
+    public List<GoalItemDto> getGoalList(UUID userId) {
         List<Goal> goals = goalRepository.findAllByUserId(userId);
-        return goals.stream().map(goal -> new GoalListDto(
+        return goals.stream().map(goal -> new GoalItemDto(
                 goal.getId(),
                 goal.getTitle(),
                 goal.getDueDate().getDueDate(),
@@ -29,12 +41,12 @@ public class GoalQueryService {
     }
 
     private float calculateProgress(List<SubGoal> subGoals) {
-        if(subGoals.isEmpty()) {
+        if (subGoals.isEmpty()) {
             return 0;
         }
 
         long completeCount = subGoals.stream().filter(SubGoal::isCompleted).count();
 
-        return (float) completeCount /subGoals.size() * 100;
+        return (float) completeCount / subGoals.size() * 100;
     }
 }

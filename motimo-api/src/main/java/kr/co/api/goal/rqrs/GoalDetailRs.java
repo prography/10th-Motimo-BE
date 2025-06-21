@@ -3,9 +3,9 @@ package kr.co.api.goal.rqrs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.util.UUID;
-import kr.co.api.goal.dto.GoalItemDto;
+import kr.co.api.goal.dto.GoalDetailDto;
 
-public record GoalItemRs(
+public record GoalDetailRs(
         @Schema(description = "목표 아이디")
         UUID id,
 
@@ -19,12 +19,12 @@ public record GoalItemRs(
         float progress
 ) {
 
-        public static GoalItemRs from(GoalItemDto dto) {
-                return new GoalItemRs(
-                        dto.id(),
-                        dto.title(),
-                        dto.dueDate(),
-                        dto.progress()
-                );
-        }
+    public static GoalDetailRs from(GoalDetailDto dto) {
+        return new GoalDetailRs(
+                dto.id(),
+                dto.title(),
+                dto.dueDate(),
+                dto.progress()
+        );
+    }
 }

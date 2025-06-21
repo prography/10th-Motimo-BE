@@ -4,8 +4,9 @@ import java.util.List;
 import java.util.UUID;
 import kr.co.api.goal.docs.GoalControllerSwagger;
 import kr.co.api.goal.dto.GoalCreateDto;
-import kr.co.api.goal.dto.GoalListDto;
+import kr.co.api.goal.dto.GoalItemDto;
 import kr.co.api.goal.rqrs.GoalCreateRq;
+import kr.co.api.goal.rqrs.GoalDetailRs;
 import kr.co.api.goal.rqrs.GoalIdRs;
 import kr.co.api.goal.rqrs.GoalItemRs;
 import kr.co.api.goal.rqrs.GoalListRs;
@@ -57,9 +58,14 @@ public class GoalController implements GoalControllerSwagger {
 
     @GetMapping
     public GoalListRs getGoalList(@AuthUser UUID userId) {
-        List<GoalListDto> goalList = this.goalQueryService.getGoalList(userId);
+        List<GoalItemDto> goalList = this.goalQueryService.getGoalList(userId);
 
         return new GoalListRs(goalList.stream().map(GoalItemRs::from).toList());
+    }
+
+    @GetMapping("/{goalId}")
+    public GoalDetailRs getGoalDetail(@PathVariable UUID goalId) {
+        return GoalDetailRs.from(this.goalQueryService.getGoalDetail(goalId));
     }
 
     @GetMapping("/{goalId}/sub-goals/all")

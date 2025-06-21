@@ -6,11 +6,13 @@ import kr.co.domain.todo.TodoResult;
 
 public interface TodoResultRepository {
 
-    TodoResult save(TodoResult todo);
+    TodoResult create(TodoResult todo);
 
     TodoResult findById(UUID id);
 
     Optional<TodoResult> findByTodoId(UUID todoId);
+
+    TodoResult update(TodoResult todo);
 
     void deleteById(UUID id);
 }

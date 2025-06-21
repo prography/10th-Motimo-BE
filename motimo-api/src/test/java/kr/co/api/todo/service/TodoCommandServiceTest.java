@@ -14,9 +14,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.common.event.Events;
 import kr.co.domain.common.event.FileDeletedEvent;
+import kr.co.domain.common.event.FileRollbackEvent;
 import kr.co.domain.common.exception.AccessDeniedException;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
@@ -89,30 +91,31 @@ class TodoCommandServiceTest {
             // given
             String title = "새로운 할일";
             LocalDate date = LocalDate.now();
-            Todo expectedTodo = Todo.createTodo()
-                    .authorId(userId)
+            Todo expectedTodo = Todo.builder()
+                    .id(todoId)
+                    .userId(userId)
                     .subGoalId(subGoalId)
                     .title(title)
                     .date(date)
                     .build();
-            when(todoRepository.save(any(Todo.class))).thenReturn(expectedTodo);
+            when(todoRepository.create(any(Todo.class))).thenReturn(expectedTodo);
 
             // when
-            Todo result = todoCommandService.createTodo(userId, subGoalId, title, date);
+            UUID id = todoCommandService.createTodo(userId, subGoalId, title, date);
 
             // then
             ArgumentCaptor<Todo> todoCaptor = ArgumentCaptor.forClass(Todo.class);
-            verify(todoRepository).save(todoCaptor.capture());
+            verify(todoRepository).create(todoCaptor.capture());
 
             Todo savedTodo = todoCaptor.getValue();
-            assertThat(savedTodo.getAuthorId()).isEqualTo(userId);
+            assertThat(savedTodo.getUserId()).isEqualTo(userId);
             assertThat(savedTodo.getSubGoalId()).isEqualTo(subGoalId);
             assertThat(savedTodo.getTitle()).isEqualTo(title);
             assertThat(savedTodo.getDate()).isEqualTo(date);
             assertThat(savedTodo.getStatus()).isEqualTo(TodoStatus.INCOMPLETE);
 
             // 반환값 검증 추가
-            assertThat(result).isEqualTo(expectedTodo);
+            assertThat(id).isEqualTo(expectedTodo.getId());
         }
 
         @Test
@@ -120,7 +123,7 @@ class TodoCommandServiceTest {
             // given
             String title = "새로운 할일";
             LocalDate date = LocalDate.now();
-            when(todoRepository.save(any(Todo.class)))
+            when(todoRepository.create(any(Todo.class)))
                     .thenThrow(new RuntimeException("Database error"));
 
             // when & then
@@ -146,9 +149,9 @@ class TodoCommandServiceTest {
             emotion = Emotion.PROUD;
             content = "투두 완료!";
 
-            todo = Todo.createTodo()
+            todo = Todo.builder()
                     .id(todoId)
-                    .authorId(userId)
+                    .userId(userId)
                     .subGoalId(subGoalId)
                     .title("Test Todo")
                     .date(LocalDate.now())
@@ -167,22 +170,22 @@ class TodoCommandServiceTest {
         void 파일_없이_투두_결과_제출_성공() {
             // given
             when(todoRepository.findById(todoId)).thenReturn(todo);
-            when(todoResultRepository.save(any(TodoResult.class))).thenReturn(expectedResult);
+            when(todoResultRepository.create(any(TodoResult.class))).thenReturn(expectedResult);
 
             // when
-            TodoResult result = todoCommandService.submitTodoResult(userId, todoId, emotion,
+            UUID id = todoCommandService.submitTodoResult(userId, todoId, emotion,
                     content, null);
 
             // then
             ArgumentCaptor<TodoResult> resultCaptor = ArgumentCaptor.forClass(TodoResult.class);
-            verify(todoResultRepository).save(resultCaptor.capture());
+            verify(todoResultRepository).create(resultCaptor.capture());
 
             TodoResult savedResult = resultCaptor.getValue();
             assertThat(savedResult.getTodoId()).isEqualTo(todoId);
             assertThat(savedResult.getEmotion()).isEqualTo(emotion);
             assertThat(savedResult.getContent()).isEqualTo(content);
             assertThat(savedResult.getFilePath()).isEqualTo("");
-            assertThat(result).isEqualTo(expectedResult);
+            assertThat(id).isEqualTo(expectedResult.getId());
 
             verify(storageService, never()).store(any(), any());
             mockedEvents.verify(() -> Events.publishEvent(any()), never());
@@ -194,19 +197,19 @@ class TodoCommandServiceTest {
             MultipartFile file = mock(MultipartFile.class);
             when(todoRepository.findById(todoId)).thenReturn(todo);
             when(file.isEmpty()).thenReturn(true);
-            when(todoResultRepository.save(any(TodoResult.class))).thenReturn(expectedResult);
+            when(todoResultRepository.create(any(TodoResult.class))).thenReturn(expectedResult);
 
             // when
-            TodoResult result = todoCommandService.submitTodoResult(userId, todoId, emotion,
+            UUID id = todoCommandService.submitTodoResult(userId, todoId, emotion,
                     content, file);
 
             // then
             ArgumentCaptor<TodoResult> resultCaptor = ArgumentCaptor.forClass(TodoResult.class);
-            verify(todoResultRepository).save(resultCaptor.capture());
+            verify(todoResultRepository).create(resultCaptor.capture());
 
             TodoResult savedResult = resultCaptor.getValue();
             assertThat(savedResult.getFilePath()).isEqualTo("");
-            assertThat(result).isEqualTo(expectedResult);
+            assertThat(id).isEqualTo(expectedResult.getId());
 
             verify(storageService, never()).store(any(), any());
             mockedEvents.verify(() -> Events.publishEvent(any()), never());
@@ -224,23 +227,23 @@ class TodoCommandServiceTest {
 
             when(todoRepository.findById(todoId)).thenReturn(todo);
             doNothing().when(storageService).store(any(MultipartFile.class), anyString());
-            when(todoResultRepository.save(any(TodoResult.class))).thenReturn(expectedResult);
+            when(todoResultRepository.create(any(TodoResult.class))).thenReturn(expectedResult);
 
             try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class)) {
                 mockedUUID.when(UUID::randomUUID).thenReturn(fixedUuid);
 
                 // when
-                TodoResult result = todoCommandService.submitTodoResult(userId, todoId, emotion,
+                UUID id = todoCommandService.submitTodoResult(userId, todoId, emotion,
                         content, file);
 
                 // then
                 ArgumentCaptor<TodoResult> resultCaptor = ArgumentCaptor.forClass(TodoResult.class);
-                verify(todoResultRepository).save(resultCaptor.capture());
+                verify(todoResultRepository).create(resultCaptor.capture());
 
                 TodoResult savedResult = resultCaptor.getValue();
                 assertThat(savedResult.getFilePath()).isEqualTo(filePath);
-                assertThat(result).isEqualTo(expectedResult);
-                mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)));
+                assertThat(id).isEqualTo(expectedResult.getId());
+                mockedEvents.verify(() -> Events.publishEvent(any(FileRollbackEvent.class)));
             }
         }
 
@@ -264,7 +267,7 @@ class TodoCommandServiceTest {
             Todo mockTodo = mock(Todo.class);
             when(todoRepository.findById(todoId)).thenReturn(mockTodo);
             doThrow(new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED))
-                    .when(mockTodo).validateAuthor(otherUserId);
+                    .when(mockTodo).validateOwner(otherUserId);
 
             // when & then
             assertThatThrownBy(() -> todoCommandService.submitTodoResult(otherUserId, todoId,
@@ -298,24 +301,24 @@ class TodoCommandServiceTest {
         @DisplayName("투두 완료 상태 토글 성공")
         void 투두_완료_상태로_토글_성공() {
             // given
-            Todo todo = Todo.createTodo()
+            Todo todo = Todo.builder()
                     .id(todoId)
-                    .authorId(userId)
+                    .userId(userId)
                     .subGoalId(subGoalId)
                     .title("Test Todo")
                     .date(LocalDate.now())
                     .status(TodoStatus.INCOMPLETE)
                     .build();
             when(todoRepository.findById(todoId)).thenReturn(todo);
-            when(todoRepository.save(any(Todo.class))).thenReturn(todo);
+            when(todoRepository.update(any(Todo.class))).thenReturn(todo);
 
             // when
-            Todo updatedTodo = todoCommandService.toggleTodoCompletion(userId, todoId);
+            UUID id = todoCommandService.toggleTodoCompletion(userId, todoId);
 
             // then
-            assertThat(updatedTodo.getStatus()).isEqualTo(TodoStatus.COMPLETE);
-            verify(todoRepository).save(todo);
-            assertThat(updatedTodo).isEqualTo(todo);
+            assertThat(todo.getStatus()).isEqualTo(TodoStatus.COMPLETE);
+            assertThat(id).isEqualTo(todo.getId());
+            verify(todoRepository).update(todo);
         }
 
         @Test
@@ -338,7 +341,7 @@ class TodoCommandServiceTest {
             UUID otherUserId = UUID.randomUUID();
             when(todoRepository.findById(todoId)).thenReturn(todo);
             doThrow(new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED)).when(todo)
-                    .validateAuthor(otherUserId);
+                    .validateOwner(otherUserId);
 
             // when & then
             assertThatThrownBy(
@@ -358,8 +361,9 @@ class TodoCommandServiceTest {
 
         @BeforeEach
         void setUp() {
-            todo = Todo.createTodo()
-                    .authorId(userId)
+            todo = Todo.builder()
+                    .id(todoId)
+                    .userId(userId)
                     .title("투두!")
                     .date(LocalDate.of(2025, 6, 1))
                     .build();
@@ -371,16 +375,16 @@ class TodoCommandServiceTest {
         void 투두_업데이트_성공() {
             // given
             when(todoRepository.findById(todoId)).thenReturn(todo);
-            when(todoRepository.save(any(Todo.class))).thenReturn(todo);
+            when(todoRepository.update(any(Todo.class))).thenReturn(todo);
 
             // when
-            Todo updatedTodo = todoCommandService.updateTodo(userId, todoId, newTitle, newDate);
+            UUID id = todoCommandService.updateTodo(userId, todoId, newTitle, newDate);
 
             // then
             assertThat(todo.getTitle()).isEqualTo(newTitle);
             assertThat(todo.getDate()).isEqualTo(newDate);
-            assertThat(updatedTodo).isEqualTo(todo);
-            verify(todoRepository).save(todo);
+            assertThat(id).isEqualTo(todo.getId());
+            verify(todoRepository).update(todo);
         }
 
         @Test
@@ -424,7 +428,7 @@ class TodoCommandServiceTest {
             todoCommandService.deleteById(userId, todoId);
 
             // then
-            verify(todo).validateAuthor(userId);
+            verify(todo).validateOwner(userId);
             verify(todoRepository).deleteById(todoId);
         }
 
@@ -446,7 +450,7 @@ class TodoCommandServiceTest {
             Todo todo = mock(Todo.class);
             when(todoRepository.findById(todoId)).thenReturn(todo);
             doThrow(new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED)).when(todo)
-                    .validateAuthor(otherUserId);
+                    .validateOwner(otherUserId);
 
             // when & then
             assertThatThrownBy(() -> todoCommandService.deleteById(otherUserId, todoId))
@@ -457,9 +461,9 @@ class TodoCommandServiceTest {
         @Test
         void repository_삭제_실패_시_예외_발생() {
             // given
-            Todo todo = Todo.createTodo()
+            Todo todo = Todo.builder()
                     .id(todoId)
-                    .authorId(userId)
+                    .userId(userId)
                     .subGoalId(subGoalId)
                     .title("Test Todo")
                     .date(LocalDate.now())
@@ -473,5 +477,123 @@ class TodoCommandServiceTest {
                     .isInstanceOf(RuntimeException.class)
                     .hasMessage("Database error");
         }
+
+        @Test
+        void 투두_삭제시_관련_투두결과도_함께_삭제_성공() {
+            // given
+            Todo todo = Todo.builder()
+                    .id(todoId)
+                    .userId(userId)
+                    .subGoalId(subGoalId)
+                    .title("Test Todo")
+                    .date(LocalDate.now())
+                    .status(TodoStatus.INCOMPLETE)
+                    .build();
+
+            TodoResult todoResult = TodoResult.builder()
+                    .id(UUID.randomUUID())
+                    .todoId(todoId)
+                    .userId(userId)
+                    .emotion(Emotion.PROUD)
+                    .content("투두 완료!")
+                    .filePath("todo/test/file.jpg")
+                    .build();
+
+            when(todoRepository.findById(todoId)).thenReturn(todo);
+            when(todoResultRepository.findByTodoId(todoId)).thenReturn(Optional.of(todoResult));
+
+            // when
+            todoCommandService.deleteById(userId, todoId);
+
+            // then
+            verify(todoRepository).deleteById(todoId);
+            verify(todoResultRepository).deleteById(todoResult.getId());
+            mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)));
+        }
+
+        @Test
+        void 투두_삭제시_파일경로가_없는_투두결과도_함께_삭제_성공() {
+            // given
+            Todo todo = Todo.builder()
+                    .id(todoId)
+                    .userId(userId)
+                    .subGoalId(subGoalId)
+                    .title("Test Todo")
+                    .date(LocalDate.now())
+                    .status(TodoStatus.INCOMPLETE)
+                    .build();
+
+            TodoResult todoResult = TodoResult.builder()
+                    .id(UUID.randomUUID())
+                    .todoId(todoId)
+                    .userId(userId)
+                    .emotion(Emotion.PROUD)
+                    .content("투두 완료!")
+                    .filePath("")
+                    .build();
+
+            when(todoRepository.findById(todoId)).thenReturn(todo);
+            when(todoResultRepository.findByTodoId(todoId)).thenReturn(Optional.of(todoResult));
+
+            // when
+            todoCommandService.deleteById(userId, todoId);
+
+            // then
+            verify(todoRepository).deleteById(todoId);
+            verify(todoResultRepository).deleteById(todoResult.getId());
+            mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)), never());
+        }
+
+        @Test
+        void 투두_삭제시_투두결과가_없어도_삭제_성공() {
+            // given
+            Todo todo = Todo.builder()
+                    .id(todoId)
+                    .userId(userId)
+                    .subGoalId(subGoalId)
+                    .title("Test Todo")
+                    .date(LocalDate.now())
+                    .status(TodoStatus.INCOMPLETE)
+                    .build();
+
+            when(todoRepository.findById(todoId)).thenReturn(todo);
+            when(todoResultRepository.findByTodoId(todoId)).thenReturn(Optional.empty());
+
+            // when
+            todoCommandService.deleteById(userId, todoId);
+
+            // then
+            verify(todoRepository).deleteById(todoId);
+            verify(todoResultRepository, never()).deleteById(any());
+            mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)), never());
+        }
+
+        @Test
+        void 투두_삭제시_투두결과_권한이_없는_경우_예외_발생() {
+            // given
+            Todo todo = Todo.builder()
+                    .id(todoId)
+                    .userId(userId)
+                    .subGoalId(subGoalId)
+                    .title("Test Todo")
+                    .date(LocalDate.now())
+                    .status(TodoStatus.INCOMPLETE)
+                    .build();
+
+            TodoResult todoResult = mock(TodoResult.class);
+            when(todoRepository.findById(todoId)).thenReturn(todo);
+            when(todoResultRepository.findByTodoId(todoId)).thenReturn(Optional.of(todoResult));
+            doThrow(new AccessDeniedException(TodoErrorCode.TODO_RESULT_ACCESS_DENIED))
+                    .when(todoResult).validateOwner(userId);
+
+            // when & then
+            assertThatThrownBy(() -> todoCommandService.deleteById(userId, todoId))
+                    .isInstanceOf(AccessDeniedException.class)
+                    .hasMessage(TodoErrorCode.TODO_RESULT_ACCESS_DENIED.getMessage());
+
+            verify(todoRepository, never()).deleteById(todoId);
+            verify(todoResultRepository, never()).deleteById(any());
+        }
+
     }
 }

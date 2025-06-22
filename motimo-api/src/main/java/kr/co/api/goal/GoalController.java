@@ -58,13 +58,13 @@ public class GoalController implements GoalControllerSwagger {
 
     @GetMapping
     public GoalListRs getGoalList(@AuthUser UUID userId) {
-        List<GoalItemDto> goalList = this.goalQueryService.getGoalList(userId);
+        List<GoalItemDto> goalList = goalQueryService.getGoalList(userId);
         return new GoalListRs(goalList.stream().map(GoalItemRs::from).toList());
     }
 
     @GetMapping("/{goalId}")
     public GoalDetailRs getGoalDetail(@PathVariable UUID goalId) {
-        return GoalDetailRs.from(this.goalQueryService.getGoalDetail(goalId));
+        return GoalDetailRs.from(goalQueryService.getGoalDetail(goalId));
     }
 
     @GetMapping("/{goalId}/sub-goals/all")

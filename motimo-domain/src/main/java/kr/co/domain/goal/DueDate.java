@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class DueDate {
     private Integer month;
-    private LocalDate dueDate;
+    private LocalDate date;
 
     public static DueDate of(int month) {
         LocalDate currentDate = LocalDate.now();

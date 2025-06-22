@@ -16,7 +16,7 @@ public record GoalTodoListDto(
         return new GoalTodoListDto(
                 goal.getId(),
                 goal.getTitle(),
-                goal.getDueDate().getDueDate(),
+                goal.getDueDateValue(),
                 subGoals
         );
     }

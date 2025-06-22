@@ -30,7 +30,7 @@ public class GoalQueryService {
         return new GoalDetailDto(
                 goal.getId(),
                 goal.getTitle(),
-                goal.getDueDate().getDueDate(),
+                goal.getDueDateValue(),
                 goal.calculateProgress(),
                 goal.getCreatedAt(),
                 new Random().nextBoolean() // TODO: 그룹 기능 구현 시 수정
@@ -42,7 +42,7 @@ public class GoalQueryService {
         return goals.stream().map(goal -> new GoalItemDto(
                 goal.getId(),
                 goal.getTitle(),
-                goal.getDueDate().getDueDate(),
+                goal.getDueDateValue(),
                 goal.calculateProgress(),
                 goal.getCreatedAt()
         )).toList();

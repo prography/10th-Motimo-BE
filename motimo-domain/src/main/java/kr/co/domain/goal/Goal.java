@@ -1,5 +1,6 @@
 package kr.co.domain.goal;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -60,6 +61,10 @@ public class Goal {
         long completedSubGoalCount = subGoals.stream().filter(SubGoal::isCompleted).count();
 
         return (float) completedSubGoalCount / subGoals.size() * 100;
+    }
+
+    public LocalDate getDueDateValue() {
+        return this.dueDate.getDate();
     }
 
     @Builder(builderMethodName = "createGoal")

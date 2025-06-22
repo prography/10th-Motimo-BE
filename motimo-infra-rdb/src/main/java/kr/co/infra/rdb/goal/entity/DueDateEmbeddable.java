@@ -15,7 +15,7 @@ public class DueDateEmbeddable {
     private LocalDate dueDate;
 
     public static DueDateEmbeddable from(DueDate dueDate) {
-        return new DueDateEmbeddable(dueDate.getMonth(), dueDate.getDueDate());
+        return new DueDateEmbeddable(dueDate.getMonth(), dueDate.getDate());
     }
 
     public DueDate toDomain() {

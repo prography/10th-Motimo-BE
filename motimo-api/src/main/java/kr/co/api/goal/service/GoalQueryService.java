@@ -39,13 +39,7 @@ public class GoalQueryService {
 
     public List<GoalItemDto> getGoalList(UUID userId) {
         List<Goal> goals = goalRepository.findAllByUserId(userId);
-        return goals.stream().map(goal -> new GoalItemDto(
-                goal.getId(),
-                goal.getTitle(),
-                goal.getDueDateValue(),
-                goal.calculateProgress(),
-                goal.getCreatedAt()
-        )).toList();
+        return goals.stream().map(GoalItemDto::from).toList();
     }
 
     public GoalTodoListDto getAllTodoByGoal(UUID goalId) {

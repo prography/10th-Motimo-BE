@@ -1,5 +1,6 @@
 package kr.co.api.goal.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -50,6 +51,7 @@ public class GoalQueryService {
 
     private List<SubGoalDto> getTodoBySubGoalList(List<SubGoal> subGoals) {
         return subGoals.stream()
+                .sorted(Comparator.comparing(SubGoal::getImportance))
                 .map(subGoal -> {
                     List<TodoSummary> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
                             subGoal.getId());

@@ -43,7 +43,7 @@ public class GoalQueryService {
         return goals.stream().map(GoalItemDto::from).toList();
     }
 
-    public GoalWithSubGoalTodoDto getGoalWithSubGoalTodayTodos(UUID goalId) {
+    public GoalWithSubGoalTodoDto getGoalWithIncompleteSubGoalTodayTodos(UUID goalId) {
         Goal goal = goalRepository.findById(goalId);
         List<SubGoalDto> subGoals = getTodoByIncompleteSubGoalList(goal.getSubGoals());
         return GoalWithSubGoalTodoDto.of(goal, subGoals);

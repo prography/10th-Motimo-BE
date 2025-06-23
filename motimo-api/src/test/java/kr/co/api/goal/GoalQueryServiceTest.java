@@ -87,7 +87,7 @@ class GoalQueryServiceTest {
             givenGoalWithSubGoalsAndTodos(goalId, mockGoal, mockTodos);
 
             // when
-            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithSubGoalTodayTodos(goalId);
+            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId);
 
             // then
             assertThat(dto).isNotNull();
@@ -123,7 +123,7 @@ class GoalQueryServiceTest {
             givenGoalWithSubGoalsAndTodos(goalId, mockGoal, mockTodos);
 
             // when
-            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithSubGoalTodayTodos(goalId);
+            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId);
 
             // then
             assertThat(dto).isNotNull();
@@ -162,7 +162,7 @@ class GoalQueryServiceTest {
             when(goalRepository.findById(goalId)).thenReturn(mockGoal);
 
             // when
-            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithSubGoalTodayTodos(goalId);
+            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId);
 
             // then
             assertThat(dto).isNotNull();

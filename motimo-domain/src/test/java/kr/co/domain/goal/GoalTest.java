@@ -12,10 +12,11 @@ import org.junit.jupiter.api.Test;
 public class GoalTest {
 
     @Nested
+    @DisplayName("목표 진행률 계산 테스트")
     class ProgressTest {
 
         @Test
-        void 진행률_세부목표가_없으면_0퍼센트() {
+        void 진행률_세부목표가_없으면_0_퍼센트() {
             Goal goal = getGoalWithoutSubGoals();
             goal.addSubGoals(List.of());
 
@@ -25,7 +26,7 @@ public class GoalTest {
         }
 
         @Test
-        void 진행률_모두_미완료면_0퍼센트() {
+        void 진행률_모두_미완료시_0_퍼센트() {
             Goal goal = getGoalWithoutSubGoals();
             goal.addSubGoals(List.of(
                     SubGoal.builder().completed(false).build(),
@@ -39,7 +40,7 @@ public class GoalTest {
         }
 
         @Test
-        void 진행률_모두완료면_100퍼센트() {
+        void 진행률_모두_완료시_100_퍼센트() {
             Goal goal = getGoalWithoutSubGoals();
             goal.addSubGoals(List.of(
                     SubGoal.builder().completed(true).build(),
@@ -53,7 +54,7 @@ public class GoalTest {
         }
 
         @Test
-        void 진행률_일부완료_정확한퍼센트계산() {
+        void 진행률_일부완료시_정확한_퍼센트_계산() {
             Goal goal = getGoalWithoutSubGoals();
             goal.addSubGoals(List.of(
                     SubGoal.builder().completed(false).build(),

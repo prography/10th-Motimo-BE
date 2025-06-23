@@ -2,6 +2,7 @@ package kr.co.domain.goal;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import kr.co.domain.common.exception.AccessDeniedException;
@@ -17,6 +18,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Goal {
+    @Builder.Default()
     private UUID id = null;
     public boolean completed;
     private String title;
@@ -25,10 +27,11 @@ public class Goal {
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
     public LocalDateTime completedAt;
-    private List<SubGoal> subGoals;
+    @Builder.Default()
+    private List<SubGoal> subGoals = new ArrayList<>();
 
-    public void addSubGoal(SubGoal subGoal) {
-        subGoals.add(subGoal);
+    public void addSubGoals(List<SubGoal> subGoal) {
+        subGoals.addAll(subGoal);
     }
 
     public void update(String title, DueDate dueDate, List<SubGoal> subGoals) {

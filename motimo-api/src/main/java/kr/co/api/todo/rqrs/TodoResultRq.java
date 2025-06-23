@@ -6,7 +6,7 @@ import kr.co.domain.todo.Emotion;
 
 public record TodoResultRq(
         @NotNull
-        @Schema(description = "투두 진행 후 감정", example = "HAPPY")
+        @Schema(description = "투두 진행 후 감정", example = "PROUD")
         Emotion emotion,
 
         @Schema(description = "투두 내용", example = "영어 단어를 10개를 외웠다.")

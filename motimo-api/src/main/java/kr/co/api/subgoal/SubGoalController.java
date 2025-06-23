@@ -13,7 +13,6 @@ import kr.co.api.todo.rqrs.TodoIdRs;
 import kr.co.api.todo.rqrs.TodoRs;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
-import kr.co.domain.todo.Todo;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -54,9 +53,9 @@ public class SubGoalController implements SubGoalControllerSwagger {
     @ResponseStatus(HttpStatus.CREATED)
     public TodoIdRs createTodo(@AuthUser UUID userId, @PathVariable UUID subGoalId,
             @Valid @RequestBody TodoCreateRq request) {
-        Todo todo = todoCommandService.createTodo(userId, subGoalId, request.title(),
+        UUID id = todoCommandService.createTodo(userId, subGoalId, request.title(),
                 request.date());
-        return new TodoIdRs(todo.getId());
+        return new TodoIdRs(id);
     }
 
     @GetMapping("/{subGoalId}/todos/incomplete-or-date")

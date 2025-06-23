@@ -29,10 +29,9 @@ public class TodoRepositoryImpl implements TodoRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Todo save(Todo todo) {
+    public Todo create(Todo todo) {
         TodoEntity entity = TodoMapper.toEntity(todo);
-        TodoEntity saved = todoJpaRepository.save(entity);
-        return TodoMapper.toDomain(saved);
+        return TodoMapper.toDomain(todoJpaRepository.save(entity));
     }
 
     @Override
@@ -92,7 +91,7 @@ public class TodoRepositoryImpl implements TodoRepository {
                 ))
                 .from(todoEntity)
                 .leftJoin(todoResultEntity).on(todoResultEntity.todoId.eq(todoEntity.id))
-                .where(todoEntity.authorId.eq(userId))
+                .where(todoEntity.userId.eq(userId))
                 .orderBy(
                         priorityOrder.asc(),
                         todoEntity.date.asc().nullsLast()
@@ -106,10 +105,17 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
+    public Todo update(Todo todo) {
+        TodoEntity todoEntity = todoJpaRepository.findById(todo.getId())
+                .orElseThrow(TodoNotFoundException::new);
+        todoEntity.update(todo.getTitle(), todo.getDate(), todo.getStatus());
+        return TodoMapper.toDomain(todoJpaRepository.save(todoEntity));
+    }
+
+    @Override
     public void deleteById(UUID id) {
         todoJpaRepository.deleteById(id);
     }
-
 
     private NumberExpression<Integer> getPriorityOrder(QTodoEntity todoEntity,
             QTodoResultEntity todoResultEntity) {

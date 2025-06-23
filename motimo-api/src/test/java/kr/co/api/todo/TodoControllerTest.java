@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -31,8 +33,10 @@ import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.common.exception.AccessDeniedException;
 import kr.co.domain.todo.Emotion;
+import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
+import kr.co.domain.todo.exception.TodoResultNotSubmittedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +97,7 @@ class TodoControllerTest {
     @WithMockUser
     void 투두_결과_제출_성공() throws Exception {
         // given
+        UUID todoResultId = UUID.randomUUID();
         String fakeToken = "Bearer test-token";
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.jpg", "image/jpeg", "image".getBytes()
@@ -106,10 +111,13 @@ class TodoControllerTest {
                 }
                 """.trim().getBytes(StandardCharsets.UTF_8)
         );
+        TodoResult mockTodoResult = mock(TodoResult.class);
 
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
+        when(todoCommandService.submitTodoResult(any(), any(), any(), any(), any()))
+                .thenReturn(todoResultId);
 
         // when & then
         mockMvc.perform(multipart("/v1/todos/{todoId}/result", todoId)
@@ -201,6 +209,7 @@ class TodoControllerTest {
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
+        when(todoCommandService.toggleTodoCompletion(any(), any())).thenReturn(todoId);
 
         // when & then
         mockMvc.perform(patch("/v1/todos/{todoId}/completion", todoId))
@@ -252,5 +261,52 @@ class TodoControllerTest {
         // when & then
         mockMvc.perform(delete("/v1/todos/{todoId}", todoId))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser
+    void 투두결과_삭제_성공() throws Exception {
+        // given
+        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(userId);
+
+        // when & then
+        mockMvc.perform(delete("/v1/todos/{todoId}/result", todoId))
+                .andExpect(status().isNoContent());
+
+        verify(todoCommandService).deleteTodoResultByTodoId(userId, todoId);
+    }
+
+    @Test
+    @WithMockUser
+    void 투두결과_삭제시_권한이_없는_경우_예외반환() throws Exception {
+        // given
+        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(userId);
+
+        doThrow(new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED))
+                .when(todoCommandService).deleteTodoResultByTodoId(eq(userId), eq(todoId));
+
+        // when & then
+        mockMvc.perform(delete("/v1/todos/{todoId}/result", todoId))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser
+    void 존재하지않는_투두결과_삭제시_예외반환() throws Exception {
+        // given
+        when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
+        when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .thenReturn(userId);
+
+        doThrow(new TodoResultNotSubmittedException())
+                .when(todoCommandService).deleteTodoResultByTodoId(eq(userId), eq(todoId));
+
+        // when & then
+        mockMvc.perform(delete("/v1/todos/{todoId}/result", todoId))
+                .andExpect(status().isNotFound());
     }
 }

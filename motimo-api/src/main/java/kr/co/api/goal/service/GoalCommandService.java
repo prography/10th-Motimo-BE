@@ -42,7 +42,7 @@ public class GoalCommandService {
 
         goal.validateOwner(userId);
 
-        goal.update();
+//        goal.update(dto.ti);
 
         return goalRepository.update(goal).getId();
     }

@@ -3,6 +3,7 @@ package kr.co.api.goal.service;
 import java.util.List;
 import java.util.UUID;
 import kr.co.api.goal.dto.GoalCreateDto;
+import kr.co.api.goal.dto.GoalUpdateDto;
 import kr.co.domain.goal.DueDate;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
@@ -36,7 +37,17 @@ public class GoalCommandService {
         return createdGoal.getId();
     }
 
-    public UUID goalComplete(UUID userId, UUID goalId) {
+    public UUID updateGoal(UUID userId, UUID goalId, GoalUpdateDto dto) {
+        Goal goal = goalRepository.findById(goalId);
+
+        goal.validateOwner(userId);
+
+        goal.update();
+
+        return goalRepository.update(goal).getId();
+    }
+
+    public UUID completeGoal(UUID userId, UUID goalId) {
         Goal goal = goalRepository.findById(goalId);
 
         goal.validateOwner(userId);

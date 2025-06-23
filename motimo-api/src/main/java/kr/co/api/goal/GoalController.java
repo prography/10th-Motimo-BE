@@ -45,15 +45,16 @@ public class GoalController implements GoalControllerSwagger {
         return new GoalIdRs(goalCommandService.createGoal(userId, GoalCreateDto.from(rq)));
     }
 
-    @PutMapping("/{id}")
-    public GoalIdRs updateGoal(@AuthUser UUID userId, @PathVariable String id,
+    @PutMapping("/{goalId}")
+    public GoalIdRs updateGoal(@AuthUser UUID userId, @PathVariable String goalId,
             @RequestBody GoalUpdateRq rq) {
+//        goalCommandService.updateGoal(userId, goalId, new GoalUpdateDto());
         return null;
     }
 
     @PatchMapping("/{goalId}/completion")
     public GoalIdRs goalComplete(@AuthUser UUID userId, @PathVariable UUID goalId) {
-        return new GoalIdRs(goalCommandService.goalComplete(userId, goalId));
+        return new GoalIdRs(goalCommandService.completeGoal(userId, goalId));
     }
 
     @GetMapping

@@ -40,12 +40,11 @@ public class TodoController implements TodoControllerSwagger {
     }
 
     @PostMapping(path = "/{todoId}/result", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public TodoResultIdRs submitResult(@AuthUser UUID userId,
+    public TodoResultIdRs upsertTodoResult(@AuthUser UUID userId,
             @PathVariable UUID todoId,
             @RequestPart TodoResultRq request,
             @RequestPart(name = "file", required = false) MultipartFile file) {
-        UUID id = todoCommandService.submitTodoResult(
+        UUID id = todoCommandService.upsertTodoResult(
                 userId, todoId, request.emotion(), request.content(), file);
 
         return new TodoResultIdRs(id);
@@ -69,15 +68,6 @@ public class TodoController implements TodoControllerSwagger {
             @RequestBody TodoUpdateRq request) {
         UUID id = todoCommandService.updateTodo(userId, todoId, request.title(), request.date());
         return new TodoIdRs(id);
-    }
-
-    @PutMapping("/result/{todoResultId}")
-    public TodoResultIdRs updateTodoResult(@AuthUser UUID userId, @PathVariable UUID todoResultId,
-            @RequestPart TodoResultRq request,
-            @RequestPart(name = "file", required = false) MultipartFile file) {
-        TodoResult todoResult = todoCommandService.updateTodoResult(userId, todoResultId,
-                request.emotion(), request.content(), file);
-        return new TodoResultIdRs(todoResult.getId());
     }
 
     @DeleteMapping("/{todoId}")

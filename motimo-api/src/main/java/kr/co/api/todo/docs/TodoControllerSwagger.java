@@ -24,12 +24,12 @@ public interface TodoControllerSwagger {
 
     @Operation(summary = "투두 결과(기록) 제출하기", description = "투두 수행 결과를 제출합니다. 파일을 첨부할 수 있습니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "TODO 결과 제출 성공"),
+            @ApiResponse(responseCode = "200", description = "TODO 결과 제출 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터"),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
             @ApiResponse(responseCode = "404", description = "TODO를 찾을 수 없음")
     })
-    TodoResultIdRs submitResult(
+    TodoResultIdRs upsertTodoResult(
             UUID userId,
             @Parameter(description = "TODO ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID todoId,
@@ -73,22 +73,6 @@ public interface TodoControllerSwagger {
             @Parameter(description = "TODO ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID todoId,
             @RequestBody @Schema(implementation = TodoUpdateRq.class) TodoUpdateRq request
-    );
-
-    @Operation(summary = "투두 결과 업데이트", description = "투두 결과를 수정합니다. 파일을 첨부할 수 있습니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "TODO 결과 수정 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터"),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
-            @ApiResponse(responseCode = "403", description = "투두 결과 수정에 대한 권한이 없는 사용자"),
-            @ApiResponse(responseCode = "404", description = "TODO 결과를 찾을 수 없음")
-    })
-    TodoResultIdRs updateTodoResult(
-            UUID userId,
-            @Parameter(description = "TODO 결과 ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
-            @PathVariable UUID todoResultId,
-            @RequestPart @Schema(implementation = TodoResultRq.class) TodoResultRq request,
-            @RequestPart(name = "file", required = false) MultipartFile file
     );
 
     @Operation(summary = "투두 삭제", description = "특정 투두를 삭제합니다.")

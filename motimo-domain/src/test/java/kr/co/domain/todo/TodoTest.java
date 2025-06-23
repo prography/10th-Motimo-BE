@@ -16,16 +16,16 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Todo 도메인 테스트")
 public class TodoTest {
 
-    private UUID authorId;
+    private UUID userId;
     private Todo todo;
 
     @BeforeEach
     void setUp() {
-        authorId = UUID.randomUUID();
-        todo = Todo.createTodo()
+        userId = UUID.randomUUID();
+        todo = Todo.builder()
                 .id(UUID.randomUUID())
                 .subGoalId(UUID.randomUUID())
-                .authorId(authorId)
+                .userId(userId)
                 .title("오늘의 투두")
                 .date(LocalDate.of(2025, 5, 30))
                 .status(TodoStatus.INCOMPLETE)
@@ -51,9 +51,9 @@ public class TodoTest {
     @Test
     void toggleCompletion_호출시_completed값이_토글된다() {
         // given
-        Todo todo = Todo.createTodo()
+        Todo todo = Todo.builder()
                 .status(TodoStatus.INCOMPLETE)
-                .authorId(UUID.randomUUID())
+                .userId(UUID.randomUUID())
                 .subGoalId(UUID.randomUUID())
                 .build();
         // when
@@ -69,7 +69,7 @@ public class TodoTest {
     void 작성자가_아닌지_확인시_일치할_경우_정상_동작() {
         // given
         // when & then
-        assertThatCode(() -> todo.validateAuthor(authorId)).doesNotThrowAnyException();
+        assertThatCode(() -> todo.validateOwner(userId)).doesNotThrowAnyException();
     }
 
     @Test
@@ -77,7 +77,7 @@ public class TodoTest {
         // given
         UUID otherUserId = UUID.randomUUID();
         // when & then
-        assertThatThrownBy(() -> todo.validateAuthor(otherUserId))
+        assertThatThrownBy(() -> todo.validateOwner(otherUserId))
                 .isInstanceOf(AccessDeniedException.class)
                 .hasMessage(TodoErrorCode.TODO_ACCESS_DENIED.getMessage());
     }

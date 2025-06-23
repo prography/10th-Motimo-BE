@@ -17,10 +17,18 @@ public class TodoResultRepositoryImpl implements TodoResultRepository {
     private final TodoResultJpaRepository todoResultJpaRepository;
 
     @Override
-    public TodoResult save(TodoResult todo) {
-        TodoResultEntity entity = TodoResultMapper.toEntity(todo);
-        todoResultJpaRepository.save(entity);
-        return TodoResultMapper.toDomain(entity);
+    public TodoResult create(TodoResult todoResult) {
+        TodoResultEntity entity = TodoResultMapper.toEntity(todoResult);
+        return TodoResultMapper.toDomain(todoResultJpaRepository.save(entity));
+    }
+
+    @Override
+    public TodoResult update(TodoResult todoResult) {
+        TodoResultEntity entity = todoResultJpaRepository.findById(todoResult.getId())
+                .orElseThrow(TodoResultNotSubmittedException::new);
+
+        entity.update(todoResult.getEmotion(), todoResult.getContent(), todoResult.getFilePath());
+        return TodoResultMapper.toDomain(todoResultJpaRepository.save(entity));
     }
 
     @Override

@@ -2,6 +2,7 @@ package kr.co.api.subgoal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +32,7 @@ import kr.co.api.security.resolver.AuthUserArgumentResolver;
 import kr.co.api.subgoal.rqrs.TodoCreateRq;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
+import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.dto.TodoSummary;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,10 +95,13 @@ class SubGoalControllerTest {
     void 투두_생성_성공() throws Exception {
         // given
         TodoCreateRq request = new TodoCreateRq("투두", LocalDate.now());
+        UUID todoId = UUID.randomUUID();
+        Todo todo = mock(Todo.class);
         String requestJson = objectMapper.writeValueAsString(request);
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
+        when(todoCommandService.createTodo(any(), any(), any(), any())).thenReturn(todoId);
 
         // when & then
         mockMvc.perform(post("/v1/sub-goals/{subGoalId}/todo", subGoalId)

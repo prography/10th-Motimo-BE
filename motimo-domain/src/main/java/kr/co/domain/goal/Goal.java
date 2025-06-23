@@ -3,6 +3,9 @@ package kr.co.domain.goal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import kr.co.domain.common.exception.AccessDeniedException;
+import kr.co.domain.goal.exception.GoalCompleteFailedException;
+import kr.co.domain.goal.exception.GoalErrorCode;
 import kr.co.domain.subGoal.SubGoal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -37,8 +40,15 @@ public class Goal {
     public void complete() {
         if (subGoals.stream().allMatch(SubGoal::isCompleted)) {
             completed = true;
+            completedAt = LocalDateTime.now();
         } else {
-            throw new IllegalArgumentException();
+            throw new GoalCompleteFailedException();
+        }
+    }
+
+    public void validateOwner(UUID userId) {
+        if(!userId.equals(this.userId)) {
+            throw new AccessDeniedException(GoalErrorCode.GOAL_ACCESS_DENIED);
         }
     }
 

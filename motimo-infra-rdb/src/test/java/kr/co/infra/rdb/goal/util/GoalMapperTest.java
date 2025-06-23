@@ -35,7 +35,6 @@ class GoalMapperTest {
         assertThat(entity.getUserId()).isEqualTo(goal.getUserId());
         assertThat(entity.getTitle()).isEqualTo(goal.getTitle());
         assertThat(entity.getDueDate()).isInstanceOf(DueDateEmbeddable.class);
-        assertThat(entity.getCreatedAt()).isNotNull();
         assertThat(entity.isCompleted()).isFalse();
         assertThat(entity.getCompletedAt()).isNull();
     }

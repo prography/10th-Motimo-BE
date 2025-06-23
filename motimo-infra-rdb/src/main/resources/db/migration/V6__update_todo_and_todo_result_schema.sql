@@ -11,6 +11,3 @@ SET user_id = (
     FROM todo t
     WHERE t.id = todo_result.todo_id
 );
-
--- 4. todo_result 테이블의 todo_id에 unique 제약조건 추가
-ALTER TABLE todo_result ADD CONSTRAINT uk_todo_result_todo_id UNIQUE (todo_id);

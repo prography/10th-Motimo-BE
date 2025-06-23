@@ -26,7 +26,7 @@ public class GoalCommandService {
                 .importance(sub.importance())
                 .build()).toList();
 
-        Goal createdGoal = goalRepository.save(Goal.createGoal()
+        Goal createdGoal = goalRepository.create(Goal.createGoal()
                 .userId(userId)
                 .title(dto.title())
                 .dueDate(dueDate)
@@ -34,5 +34,15 @@ public class GoalCommandService {
                 .build());
 
         return createdGoal.getId();
+    }
+
+    public UUID goalComplete(UUID userId, UUID goalId) {
+        Goal goal = goalRepository.findById(goalId);
+
+        goal.validateOwner(userId);
+
+        goal.complete();
+
+        return goalRepository.update(goal).getId();
     }
 }

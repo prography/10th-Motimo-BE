@@ -33,7 +33,6 @@ import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.common.exception.AccessDeniedException;
 import kr.co.domain.todo.Emotion;
-import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
@@ -98,6 +97,7 @@ class TodoControllerTest {
     @WithMockUser
     void 투두_결과_제출_성공() throws Exception {
         // given
+        UUID todoResultId = UUID.randomUUID();
         String fakeToken = "Bearer test-token";
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.jpg", "image/jpeg", "image".getBytes()
@@ -116,8 +116,8 @@ class TodoControllerTest {
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
-        when(todoCommandService.submitTodoResult(any(), any(), any(), any(), any())).thenReturn(
-                mockTodoResult);
+        when(todoCommandService.submitTodoResult(any(), any(), any(), any(), any()))
+                .thenReturn(todoResultId);
 
         // when & then
         mockMvc.perform(multipart("/v1/todos/{todoId}/result", todoId)
@@ -206,11 +206,10 @@ class TodoControllerTest {
     @WithMockUser
     void 투두_완료상태_토글() throws Exception {
         // given
-        Todo todo = mock(Todo.class);
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
-        when(todoCommandService.toggleTodoCompletion(any(), any())).thenReturn(todo);
+        when(todoCommandService.toggleTodoCompletion(any(), any())).thenReturn(todoId);
 
         // when & then
         mockMvc.perform(patch("/v1/todos/{todoId}/completion", todoId))

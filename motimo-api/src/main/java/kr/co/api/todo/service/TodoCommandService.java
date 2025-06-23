@@ -1,6 +1,7 @@
 package kr.co.api.todo.service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.common.event.Events;
 import kr.co.domain.common.event.FileDeletedEvent;
@@ -25,20 +26,21 @@ public class TodoCommandService {
     private final TodoResultRepository todoResultRepository;
     private final StorageService storageService;
 
-    public Todo createTodo(UUID userId, UUID subGoalId, String title, LocalDate date) {
+    public UUID createTodo(UUID userId, UUID subGoalId, String title, LocalDate date) {
         Todo todo = Todo.createTodo()
                 .userId(userId)
                 .subGoalId(subGoalId)
                 .title(title)
                 .date(date)
                 .build();
-        return todoRepository.save(todo);
+        return todoRepository.create(todo).getId();
     }
 
-    public TodoResult submitTodoResult(UUID userId, UUID todoId, Emotion emotion, String content,
+    public UUID submitTodoResult(UUID userId, UUID todoId, Emotion emotion, String content,
             MultipartFile file) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateOwner(userId);
+        Optional<TodoResult> todoResult = todoResultRepository.findByTodoId(todoId);
 
         String filePath = "";
         if (file != null && !file.isEmpty()) {
@@ -56,21 +58,21 @@ public class TodoCommandService {
                 .filePath(filePath)
                 .build();
 
-        return todoResultRepository.save(result);
+        return todoResultRepository.create(result).getId();
     }
 
-    public Todo toggleTodoCompletion(UUID userId, UUID todoId) {
+    public UUID toggleTodoCompletion(UUID userId, UUID todoId) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateOwner(userId);
         todo.toggleCompletion();
-        return todoRepository.save(todo);
+        return todoRepository.update(todo).getId();
     }
 
-    public Todo updateTodo(UUID userId, UUID todoId, String title, LocalDate date) {
+    public UUID updateTodo(UUID userId, UUID todoId, String title, LocalDate date) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateOwner(userId);
         todo.update(title, date);
-        return todoRepository.save(todo);
+        return todoRepository.update(todo).getId();
     }
 
     public TodoResult updateTodoResult(UUID userId, UUID todoResultId, Emotion emotion,

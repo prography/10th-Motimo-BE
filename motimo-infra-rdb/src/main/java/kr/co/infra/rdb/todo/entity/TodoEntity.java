@@ -66,4 +66,10 @@ public class TodoEntity {
         this.date = date;
         this.status = status;
     }
+
+    public void update(String title, LocalDate date, TodoStatus status) {
+        this.title = title;
+        this.date = date;
+        this.status = status;
+    }
 }

@@ -32,7 +32,7 @@ public class TodoResultEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "todo_id", nullable = false, unique = true)
+    @Column(name = "todo_id", nullable = false)
     private UUID todoId;
 
     @Column(name = "user_id", nullable = false)
@@ -61,6 +61,12 @@ public class TodoResultEntity {
         this.id = id;
         this.todoId = todoId;
         this.userId = userId;
+        this.emotion = emotion;
+        this.content = content;
+        this.filePath = filePath;
+    }
+
+    public void update(Emotion emotion, String content, String filePath) {
         this.emotion = emotion;
         this.content = content;
         this.filePath = filePath;

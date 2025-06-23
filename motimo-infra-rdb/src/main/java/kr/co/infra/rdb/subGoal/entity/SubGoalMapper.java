@@ -11,6 +11,8 @@ public class SubGoalMapper {
 
         return SubGoal.builder()
                 .id(entity.getId())
+                .goalId(entity.getGoal().getId())
+                .userId(entity.getUserId())
                 .title(entity.getTitle())
                 .importance(entity.getImportance())
                 .completed(entity.isCompleted())

@@ -1,6 +1,7 @@
 package kr.co.infra.rdb.subGoal.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
@@ -15,8 +16,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "sub_goals")
 @SoftDelete(columnName = "is_deleted")
 @Getter
@@ -29,6 +32,8 @@ public class SubGoalEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private GoalEntity goal;
+
+    private UUID userId;
 
     private String title;
 
@@ -46,8 +51,18 @@ public class SubGoalEntity {
 
     protected SubGoalEntity(GoalEntity goal, String title, int importance) {
         this.goal = goal;
+        this.userId = goal.getUserId();
         this.title = title;
         this.importance = importance;
         this.completed = false;
+    }
+
+    public void update(String title, int importance, boolean completed) {
+        this.title = title;
+        this.importance = importance;
+        this.completed = completed;
+        if(completed) {
+            this.completedChangedAt = LocalDateTime.now();
+        }
     }
 }

@@ -65,4 +65,8 @@ public class SubGoalEntity {
             this.completedChangedAt = LocalDateTime.now();
         }
     }
+
+    public void updateOrder(int order) {
+        this.importance = order;
+    }
 }

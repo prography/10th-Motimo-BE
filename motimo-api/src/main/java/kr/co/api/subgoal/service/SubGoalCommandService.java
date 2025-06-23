@@ -34,6 +34,16 @@ public class SubGoalCommandService {
         return subGoal.getId();
     }
 
+    public UUID updateSubGoal(UUID userId, UUID subGoalId, String title, int order) {
+        SubGoal subGoal = subGoalRepository.findById(subGoalId);
+
+        subGoal.validateOwner(userId);
+
+        subGoal.updateTitle(title);
+
+        return subGoalRepository.update(subGoal).getId();
+    }
+
     public UUID toggleSubGoalComplete(UUID userId, UUID subGoalId) {
         SubGoal subGoal = subGoalRepository.findById(subGoalId);
 
@@ -42,6 +52,16 @@ public class SubGoalCommandService {
         subGoal.toggleCompleted();
 
         return subGoalRepository.update(subGoal).getId();
+    }
+
+    public void updateSubGoalOrder(UUID userId, UUID goalId, UUID subGoalId, int order) {
+        Goal goal = goalRepository.findById(goalId);
+
+        goal.validateOwner(userId);
+
+        goal.updateSubGoalOrderAndSort(subGoalId, order);
+
+        subGoalRepository.updateAllOrder(goal.getSubGoals());
     }
 
 }

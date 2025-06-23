@@ -35,6 +35,14 @@ public class SubGoal {
         completedChangedAt = LocalDateTime.now();
     }
 
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateOrder(int order) {
+        this.importance = order;
+    }
+
     public void validateOwner(UUID userId) {
         if(!userId.equals(this.userId)) {
             throw new AccessDeniedException(SubGoalErrorCode.SUB_GOAL_ACCESS_DENIED);

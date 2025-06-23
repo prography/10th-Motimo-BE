@@ -137,10 +137,11 @@ class TodoCommandServiceTest {
     }
 
     @Nested
-    @DisplayName("투두 결과(기록) 제출 테스트")
-    class SubmitTodoResultTest {
+    @DisplayName("투두 결과(기록) Upsert 테스트")
+    class UpsertTodoResultTest {
 
         Todo todo;
+        UUID todoResultId;
         TodoResult expectedResult;
         Emotion emotion;
         String content;
@@ -149,7 +150,7 @@ class TodoCommandServiceTest {
         void setUp() {
             emotion = Emotion.PROUD;
             content = "투두 완료!";
-
+            todoResultId = UUID.randomUUID();
             todo = Todo.builder()
                     .id(todoId)
                     .userId(userId)
@@ -159,8 +160,10 @@ class TodoCommandServiceTest {
                     .status(TodoStatus.INCOMPLETE)
                     .build();
 
-            expectedResult = TodoResult.createTodoResult()
+            expectedResult = TodoResult.builder()
+                    .id(todoResultId)
                     .todoId(todoId)
+                    .userId(userId)
                     .emotion(emotion)
                     .content(content)
                     .filePath("")
@@ -168,14 +171,13 @@ class TodoCommandServiceTest {
         }
 
         @Test
-        void 파일_없이_투두_결과_제출_성공() {
+        void 파일_없이_투두_결과_생성_성공() {
             // given
             when(todoRepository.findById(todoId)).thenReturn(todo);
             when(todoResultRepository.create(any(TodoResult.class))).thenReturn(expectedResult);
 
             // when
-            UUID id = todoCommandService.submitTodoResult(userId, todoId, emotion,
-                    content, null);
+            UUID id = todoCommandService.upsertTodoResult(userId, todoId, emotion, content, null);
 
             // then
             ArgumentCaptor<TodoResult> resultCaptor = ArgumentCaptor.forClass(TodoResult.class);
@@ -193,7 +195,7 @@ class TodoCommandServiceTest {
         }
 
         @Test
-        void 빈_파일로_할일_결과_제출() {
+        void 빈_파일로_할일_결과_생성() {
             // given
             MultipartFile file = mock(MultipartFile.class);
             when(todoRepository.findById(todoId)).thenReturn(todo);
@@ -201,8 +203,7 @@ class TodoCommandServiceTest {
             when(todoResultRepository.create(any(TodoResult.class))).thenReturn(expectedResult);
 
             // when
-            UUID id = todoCommandService.submitTodoResult(userId, todoId, emotion,
-                    content, file);
+            UUID id = todoCommandService.upsertTodoResult(userId, todoId, emotion, content, file);
 
             // then
             ArgumentCaptor<TodoResult> resultCaptor = ArgumentCaptor.forClass(TodoResult.class);
@@ -217,7 +218,7 @@ class TodoCommandServiceTest {
         }
 
         @Test
-        void 파일을_포함한_투두_결과_제출_성공() {
+        void 파일을_포함한_투두_결과_생성_성공() {
             // given
             String filename = "image.jpg";
             MultipartFile file = new MockMultipartFile("file", filename, "image/jpeg",
@@ -234,8 +235,8 @@ class TodoCommandServiceTest {
                 mockedUUID.when(UUID::randomUUID).thenReturn(fixedUuid);
 
                 // when
-                UUID id = todoCommandService.submitTodoResult(userId, todoId, emotion,
-                        content, file);
+                UUID id = todoCommandService.upsertTodoResult(userId, todoId, emotion, content,
+                        file);
 
                 // then
                 ArgumentCaptor<TodoResult> resultCaptor = ArgumentCaptor.forClass(TodoResult.class);
@@ -249,6 +250,103 @@ class TodoCommandServiceTest {
         }
 
         @Test
+        void 파일_없이_기존_투두결과_업데이트_성공() {
+            // given
+            when(todoRepository.findById(todoId)).thenReturn(todo);
+            when(todoResultRepository.findByTodoId(todoId)).thenReturn(Optional.of(expectedResult));
+            when(todoResultRepository.update(any(TodoResult.class))).thenReturn(expectedResult);
+
+            // when
+            UUID id = todoCommandService.upsertTodoResult(userId, todoId, emotion, content, null);
+
+            // then
+            verify(todoResultRepository, never()).create(any());
+            verify(todoResultRepository).update(expectedResult); // updateTodoResult 메서드에서 create 호출
+            assertThat(expectedResult.getEmotion()).isEqualTo(emotion);
+            assertThat(expectedResult.getContent()).isEqualTo(content);
+            assertThat(id).isEqualTo(expectedResult.getId());
+
+            verify(storageService, never()).store(any(), any());
+            mockedEvents.verify(() -> Events.publishEvent(any()), never());
+        }
+
+        @Test
+        void 파일을_포함한_기존_투두결과_업데이트_성공_기존파일없음() {
+            // given
+            String filename = "new_image.jpg";
+            MultipartFile file = new MockMultipartFile("file", filename, "image/jpeg",
+                    "file".getBytes());
+
+            UUID fixedUuid = UUID.fromString("8ec9c39f-ae45-4c1a-b38f-0af834a88a4c");
+            String newFilePath = String.format("todo/%s/%s", todoId, fixedUuid);
+
+            TodoResult mockResult = mock(TodoResult.class);
+            when(todoRepository.findById(todoId)).thenReturn(todo);
+            when(todoResultRepository.findByTodoId(todoId)).thenReturn(Optional.of(mockResult));
+            when(mockResult.getFilePath()).thenReturn("");
+            when(mockResult.getTodoId()).thenReturn(todoId);
+            when(mockResult.getId()).thenReturn(todoResultId);
+            doNothing().when(storageService).store(any(MultipartFile.class), anyString());
+            when(todoResultRepository.update(any(TodoResult.class))).thenReturn(mockResult);
+
+            try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class)) {
+                mockedUUID.when(UUID::randomUUID).thenReturn(fixedUuid);
+
+                // when
+                UUID id = todoCommandService.upsertTodoResult(userId, todoId, emotion, content,
+                        file);
+
+                // then
+                verify(mockResult).validateOwner(userId);
+                verify(mockResult).update(emotion, content, newFilePath);
+                verify(storageService).store(file, newFilePath);
+                verify(todoResultRepository).update(mockResult);
+                mockedEvents.verify(() -> Events.publishEvent(any(FileRollbackEvent.class)));
+                mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)),
+                        never());
+                assertThat(id).isEqualTo(todoResultId);
+            }
+        }
+
+        @Test
+        void 파일을_포함한_기존_투두결과_업데이트_성공_기존파일있음() {
+            // given
+            String filename = "new_image.jpg";
+            MultipartFile file = new MockMultipartFile("file", filename, "image/jpeg",
+                    "file".getBytes());
+
+            String originalFilePath = "todo/old-todo-id/old-file-uuid";
+            UUID fixedUuid = UUID.fromString("8ec9c39f-ae45-4c1a-b38f-0af834a88a4c");
+            String newFilePath = String.format("todo/%s/%s", todoId, fixedUuid);
+
+            TodoResult mockResult = mock(TodoResult.class);
+            when(todoRepository.findById(todoId)).thenReturn(todo);
+            when(todoResultRepository.findByTodoId(todoId)).thenReturn(Optional.of(mockResult));
+            when(mockResult.getFilePath()).thenReturn(originalFilePath);
+            when(mockResult.getTodoId()).thenReturn(todoId);
+            when(mockResult.getId()).thenReturn(todoResultId);
+            doNothing().when(storageService).store(any(MultipartFile.class), anyString());
+            when(todoResultRepository.update(any(TodoResult.class))).thenReturn(mockResult);
+
+            try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class)) {
+                mockedUUID.when(UUID::randomUUID).thenReturn(fixedUuid);
+
+                // when
+                UUID id = todoCommandService.upsertTodoResult(userId, todoId, emotion, content,
+                        file);
+
+                // then
+                verify(mockResult).validateOwner(userId);
+                verify(mockResult).update(emotion, content, newFilePath);
+                verify(storageService).store(file, newFilePath);
+                verify(todoResultRepository).update(mockResult);
+                mockedEvents.verify(() -> Events.publishEvent(any(FileRollbackEvent.class)));
+                mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)));
+                assertThat(id).isEqualTo(todoResultId);
+            }
+        }
+
+        @Test
         void 존재하지않는_투두ID_제출시_예외_발생() {
             // given
             UUID nonExistsTodoId = UUID.randomUUID();
@@ -256,7 +354,7 @@ class TodoCommandServiceTest {
 
             // when & then
             assertThatThrownBy(
-                    () -> todoCommandService.submitTodoResult(userId, nonExistsTodoId,
+                    () -> todoCommandService.upsertTodoResult(userId, nonExistsTodoId,
                             Emotion.PROUD, "투두 완료!", null))
                     .isInstanceOf(NullPointerException.class);
         }
@@ -271,7 +369,7 @@ class TodoCommandServiceTest {
                     .when(mockTodo).validateOwner(otherUserId);
 
             // when & then
-            assertThatThrownBy(() -> todoCommandService.submitTodoResult(otherUserId, todoId,
+            assertThatThrownBy(() -> todoCommandService.upsertTodoResult(otherUserId, todoId,
                     Emotion.PROUD, "투두 완료!", null))
                     .isInstanceOf(AccessDeniedException.class)
                     .hasMessage(TodoErrorCode.TODO_ACCESS_DENIED.getMessage());
@@ -287,7 +385,7 @@ class TodoCommandServiceTest {
                     .when(storageService).store(eq(file), anyString());
 
             // when & then
-            assertThatThrownBy(() -> todoCommandService.submitTodoResult(userId, todoId,
+            assertThatThrownBy(() -> todoCommandService.upsertTodoResult(userId, todoId,
                     Emotion.PROUD, "투두 완료!", file))
                     .isInstanceOf(StorageException.class)
                     .hasMessage(StorageErrorCode.FILE_UPLOAD_FAILED.getMessage());
@@ -414,161 +512,6 @@ class TodoCommandServiceTest {
             verify(todoRepository).findById(todoId);
         }
     }
-
-    @Nested
-    @DisplayName("투두 결과 수정 테스트")
-    class UpdateTodoResultTest {
-
-        TodoResult todoResult;
-        UUID todoResultId;
-        Emotion emotion;
-        String content;
-
-        @BeforeEach
-        void setUp() {
-            todoResultId = UUID.randomUUID();
-            emotion = Emotion.PROUD;
-            content = "수정된 투두 완료!";
-
-            todoResult = mock(TodoResult.class);
-        }
-
-        @Test
-        void 파일_없이_투두결과_수정성공() {
-            // given
-            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
-            when(todoResultRepository.save(any(TodoResult.class))).thenReturn(todoResult);
-
-            // when
-            TodoResult result = todoCommandService.updateTodoResult(userId, todoResultId, emotion,
-                    content, null);
-
-            // then
-            verify(todoResult).validateOwner(userId);
-            verify(todoResult).update(emotion, content, "");
-            verify(todoResultRepository).save(todoResult);
-            verify(storageService, never()).store(any(), any());
-            mockedEvents.verify(() -> Events.publishEvent(any()), never());
-            assertThat(result).isEqualTo(todoResult);
-        }
-
-        @Test
-        void 파일을_포함한_투두결과_수정성공_수정전_파일없는_경우() {
-            // given
-            String filename = "new_image.jpg";
-            MultipartFile file = new MockMultipartFile("file", filename, "image/jpeg",
-                    "file".getBytes());
-
-            UUID fixedUuid = UUID.fromString("8ec9c39f-ae45-4c1a-b38f-0af834a88a4c");
-            String expectedFilePath = String.format("todo/%s/%s", todoId, fixedUuid);
-
-            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
-            when(todoResult.getFilePath()).thenReturn("");
-            when(todoResult.getTodoId()).thenReturn(todoId);
-            doNothing().when(storageService).store(any(MultipartFile.class), anyString());
-            when(todoResultRepository.save(any(TodoResult.class))).thenReturn(todoResult);
-
-            try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class)) {
-                mockedUUID.when(UUID::randomUUID).thenReturn(fixedUuid);
-
-                // when
-                TodoResult result = todoCommandService.updateTodoResult(userId, todoResultId,
-                        emotion,
-                        content, file);
-
-                // then
-                verify(todoResult).validateOwner(userId);
-                verify(todoResult).update(emotion, content, expectedFilePath);
-                verify(storageService).store(file, expectedFilePath);
-                verify(todoResultRepository).save(todoResult);
-                mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)),
-                        never());
-                assertThat(result).isEqualTo(todoResult);
-            }
-        }
-
-        @Test
-        void 파일을_포함한_투두결과_수정성공_수정전_파일있는_경우() {
-            // given
-            String filename = "new_image.jpg";
-            MultipartFile file = new MockMultipartFile("file", filename, "image/jpeg",
-                    "file".getBytes());
-
-            String originalFilePath = "todo/todo-id/file-uuid";
-            UUID fixedUuid = UUID.fromString("8ec9c39f-ae45-4c1a-b38f-0af834a88a4c");
-            String expectedFilePath = String.format("todo/%s/%s", todoId, fixedUuid);
-
-            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
-            when(todoResult.getFilePath()).thenReturn(originalFilePath);
-            when(todoResult.getTodoId()).thenReturn(todoId);
-            doNothing().when(storageService).store(any(MultipartFile.class), anyString());
-            when(todoResultRepository.save(any(TodoResult.class))).thenReturn(todoResult);
-
-            try (MockedStatic<UUID> mockedUUID = mockStatic(UUID.class)) {
-                mockedUUID.when(UUID::randomUUID).thenReturn(fixedUuid);
-
-                // when
-                TodoResult result = todoCommandService.updateTodoResult(userId, todoResultId,
-                        emotion,
-                        content, file);
-
-                // then
-                verify(todoResult).validateOwner(userId);
-                verify(todoResult).update(emotion, content, expectedFilePath);
-                verify(storageService).store(file, expectedFilePath);
-                verify(todoResultRepository).save(todoResult);
-                mockedEvents.verify(() -> Events.publishEvent(any(FileDeletedEvent.class)));
-                assertThat(result).isEqualTo(todoResult);
-            }
-        }
-
-        @Test
-        void 존재하지_않는_투두결과_수정_요청시_예외_발생() {
-            // given
-            UUID nonExistsTodoResultId = UUID.randomUUID();
-            when(todoResultRepository.findById(nonExistsTodoResultId))
-                    .thenThrow(new TodoResultNotSubmittedException());
-
-            // when & then
-            assertThatThrownBy(
-                    () -> todoCommandService.updateTodoResult(userId, nonExistsTodoResultId,
-                            emotion, content, null))
-                    .isInstanceOf(TodoResultNotSubmittedException.class);
-        }
-
-        @Test
-        void 작성자가_아닌_경우_예외_발생() {
-            // given
-            UUID otherUserId = UUID.randomUUID();
-            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
-            doThrow(new AccessDeniedException(TodoErrorCode.TODO_RESULT_ACCESS_DENIED))
-                    .when(todoResult).validateOwner(otherUserId);
-
-            // when & then
-            assertThatThrownBy(() -> todoCommandService.updateTodoResult(otherUserId, todoResultId,
-                    emotion, content, null))
-                    .isInstanceOf(AccessDeniedException.class)
-                    .hasMessage(TodoErrorCode.TODO_RESULT_ACCESS_DENIED.getMessage());
-        }
-
-        @Test
-        void 파일_저장_실패_시_예외_발생() {
-            // given
-            MultipartFile file = new MockMultipartFile("file", "filename.jpg", "image/jpeg",
-                    "file".getBytes());
-            when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
-            when(todoResult.getTodoId()).thenReturn(todoId);
-            doThrow(new StorageException(StorageErrorCode.FILE_UPLOAD_FAILED))
-                    .when(storageService).store(eq(file), anyString());
-
-            // when & then
-            assertThatThrownBy(() -> todoCommandService.updateTodoResult(userId, todoResultId,
-                    emotion, content, file))
-                    .isInstanceOf(StorageException.class)
-                    .hasMessage(StorageErrorCode.FILE_UPLOAD_FAILED.getMessage());
-        }
-    }
-
 
     @Nested
     @DisplayName("투두 아이디로 투두 삭제 테스트")

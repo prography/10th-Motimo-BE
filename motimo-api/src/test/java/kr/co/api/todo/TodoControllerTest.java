@@ -116,7 +116,7 @@ class TodoControllerTest {
         when(authUserArgumentResolver.supportsParameter(any())).thenReturn(true);
         when(authUserArgumentResolver.resolveArgument(any(), any(), any(), any()))
                 .thenReturn(userId);
-        when(todoCommandService.submitTodoResult(any(), any(), any(), any(), any()))
+        when(todoCommandService.upsertTodoResult(any(), any(), any(), any(), any()))
                 .thenReturn(todoResultId);
 
         // when & then
@@ -126,7 +126,7 @@ class TodoControllerTest {
                         .with(csrf())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .header("Authorization", fakeToken))
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -135,7 +135,7 @@ class TodoControllerTest {
         // given
         doThrow(new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED))
                 .when(todoCommandService)
-                .submitTodoResult(eq(userId), eq(todoId), any(), any(), any());
+                .upsertTodoResult(eq(userId), eq(todoId), any(), any(), any());
 
         MockMultipartFile request = new MockMultipartFile(
                 "request", "", "application/json", """

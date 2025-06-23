@@ -23,7 +23,8 @@ public class SubGoal {
     private LocalDateTime completedChangedAt;
 
     @Builder(builderMethodName = "createSubGoal")
-    private SubGoal(String title, int importance) {
+    private SubGoal(UUID goalId, String title, int importance) {
+        this.goalId = goalId;
         this.title = title;
         this.importance = importance;
         this.completed = false;
@@ -34,7 +35,7 @@ public class SubGoal {
         completedChangedAt = LocalDateTime.now();
     }
 
-    public void userChecked(UUID userId) {
+    public void validateOwner(UUID userId) {
         if(!userId.equals(this.userId)) {
             throw new AccessDeniedException(SubGoalErrorCode.SUB_GOAL_ACCESS_DENIED);
         }

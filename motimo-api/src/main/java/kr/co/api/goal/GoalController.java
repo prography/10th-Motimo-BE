@@ -5,6 +5,7 @@ import java.util.UUID;
 import kr.co.api.goal.docs.GoalControllerSwagger;
 import kr.co.api.goal.dto.GoalCreateDto;
 import kr.co.api.goal.dto.GoalItemDto;
+import kr.co.api.goal.dto.SubGoalCreateDto;
 import kr.co.api.goal.rqrs.GoalCreateRq;
 import kr.co.api.goal.rqrs.GoalDetailRs;
 import kr.co.api.goal.rqrs.GoalIdRs;
@@ -12,9 +13,12 @@ import kr.co.api.goal.rqrs.GoalItemRs;
 import kr.co.api.goal.rqrs.GoalListRs;
 import kr.co.api.goal.rqrs.GoalUpdateRq;
 import kr.co.api.goal.rqrs.GoalWithSubGoalTodoRs;
+import kr.co.api.goal.rqrs.SubGoalCreateRq;
 import kr.co.api.goal.service.GoalCommandService;
 import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.security.annotation.AuthUser;
+import kr.co.api.subgoal.rqrs.SubGoalIdRs;
+import kr.co.api.subgoal.service.SubGoalCommandService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -32,11 +36,14 @@ public class GoalController implements GoalControllerSwagger {
 
     private final GoalCommandService goalCommandService;
     private final GoalQueryService goalQueryService;
+    private final SubGoalCommandService subGoalCommandService;
 
     public GoalController(final GoalCommandService goalCommandService,
-            final GoalQueryService goalQueryService) {
+            final GoalQueryService goalQueryService,
+            final SubGoalCommandService subGoalCommandService) {
         this.goalCommandService = goalCommandService;
         this.goalQueryService = goalQueryService;
+        this.subGoalCommandService = subGoalCommandService;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -46,10 +53,16 @@ public class GoalController implements GoalControllerSwagger {
     }
 
     @PutMapping("/{goalId}")
-    public GoalIdRs updateGoal(@AuthUser UUID userId, @PathVariable String goalId,
+    public GoalIdRs updateGoal(@AuthUser UUID userId, @PathVariable UUID goalId,
             @RequestBody GoalUpdateRq rq) {
 //        goalCommandService.updateGoal(userId, goalId, new GoalUpdateDto());
         return null;
+    }
+
+    @PostMapping("/{goalId}/subGoals")
+    public SubGoalIdRs addSubGoal(@AuthUser UUID userId, @PathVariable UUID goalId,
+            @RequestBody SubGoalCreateRq rq) {
+        return new SubGoalIdRs(subGoalCommandService.createSubGoal(userId,goalId, SubGoalCreateDto.from(rq)));
     }
 
     @PatchMapping("/{goalId}/completion")

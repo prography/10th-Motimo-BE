@@ -12,7 +12,7 @@ public record SubGoalCreateRq(
 
         @Size(min = 1, max = 3)
         @Schema(description = "세부 목표 중요도 (상: 1, 하:3)")
-        int importance
+        int importance // FIXME 기획 변경으로 삭제되어야 할 수 있음
 ) {
 
 }

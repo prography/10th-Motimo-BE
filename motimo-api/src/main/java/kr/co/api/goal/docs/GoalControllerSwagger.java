@@ -19,7 +19,7 @@ public interface GoalControllerSwagger {
     GoalIdRs createGoal(UUID userId, GoalCreateRq rq);
 
     @Operation(summary = "목표 수정 API", description = "목표를 수정합니다.")
-    GoalIdRs updateGoal(UUID userId, String id, GoalUpdateRq rq);
+    GoalIdRs updateGoal(UUID userId, UUID goalId, GoalUpdateRq rq);
 
     @Operation(summary = "목표 완료 API", description = "목표를 완료합니다.")
     @ApiResponses({

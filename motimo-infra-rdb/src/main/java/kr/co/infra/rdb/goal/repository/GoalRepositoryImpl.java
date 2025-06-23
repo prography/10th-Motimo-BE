@@ -1,5 +1,6 @@
 package kr.co.infra.rdb.goal.repository;
 
+import java.util.List;
 import java.util.UUID;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.exception.GoalNotFoundException;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class GoalRepositoryImpl implements GoalRepository {
+
     private final GoalJpaRepository goalJpaRepository;
 
     public GoalRepositoryImpl(GoalJpaRepository goalJpaRepository) {
@@ -26,14 +28,21 @@ public class GoalRepositoryImpl implements GoalRepository {
     public Goal update(Goal goal) {
         GoalEntity goalEntity = goalJpaRepository.findById(goal.getId()).orElseThrow(
                 GoalNotFoundException::new);
-        goalEntity.update(goal.getTitle(), DueDateEmbeddable.from(goal.getDueDate()), goal.isCompleted(),goal.completedAt);
+        goalEntity.update(goal.getTitle(), DueDateEmbeddable.from(goal.getDueDate()),
+                goal.isCompleted(), goal.completedAt);
         GoalEntity savedGoal = goalJpaRepository.save(goalEntity);
         return GoalMapper.toDomain(savedGoal);
     }
 
     public Goal findById(UUID id) {
-        GoalEntity goalEntity = goalJpaRepository.findById(id).orElseThrow(GoalNotFoundException::new);
+        GoalEntity goalEntity = goalJpaRepository.findById(id)
+                .orElseThrow(GoalNotFoundException::new);
         return GoalMapper.toDomain(goalEntity);
+    }
+
+    public List<Goal> findAllByUserId(UUID userId) {
+        List<GoalEntity> goalEntities = goalJpaRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+        return goalEntities.stream().map(GoalMapper::toDomain).toList();
     }
 
 }

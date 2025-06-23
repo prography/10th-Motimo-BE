@@ -8,8 +8,8 @@ import java.util.UUID;
 import kr.co.api.goal.rqrs.GoalCreateRq;
 import kr.co.api.goal.rqrs.GoalIdRs;
 import kr.co.api.goal.rqrs.GoalListRs;
-import kr.co.api.goal.rqrs.GoalTodoListRs;
 import kr.co.api.goal.rqrs.GoalUpdateRq;
+import kr.co.api.goal.rqrs.GoalWithSubGoalTodoRs;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "목표 API", description = "목표 관련 API 목록입니다")
@@ -34,5 +34,5 @@ public interface GoalControllerSwagger {
     GoalListRs getGoalList(UUID userId);
 
     @Operation(summary = "목표 투두 목록 API", description = "목표에 해당하는 세부 목표와 투두 목록을 조회합니다.")
-    GoalTodoListRs getTodoListByGoal(UUID userId, @PathVariable UUID goalId);
+    GoalWithSubGoalTodoRs getTodoListByGoal(@PathVariable UUID goalId);
 }

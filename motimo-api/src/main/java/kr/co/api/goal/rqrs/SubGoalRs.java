@@ -3,6 +3,7 @@ package kr.co.api.goal.rqrs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.UUID;
+import kr.co.api.goal.dto.SubGoalDto;
 import kr.co.api.todo.rqrs.TodoRs;
 
 public record SubGoalRs(
@@ -16,4 +17,11 @@ public record SubGoalRs(
         List<TodoRs> todos
 ) {
 
+        public static SubGoalRs from(SubGoalDto dto) {
+                return new SubGoalRs(
+                        dto.id(),
+                        dto.title(),
+                        dto.todos().stream().map(TodoRs::from).toList()
+                );
+        }
 }

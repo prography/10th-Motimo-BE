@@ -1,7 +1,9 @@
 package kr.co.api.event.listener;
 
+import kr.co.api.event.service.OutboxCommandService;
 import kr.co.domain.common.event.FileDeletedEvent;
 import kr.co.domain.common.event.FileRollbackEvent;
+import kr.co.domain.common.outbox.OutboxEvent;
 import kr.co.infra.storage.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class FileEventListener {
 
     private final StorageService storageService;
+    private final OutboxCommandService outboxCommandService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
     public void handleFileRollback(FileRollbackEvent event) {
@@ -22,7 +25,7 @@ public class FileEventListener {
         try {
             storageService.delete(filePath);
         } catch (Exception e) {
-            // todo: 삭제 실패 시 로깅만, 재시도 x => 추후 아웃박스 도입 고려)
+            outboxCommandService.createOutboxEvent(OutboxEvent.from(event));
             log.error("롤백 후 파일 삭제 실패 {}:", e.getMessage());
         }
     }
@@ -33,8 +36,8 @@ public class FileEventListener {
         try {
             storageService.delete(filePath);
         } catch (Exception e) {
+            outboxCommandService.createOutboxEvent(OutboxEvent.from(event));
             log.error("커밋 후 파일 삭제 실패 {}: {}", filePath, e.getMessage());
         }
     }
-
 }

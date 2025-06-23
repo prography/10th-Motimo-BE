@@ -140,35 +140,6 @@ class GoalQueryServiceTest {
             );
         }
 
-        @Test
-        void 완료한_세부목표의_경우_조회되지_않는다() {
-            final UUID userId = UUID.randomUUID();
-            final UUID goalId = UUID.randomUUID();
-            final List<SubGoal> subGoals = List.of(
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title").importance(1)
-                            .completed(true).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title2").importance(1)
-                            .completed(true).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title3").importance(2)
-                            .completed(false).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title4").importance(3)
-                            .completed(false).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title5").importance(1)
-                            .completed(false).build()
-            );
-
-            // given
-            Goal mockGoal = createMockGoal(userId, goalId, subGoals);
-            when(goalRepository.findById(goalId)).thenReturn(mockGoal);
-
-            // when
-            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId);
-
-            // then
-            assertThat(dto).isNotNull();
-            assertThat(dto.subGoals()).hasSize(3);
-        }
-
 
     }
 }

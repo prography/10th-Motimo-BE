@@ -10,8 +10,8 @@ import kr.co.api.goal.rqrs.GoalDetailRs;
 import kr.co.api.goal.rqrs.GoalIdRs;
 import kr.co.api.goal.rqrs.GoalItemRs;
 import kr.co.api.goal.rqrs.GoalListRs;
-import kr.co.api.goal.rqrs.GoalTodoListRs;
 import kr.co.api.goal.rqrs.GoalUpdateRq;
+import kr.co.api.goal.rqrs.GoalWithSubGoalTodoRs;
 import kr.co.api.goal.service.GoalCommandService;
 import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.security.annotation.AuthUser;
@@ -68,8 +68,8 @@ public class GoalController implements GoalControllerSwagger {
     }
 
     @GetMapping("/{goalId}/sub-goals/all")
-    public GoalTodoListRs getTodoListByGoal(@PathVariable UUID goalId) {
-        return GoalTodoListRs.from(goalQueryService.getAllTodoByGoal(goalId));
+    public GoalWithSubGoalTodoRs getTodoListByGoal(@PathVariable UUID goalId) {
+        return GoalWithSubGoalTodoRs.from(goalQueryService.getGoalWithSubGoalTodayTodos(goalId));
     }
 
 }

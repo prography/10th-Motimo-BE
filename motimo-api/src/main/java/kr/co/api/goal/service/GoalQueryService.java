@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.UUID;
 import kr.co.api.goal.dto.GoalDetailDto;
 import kr.co.api.goal.dto.GoalItemDto;
-import kr.co.api.goal.dto.GoalTodoListDto;
+import kr.co.api.goal.dto.GoalWithSubGoalTodoDto;
 import kr.co.api.goal.dto.SubGoalDto;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.goal.Goal;
@@ -43,10 +43,10 @@ public class GoalQueryService {
         return goals.stream().map(GoalItemDto::from).toList();
     }
 
-    public GoalTodoListDto getAllTodoByGoal(UUID goalId) {
+    public GoalWithSubGoalTodoDto getGoalWithSubGoalTodayTodos(UUID goalId) {
         Goal goal = goalRepository.findById(goalId);
         List<SubGoalDto> subGoals = getTodoBySubGoalList(goal.getSubGoals());
-        return GoalTodoListDto.of(goal, subGoals);
+        return GoalWithSubGoalTodoDto.of(goal, subGoals);
     }
 
     private List<SubGoalDto> getTodoBySubGoalList(List<SubGoal> subGoals) {

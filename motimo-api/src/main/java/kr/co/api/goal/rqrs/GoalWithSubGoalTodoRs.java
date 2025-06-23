@@ -4,9 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import kr.co.api.goal.dto.GoalTodoListDto;
+import kr.co.api.goal.dto.GoalWithSubGoalTodoDto;
 
-public record GoalTodoListRs(
+public record GoalWithSubGoalTodoRs(
         @Schema(description = "목표 Id", example = "0197157f-aea4-77bb-8581-3213eb5bd2aq")
         UUID id,
 
@@ -20,8 +20,8 @@ public record GoalTodoListRs(
         List<SubGoalRs> subGoals
 ) {
 
-        public static GoalTodoListRs from(GoalTodoListDto dto) {
-                return new GoalTodoListRs(
+        public static GoalWithSubGoalTodoRs from(GoalWithSubGoalTodoDto dto) {
+                return new GoalWithSubGoalTodoRs(
                         dto.id(),
                         dto.title(),
                         dto.dueDate(),

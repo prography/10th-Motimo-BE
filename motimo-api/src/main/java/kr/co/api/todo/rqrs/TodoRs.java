@@ -20,7 +20,7 @@ public record TodoRs(
         @Schema(description = "투두 상태", example = "COMPLETE")
         TodoStatus status,
 
-        @Schema(description = "투두 기록 여부", nullable = true)
+        @Schema(description = "투두 기록 아이디", example = "0203157f-aea4-77bb-8581-3213eb6bd2ae", nullable = true)
         UUID todoResultId,
 
         @Schema(description = "투두 생성 날짜", type = "date")

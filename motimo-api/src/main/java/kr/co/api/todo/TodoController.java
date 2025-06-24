@@ -40,12 +40,11 @@ public class TodoController implements TodoControllerSwagger {
     }
 
     @PostMapping(path = "/{todoId}/result", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public TodoResultIdRs submitResult(@AuthUser UUID userId,
+    public TodoResultIdRs upsertTodoResult(@AuthUser UUID userId,
             @PathVariable UUID todoId,
             @RequestPart TodoResultRq request,
             @RequestPart(name = "file", required = false) MultipartFile file) {
-        UUID id = todoCommandService.submitTodoResult(
+        UUID id = todoCommandService.upsertTodoResult(
                 userId, todoId, request.emotion(), request.content(), file);
 
         return new TodoResultIdRs(id);
@@ -59,14 +58,12 @@ public class TodoController implements TodoControllerSwagger {
     }
 
     @PatchMapping("/{todoId}/completion")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public TodoIdRs toggleTodoCompletion(@AuthUser UUID userId, @PathVariable UUID todoId) {
         UUID id = todoCommandService.toggleTodoCompletion(userId, todoId);
         return new TodoIdRs(id);
     }
 
     @PutMapping("/{todoId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public TodoIdRs updateTodo(@AuthUser UUID userId, @PathVariable UUID todoId,
             @RequestBody TodoUpdateRq request) {
         UUID id = todoCommandService.updateTodo(userId, todoId, request.title(), request.date());
@@ -79,11 +76,9 @@ public class TodoController implements TodoControllerSwagger {
         todoCommandService.deleteById(userId, todoId);
     }
 
-    @DeleteMapping("/{todoId}/result")
+    @DeleteMapping("/result/{todoResultId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTodoResultByTodoId(@AuthUser UUID userId, @PathVariable UUID todoId) {
-        todoCommandService.deleteTodoResultByTodoId(userId, todoId);
+    public void deleteTodoResultById(@AuthUser UUID userId, @PathVariable UUID todoResultId) {
+        todoCommandService.deleteTodoResultById(userId, todoResultId);
     }
-
-    // todo: 투두 결과 수정 기능 추가
 }

@@ -40,4 +40,10 @@ public class TodoResult {
             throw new AccessDeniedException(TodoErrorCode.TODO_RESULT_ACCESS_DENIED);
         }
     }
+
+    public void update(Emotion emotion, String content, String filePath) {
+        this.emotion = emotion;
+        this.content = content;
+        this.filePath = filePath;
+    }
 }

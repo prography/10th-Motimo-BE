@@ -1,17 +1,17 @@
 package kr.co.api.goal;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import kr.co.api.goal.docs.GoalControllerSwagger;
 import kr.co.api.goal.dto.GoalCreateDto;
+import kr.co.api.goal.dto.GoalItemDto;
 import kr.co.api.goal.rqrs.GoalCreateRq;
+import kr.co.api.goal.rqrs.GoalDetailRs;
 import kr.co.api.goal.rqrs.GoalIdRs;
 import kr.co.api.goal.rqrs.GoalItemRs;
 import kr.co.api.goal.rqrs.GoalListRs;
-import kr.co.api.goal.rqrs.GoalTodoListRs;
 import kr.co.api.goal.rqrs.GoalUpdateRq;
+import kr.co.api.goal.rqrs.GoalWithSubGoalTodoRs;
 import kr.co.api.goal.service.GoalCommandService;
 import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.security.annotation.AuthUser;
@@ -58,18 +58,18 @@ public class GoalController implements GoalControllerSwagger {
 
     @GetMapping
     public GoalListRs getGoalList(@AuthUser UUID userId) {
-        List<GoalItemRs> items = new ArrayList<>();
-        items.add(new GoalItemRs("첫번째 목표", LocalDate.now(), 50));
-        items.add(new GoalItemRs("자격증 따기", LocalDate.of(2026, 2, 10), 20));
-        items.add(new GoalItemRs("노래 만들기", LocalDate.now(), 100));
-        return new GoalListRs(
-                items
-        );
+        List<GoalItemDto> goalList = goalQueryService.getGoalList(userId);
+        return new GoalListRs(goalList.stream().map(GoalItemRs::from).toList());
+    }
+
+    @GetMapping("/{goalId}")
+    public GoalDetailRs getGoalDetail(@PathVariable UUID goalId) {
+        return GoalDetailRs.from(goalQueryService.getGoalDetail(goalId));
     }
 
     @GetMapping("/{goalId}/sub-goals/all")
-    public GoalTodoListRs getTodoListByGoal(UUID userId, @PathVariable UUID goalId) {
-        return null;
+    public GoalWithSubGoalTodoRs getTodoListByGoal(@PathVariable UUID goalId) {
+        return GoalWithSubGoalTodoRs.from(goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId));
     }
 
 }

@@ -16,6 +16,6 @@ public class DueDateTest {
         LocalDate calculatedDueDate = LocalDate.now().plusMonths(month);
 
         assertThat(dueDate.getMonth()).isEqualTo(month);
-        assertThat(dueDate.getDueDate()).isEqualTo(calculatedDueDate);
+        assertThat(dueDate.getDate()).isEqualTo(calculatedDueDate);
     }
 }

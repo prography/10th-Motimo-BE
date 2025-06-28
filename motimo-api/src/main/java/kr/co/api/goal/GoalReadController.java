@@ -37,7 +37,7 @@ public class GoalReadController implements GoalReadControllerSwagger {
     }
 
     @GetMapping("/{goalId}/sub-goals/all")
-    public GoalWithSubGoalTodoRs getTodoListByGoal(@PathVariable UUID goalId) {
+    public GoalWithSubGoalTodoRs getGoalWithSubGoalAndTodo(@PathVariable UUID goalId) {
         return GoalWithSubGoalTodoRs.from(goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId));
     }
 

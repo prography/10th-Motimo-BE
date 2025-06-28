@@ -48,10 +48,10 @@ public class GoalController implements GoalControllerSwagger {
         return new GoalIdRs(goalCommandService.updateGoal(userId, goalId, GoalUpdateDto.from(rq)));
     }
 
-    @PostMapping("/{goalId}/subGoals")
+    @PostMapping("/{goalId}/subGoal")
     public SubGoalIdRs addSubGoal(@AuthUser UUID userId, @PathVariable UUID goalId,
             @RequestBody SubGoalCreateRq rq) {
-        return new SubGoalIdRs(subGoalCommandService.createSubGoal(userId,goalId, SubGoalCreateDto.from(rq)));
+        return new SubGoalIdRs(subGoalCommandService.createSubGoal(userId, goalId, SubGoalCreateDto.from(rq)));
     }
 
     @PatchMapping("/{goalId}/completion")

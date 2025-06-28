@@ -17,5 +17,5 @@ public interface GoalReadControllerSwagger {
     GoalListRs getGoalList(UUID userId);
 
     @Operation(summary = "목표 투두 목록 API", description = "목표에 해당하는 세부 목표와 투두 목록을 조회합니다.")
-    GoalWithSubGoalTodoRs getTodoListByGoal(@PathVariable UUID goalId);
+    GoalWithSubGoalTodoRs getGoalWithSubGoalAndTodo(@PathVariable UUID goalId);
 }

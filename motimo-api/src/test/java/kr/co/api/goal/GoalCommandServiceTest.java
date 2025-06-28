@@ -94,7 +94,7 @@ class GoalCommandServiceTest {
         when(goalRepository.update(any(Goal.class))).thenReturn(testGoal);
 
         // when
-        goalCommandService.goalComplete(userId, goalId);
+        goalCommandService.completeGoal(userId, goalId);
 
         // than
         verify(goalRepository).update(goalCaptor.capture());
@@ -118,7 +118,7 @@ class GoalCommandServiceTest {
         when(goalRepository.findById(goalId)).thenReturn(testGoal);
 
         // when & than
-        assertThatThrownBy(() -> goalCommandService.goalComplete(userId, goalId))
+        assertThatThrownBy(() -> goalCommandService.completeGoal(userId, goalId))
                 .isInstanceOf(GoalCompleteFailedException.class)
                 .hasMessage(GoalErrorCode.GOAL_COMPLETION_CONDITION_NOT_MATCHED.getMessage());
     }

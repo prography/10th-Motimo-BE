@@ -39,10 +39,9 @@ public class Goal {
         this.subGoals = subGoals;
     }
 
-    public void update(String title, DueDate dueDate, List<SubGoal> subGoals) {
+    public void update(String title, DueDate dueDate) {
         this.title = title;
         this.dueDate = dueDate;
-        this.subGoals = subGoals;
         this.updatedAt = LocalDateTime.now();
     }
 

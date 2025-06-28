@@ -22,6 +22,7 @@ public class SubGoalMapper {
     public static SubGoalEntity toEntity(GoalEntity goal, SubGoal subGoal) {
         return new SubGoalEntity(
                 goal,
+                subGoal.getId(),
                 subGoal.getTitle(),
                 subGoal.getImportance()
         );

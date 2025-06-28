@@ -1,6 +1,7 @@
 package kr.co.infra.rdb.subGoal.repository;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import kr.co.domain.goal.exception.GoalNotFoundException;
 import kr.co.domain.subGoal.SubGoal;
@@ -28,6 +29,20 @@ public class SubGoalRepositoryImpl implements SubGoalRepository {
         SubGoalEntity subGoalEntity = subGoalJpaRepository.findById(subGoalId)
                 .orElseThrow(SubGoalNotFoundException::new);
         return SubGoalMapper.toDomain(subGoalEntity);
+    }
+
+    public List<SubGoal> findByGoalId(UUID goalId) {
+        return subGoalJpaRepository.findByGoalId(goalId).stream().map(SubGoalMapper::toDomain).toList();
+    }
+
+    public void upsertList(UUID goalId, List<SubGoal> subGoals) {
+        GoalEntity goalEntity = goalJpaRepository.findById(goalId).orElseThrow(GoalNotFoundException::new);
+        List<SubGoalEntity> subGoalEntities = subGoals.stream().map(subGoal -> SubGoalMapper.toEntity(goalEntity, subGoal)).toList();
+        subGoalJpaRepository.saveAll(subGoalEntities);
+    }
+
+    public void deleteList(Set<UUID> subGoalIds) {
+        goalJpaRepository.deleteAllById(subGoalIds);
     }
 
     public SubGoal create(SubGoal subGoal) {

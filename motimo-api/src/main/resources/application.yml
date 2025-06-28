@@ -41,6 +41,8 @@ auth:
     token-expiration: ${ACCESS_TOKEN_EXP}
     refresh-token-expiration: ${REFRESH_TOKEN_EXP}
     issuer: ${ISSUER}
+  oauth2:
+    front-redirect-url: http://localhost:8080/onboarding
 
 supabase:
   storage:

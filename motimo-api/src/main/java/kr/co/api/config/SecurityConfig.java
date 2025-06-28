@@ -4,6 +4,7 @@ import kr.co.api.security.CustomAuthenticationEntryPoint;
 import kr.co.api.security.CustomUserDetailsService;
 import kr.co.api.security.jwt.TokenAuthenticationFilter;
 import kr.co.api.security.jwt.TokenProvider;
+import kr.co.api.security.oauth2.CustomOAuth2AuthorizationRequestRepository;
 import kr.co.api.security.oauth2.CustomOAuth2UserService;
 import kr.co.api.security.oauth2.OAuth2AuthenticationFailureHandler;
 import kr.co.api.security.oauth2.OAuth2AuthenticationSuccessHandler;
@@ -32,6 +33,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final CustomOAuth2AuthorizationRequestRepository customAuthorizationRequestRepository;
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
@@ -80,6 +82,8 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization -> authorization
                                 .baseUri("/oauth2/authorize")
+                                .authorizationRequestRepository(
+                                        customAuthorizationRequestRepository)
                         )
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService)

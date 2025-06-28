@@ -7,7 +7,9 @@ import java.util.UUID;
 import kr.co.api.group.rqrs.GroupChatItemRs;
 import kr.co.api.group.rqrs.GroupMemberRs;
 import kr.co.api.group.rqrs.JoinedGroupRs;
+import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.reaction.ReactionType;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "그룹 API", description = "그룹 관련 API 목록입니다")
 public interface GroupControllerSwagger {
@@ -18,7 +20,7 @@ public interface GroupControllerSwagger {
     UUID joinRandomGroup(UUID userId);
 
     @Operation(summary = "그룹 채팅 조회 API", description = "그룹 채팅을 조회합니다.")
-    List<GroupChatItemRs> getGroupChat(); // TODO Page
+    CustomSlice<GroupChatItemRs> getGroupChat(UUID userId, @RequestParam int page, @RequestParam int size);
 
     @Operation(summary = "그룹 리액션 API", description = "그룹 리액션을 생성합니다.")
     UUID createGroupReaction(UUID userId, UUID messageId, ReactionType reactionType);

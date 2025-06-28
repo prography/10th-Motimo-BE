@@ -10,6 +10,7 @@ import kr.co.api.group.rqrs.JoinedGroupRs;
 import kr.co.api.security.annotation.AuthUser;
 import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.reaction.ReactionType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,11 +36,6 @@ public class GroupController implements GroupControllerSwagger {
         return UUID.randomUUID();
     }
 
-    @Override
-    public List<GroupChatItemRs> getGroupChat() {
-        return List.of();
-    }
-
     @GetMapping("/{groupId}/chats")
     public CustomSlice<GroupChatItemRs> getGroupChat(@PathVariable UUID groupId, @RequestParam int page, @RequestParam int size) {
         List<GroupChatItemRs> groupChatItems = List.of(
@@ -48,18 +44,18 @@ public class GroupController implements GroupControllerSwagger {
         return new CustomSlice<>(groupChatItems, true);
     }
 
-    @Override
-    public UUID createGroupReaction(UUID userId, UUID messageId, ReactionType reactionType) {
+    @PostMapping("/message/{messageId}/reaction")
+    public UUID createGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId, @RequestParam ReactionType type) {
         return null;
     }
 
-    @Override
+    @GetMapping("/{groupId}/members")
     public List<GroupMemberRs> getGroupMembers(UUID userId, UUID groupId) {
         return List.of();
     }
 
-    @Override
-    public void exitsGroup(UUID groupId) {
+    @DeleteMapping("/{groupId}/exits")
+    public void exitsGroup(@PathVariable UUID groupId) {
 
     }
 }

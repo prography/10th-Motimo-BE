@@ -59,7 +59,7 @@ class GoalCommandServiceTest {
         final UUID uuid = UUID.randomUUID();
 
         List<SubGoalCreateDto> subGoalDtos = List.of(
-                new SubGoalCreateDto("sub goal title", 3)
+                new SubGoalCreateDto("sub goal title")
         );
 
         GoalCreateDto dto = new GoalCreateDto(goalTitle, true, 3, null, subGoalDtos);
@@ -113,7 +113,7 @@ class GoalCommandServiceTest {
         final UUID userId = UUID.randomUUID();
         final UUID goalId = UUID.randomUUID();
         final List<SubGoal> subGoals = List.of(
-                SubGoal.createSubGoal().title("sub goal title").importance(1).build());
+                SubGoal.createSubGoal().title("sub goal title").order(1).build());
 
         Goal testGoal = dommyTestGoal(userId, goalId, subGoals);
         when(goalRepository.findById(goalId)).thenReturn(testGoal);
@@ -142,7 +142,7 @@ class GoalCommandServiceTest {
         when(goalRepository.findById(testGoal.getId())).thenReturn(testGoal);
         when(goalRepository.update(any(Goal.class))).thenReturn(testGoal);
 
-        when(subGoalRepository.findByGoalId(testGoal.getId())).thenReturn(List.of());
+        when(subGoalRepository.findAllByGoalId(testGoal.getId())).thenReturn(List.of());
 
         // when
         goalCommandService.updateGoal(userId, testGoal.getId(), dto);
@@ -153,7 +153,7 @@ class GoalCommandServiceTest {
         assertThat(updatedGoal.getTitle()).isEqualTo("updated title");
         assertThat(updatedGoal.getDueDate().getMonth()).isEqualTo(5);
 
-        verify(subGoalRepository).findByGoalId(testGoal.getId());
+        verify(subGoalRepository).findAllByGoalId(testGoal.getId());
         verify(subGoalRepository).upsertList(eq(testGoal.getId()), eq(List.of()));
         verify(subGoalRepository).deleteList(eq(Set.of()));
     }
@@ -170,7 +170,7 @@ class GoalCommandServiceTest {
         SubGoal existingSubGoal = SubGoal.builder()
                 .goalId(testGoal.getId())
                 .title("original sub")
-                .importance(1)
+                .order(1)
                 .id(existingSubGoalId)
                 .build();
 
@@ -191,7 +191,7 @@ class GoalCommandServiceTest {
         when(goalRepository.findById(testGoal.getId())).thenReturn(testGoal);
         when(goalRepository.update(any(Goal.class))).thenReturn(testGoal);
 
-        when(subGoalRepository.findByGoalId(testGoal.getId())).thenReturn(List.of(existingSubGoal));
+        when(subGoalRepository.findAllByGoalId(testGoal.getId())).thenReturn(List.of(existingSubGoal));
 
         // when
         goalCommandService.updateGoal(userId, testGoal.getId(), dto);
@@ -201,7 +201,7 @@ class GoalCommandServiceTest {
         Goal updatedGoal = goalCaptor.getValue();
         assertThat(updatedGoal.getTitle()).isEqualTo("updated goal title");
 
-        verify(subGoalRepository).findByGoalId(testGoal.getId());
+        verify(subGoalRepository).findAllByGoalId(testGoal.getId());
 
         // upsertList 검증
         ArgumentCaptor<List<SubGoal>> subGoalCaptor = ArgumentCaptor.forClass(List.class);
@@ -228,7 +228,7 @@ class GoalCommandServiceTest {
 
     private Goal createTestGoal(UUID userId) {
         final List<SubGoal> subGoals = List.of(
-                SubGoal.createSubGoal().title("sub goal title").importance(1).build());
+                SubGoal.createSubGoal().title("sub goal title").order(1).build());
         final DueDate dueDate = DueDate.of(2);
         return Goal.createGoal().userId(userId).title(goalTitle).dueDate(dueDate)
                 .subGoals(subGoals).build();

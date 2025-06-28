@@ -80,7 +80,7 @@ public class Goal {
                 .findFirst()
                 .orElseThrow(SubGoalNotFoundException::new);
 
-        int oldOrder = targetSubGoal.getImportance();
+        int oldOrder = targetSubGoal.getOrder();
 
         if (oldOrder == newOrder) return;
 
@@ -90,7 +90,7 @@ public class Goal {
 
     private void shiftOrdersBetween(int oldOrder, int newOrder) {
         for (SubGoal subGoal : subGoals) {
-            int order = subGoal.getImportance();
+            int order = subGoal.getOrder();
 
             if (oldOrder < newOrder && order > oldOrder && order <= newOrder) {
                 subGoal.updateOrder(order - 1); // 당김

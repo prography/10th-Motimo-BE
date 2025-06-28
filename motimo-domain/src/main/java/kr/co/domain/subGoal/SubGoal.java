@@ -17,16 +17,16 @@ public class SubGoal {
     private UUID goalId;
     private UUID userId;
     private String title;
-    private int importance;
+    private int order;
     @Getter
     private boolean completed;
     private LocalDateTime completedChangedAt;
 
     @Builder(builderMethodName = "createSubGoal")
-    private SubGoal(UUID goalId, String title, int importance) {
+    private SubGoal(UUID goalId, String title, int order) {
         this.goalId = goalId;
         this.title = title;
-        this.importance = importance;
+        this.order = order;
         this.completed = false;
     }
 
@@ -40,7 +40,7 @@ public class SubGoal {
     }
 
     public void updateOrder(int order) {
-        this.importance = order;
+        this.order = order;
     }
 
     public void validateOwner(UUID userId) {

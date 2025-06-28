@@ -31,7 +31,7 @@ public class SubGoalRepositoryImpl implements SubGoalRepository {
         return SubGoalMapper.toDomain(subGoalEntity);
     }
 
-    public List<SubGoal> findByGoalId(UUID goalId) {
+    public List<SubGoal> findAllByGoalId(UUID goalId) {
         return subGoalJpaRepository.findByGoalId(goalId).stream().map(SubGoalMapper::toDomain).toList();
     }
 
@@ -54,7 +54,7 @@ public class SubGoalRepositoryImpl implements SubGoalRepository {
 
     public SubGoal update(SubGoal subGoal) {
         SubGoalEntity subGoalEntity = subGoalJpaRepository.findById(subGoal.getId()).orElseThrow(SubGoalNotFoundException::new);
-        subGoalEntity.update(subGoal.getTitle(), subGoal.getImportance(), subGoal.isCompleted());
+        subGoalEntity.update(subGoal.getTitle(), subGoal.getOrder(), subGoal.isCompleted());
         SubGoalEntity savedSubGoal = subGoalJpaRepository.save(subGoalEntity);
         return SubGoalMapper.toDomain(savedSubGoal);
     }
@@ -66,7 +66,7 @@ public class SubGoalRepositoryImpl implements SubGoalRepository {
             subGoals.stream()
                     .filter(subGoal -> subGoal.getId().equals(subGoalEntity.getId()))
                     .findFirst()
-                    .ifPresent(matched -> subGoalEntity.updateOrder(matched.getImportance()));
+                    .ifPresent(matched -> subGoalEntity.updateOrder(matched.getOrder()));
         });
 
         subGoalJpaRepository.saveAll(subGoalEntities);

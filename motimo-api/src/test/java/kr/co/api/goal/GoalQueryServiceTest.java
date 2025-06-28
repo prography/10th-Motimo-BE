@@ -69,15 +69,15 @@ class GoalQueryServiceTest {
             final UUID userId = UUID.randomUUID();
             final UUID goalId = UUID.randomUUID();
             final List<SubGoal> subGoals = List.of(
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title").importance(1)
+                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title").order(1)
                             .completed(false).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title2").importance(1)
+                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title2").order(1)
                             .completed(false).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title3").importance(2)
+                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title3").order(2)
                             .completed(false).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title4").importance(3)
+                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title4").order(3)
                             .completed(false).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title5").importance(1)
+                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title5").order(1)
                             .completed(false).build()
             );
 
@@ -106,7 +106,7 @@ class GoalQueryServiceTest {
                             .filter(sg -> sg.getId().equals(subGoal.id()))
                             .findFirst()
                             .orElseThrow()
-                            .getImportance())
+                            .getOrder())
                     .toList();
             List<Integer> sortedImportanceList = new ArrayList<>(importanceList);
             sortedImportanceList.sort(Comparator.naturalOrder());

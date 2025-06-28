@@ -1,7 +1,6 @@
 package kr.co.api.goal.service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import kr.co.api.goal.dto.GoalCreateDto;
 import kr.co.api.goal.dto.GoalUpdateDto;
@@ -28,7 +27,7 @@ public class GoalCommandService {
                 dto.isPeriodByMonth() ? DueDate.of(dto.month()) : DueDate.of(dto.dueDate());
         List<SubGoal> subGoals = dto.subGoals().stream().map(sub -> SubGoal.createSubGoal()
                 .title(sub.title())
-                .importance(sub.importance())
+                .order(0)
                 .build()).toList();
 
         Goal createdGoal = goalRepository.create(Goal.createGoal()
@@ -47,10 +46,9 @@ public class GoalCommandService {
 
         goal.update(dto.title(), getDueDate(dto));
 
-        List<SubGoal> subGoals = subGoalRepository.findByGoalId(goalId);
-        List<SubGoal> newSubGoals = getUpdateSubGoals(goalId, subGoals, dto.subGoals());
-
-        subGoalUpdate(goalId, dto.deletedSubGoalIds(), newSubGoals);
+        List<SubGoal> subGoals = subGoalRepository.findAllByGoalId(goalId);
+        subGoalRepository.deleteList(dto.deletedSubGoalIds());
+        subGoalRepository.upsertList(goalId, makeUpsertSubGoals(goalId, subGoals, dto.subGoals()));
 
         return goalRepository.update(goal).getId();
     }
@@ -59,12 +57,7 @@ public class GoalCommandService {
         return dto.isPeriodByMonth() ? DueDate.of(dto.month()) : DueDate.of(dto.dueDate());
     }
 
-    private void subGoalUpdate(UUID goalId, Set<UUID> deletedSubGoalIds, List<SubGoal> newSubGoals) {
-        subGoalRepository.deleteList(deletedSubGoalIds);
-        subGoalRepository.upsertList(goalId, newSubGoals);
-    }
-
-    private List<SubGoal> getUpdateSubGoals(UUID goalId, List<SubGoal> subGoals, List<SubGoalUpdateDto> newSubGoals) {
+    private List<SubGoal> makeUpsertSubGoals(UUID goalId, List<SubGoal> subGoals, List<SubGoalUpdateDto> newSubGoals) {
         List<UUID> subGoalIds = subGoals.stream().map(SubGoal::getId).toList();
         return newSubGoals.stream().map(
                 subGoal -> {
@@ -75,7 +68,7 @@ public class GoalCommandService {
                         orgSubGoal.updateOrder(subGoal.order());
                         return orgSubGoal;
                     }
-                    return SubGoal.createSubGoal().goalId(goalId).title(subGoal.title()).importance(subGoal.order()).build();
+                    return SubGoal.createSubGoal().goalId(goalId).title(subGoal.title()).order(subGoal.order()).build();
                 }
         ).toList();
     }

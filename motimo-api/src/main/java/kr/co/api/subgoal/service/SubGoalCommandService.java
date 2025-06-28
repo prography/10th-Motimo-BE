@@ -27,7 +27,6 @@ public class SubGoalCommandService {
                 SubGoal.createSubGoal()
                         .goalId(goalId)
                         .title(dto.title())
-                        .importance(dto.importance())
                         .build()
         );
 
@@ -40,6 +39,7 @@ public class SubGoalCommandService {
         subGoal.validateOwner(userId);
 
         subGoal.updateTitle(title);
+        subGoal.updateOrder(order);
 
         return subGoalRepository.update(subGoal).getId();
     }

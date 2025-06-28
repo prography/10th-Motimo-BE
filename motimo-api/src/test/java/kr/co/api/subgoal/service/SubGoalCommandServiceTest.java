@@ -67,7 +67,7 @@ class SubGoalCommandServiceTest {
                 .goalId(UUID.randomUUID())
                 .title("title")
                 .completed(isCompleted)
-                .importance(1)
+                .order(1)
                 .build();
 
     }

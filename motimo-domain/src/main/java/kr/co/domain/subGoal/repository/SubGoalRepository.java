@@ -7,7 +7,7 @@ import kr.co.domain.subGoal.SubGoal;
 
 public interface SubGoalRepository {
     SubGoal findById(UUID subGoalId);
-    List<SubGoal> findByGoalId(UUID goalId);
+    List<SubGoal> findAllByGoalId(UUID goalId);
     SubGoal create(SubGoal subGoal);
     SubGoal update(SubGoal subGoal);
     void updateAllOrder(List<SubGoal> subGoal);

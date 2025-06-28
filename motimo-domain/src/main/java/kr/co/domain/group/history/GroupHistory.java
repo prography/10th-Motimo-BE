@@ -5,9 +5,17 @@ import java.util.List;
 import java.util.UUID;
 import kr.co.domain.reaction.Reaction;
 import kr.co.domain.user.model.User;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GroupHistory {
-    private UUID id;
+    @Builder.Default()
+    private UUID id = null;
     private GroupHistoryType historyType;
     private LocalDateTime createdAt;
     private User creator;

@@ -19,8 +19,11 @@ FROM openjdk:21-jdk
 
 WORKDIR /app
 
-COPY --from=builder /app/motimo-api/build/libs/motimo-api-*.jar app.jar
+COPY --from=builder /app/motimo-api/build/libs/motimo-api-0.0.1-SNAPSHOT.jar app.jar
+
+COPY .env .env
 
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
+

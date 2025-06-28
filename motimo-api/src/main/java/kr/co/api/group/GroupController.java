@@ -1,0 +1,65 @@
+package kr.co.api.group;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import kr.co.api.group.docs.GroupControllerSwagger;
+import kr.co.api.group.rqrs.GroupChatItemRs;
+import kr.co.api.group.rqrs.GroupMemberRs;
+import kr.co.api.group.rqrs.JoinedGroupRs;
+import kr.co.api.security.annotation.AuthUser;
+import kr.co.domain.common.pagination.CustomSlice;
+import kr.co.domain.reaction.ReactionType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+@RestController
+@RequestMapping("/v1/groups")
+public class GroupController implements GroupControllerSwagger {
+
+    @GetMapping("/me")
+    public List<JoinedGroupRs> getJoinedGroup(@AuthUser UUID userId) {
+        return List.of(
+                new JoinedGroupRs("백다방 백잔 먹기", LocalDateTime.now(), false),
+                new JoinedGroupRs("충전기 만들기", LocalDateTime.now(), true)
+        );
+    }
+
+    @PostMapping("/random-join")
+    public UUID joinRandomGroup(@AuthUser UUID userId) {
+        return UUID.randomUUID();
+    }
+
+    @Override
+    public List<GroupChatItemRs> getGroupChat() {
+        return List.of();
+    }
+
+    @GetMapping("/{groupId}/chats")
+    public CustomSlice<GroupChatItemRs> getGroupChat(@PathVariable UUID groupId, @RequestParam int page, @RequestParam int size) {
+        List<GroupChatItemRs> groupChatItems = List.of(
+//                new GroupChatItemRs()
+        );
+        return new CustomSlice<>(groupChatItems, true);
+    }
+
+    @Override
+    public UUID createGroupReaction(UUID userId, UUID messageId, ReactionType reactionType) {
+        return null;
+    }
+
+    @Override
+    public List<GroupMemberRs> getGroupMembers(UUID userId, UUID groupId) {
+        return List.of();
+    }
+
+    @Override
+    public void exitsGroup(UUID groupId) {
+
+    }
+}

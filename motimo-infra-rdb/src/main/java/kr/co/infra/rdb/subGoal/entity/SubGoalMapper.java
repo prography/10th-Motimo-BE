@@ -14,7 +14,7 @@ public class SubGoalMapper {
                 .goalId(entity.getGoal().getId())
                 .userId(entity.getUserId())
                 .title(entity.getTitle())
-                .importance(entity.getImportance())
+                .order(entity.getImportance())
                 .completed(entity.isCompleted())
                 .completedChangedAt(entity.getCompletedChangedAt()).build();
     }
@@ -22,8 +22,9 @@ public class SubGoalMapper {
     public static SubGoalEntity toEntity(GoalEntity goal, SubGoal subGoal) {
         return new SubGoalEntity(
                 goal,
+                subGoal.getId(),
                 subGoal.getTitle(),
-                subGoal.getImportance()
+                subGoal.getOrder()
         );
     }
 }

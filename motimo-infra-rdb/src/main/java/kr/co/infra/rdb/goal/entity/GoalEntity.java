@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
@@ -54,7 +53,7 @@ public class GoalEntity {
     private LocalDateTime completedAt;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<SubGoalEntity> subGoals = new ArrayList<>();
+    private List<SubGoalEntity> subGoals;
 
     protected GoalEntity(UUID id, UUID userId, String title, DueDateEmbeddable dueDate, boolean completed) {
         this.id = id;

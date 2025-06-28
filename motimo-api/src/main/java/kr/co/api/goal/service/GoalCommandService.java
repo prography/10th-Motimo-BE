@@ -42,9 +42,16 @@ public class GoalCommandService {
 
         goal.validateOwner(userId);
 
-//        goal.update(dto.ti);
+        List<SubGoal> newSubGoals = updateSubGoals(goalId);
+
+        DueDate dueDate = dto.isPeriodByMonth() ? DueDate.of(dto.month()) : DueDate.of(dto.dueDate());
+        goal.update(dto.title(), dueDate, newSubGoals);
 
         return goalRepository.update(goal).getId();
+    }
+
+    private List<SubGoal> updateSubGoals(UUID goalId) {
+        return List.of(SubGoal.createSubGoal().goalId(goalId).title("title").importance(1).build());
     }
 
     public UUID completeGoal(UUID userId, UUID goalId) {

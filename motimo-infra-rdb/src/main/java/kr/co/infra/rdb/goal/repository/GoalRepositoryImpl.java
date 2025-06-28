@@ -8,15 +8,24 @@ import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.infra.rdb.goal.entity.DueDateEmbeddable;
 import kr.co.infra.rdb.goal.entity.GoalEntity;
 import kr.co.infra.rdb.goal.entity.GoalMapper;
+import kr.co.infra.rdb.subGoal.entity.SubGoalEntity;
+import kr.co.infra.rdb.subGoal.entity.SubGoalMapper;
+import kr.co.infra.rdb.subGoal.repository.SubGoalJpaRepository;
+import kr.co.infra.rdb.subGoal.repository.SubGoalRepositoryImpl;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class GoalRepositoryImpl implements GoalRepository {
 
     private final GoalJpaRepository goalJpaRepository;
+    private final SubGoalRepositoryImpl subGoalRepositoryImpl;
+    private final SubGoalJpaRepository subGoalJpaRepository;
 
-    public GoalRepositoryImpl(GoalJpaRepository goalJpaRepository) {
+    public GoalRepositoryImpl(GoalJpaRepository goalJpaRepository,
+            SubGoalRepositoryImpl subGoalRepositoryImpl, SubGoalJpaRepository subGoalJpaRepository) {
         this.goalJpaRepository = goalJpaRepository;
+        this.subGoalRepositoryImpl = subGoalRepositoryImpl;
+        this.subGoalJpaRepository = subGoalJpaRepository;
     }
 
     public Goal create(Goal goal) {
@@ -28,8 +37,11 @@ public class GoalRepositoryImpl implements GoalRepository {
     public Goal update(Goal goal) {
         GoalEntity goalEntity = goalJpaRepository.findById(goal.getId()).orElseThrow(
                 GoalNotFoundException::new);
+        List<SubGoalEntity> entities = goal.getSubGoals().stream().map(subGoal -> SubGoalMapper.toEntity(goalEntity, subGoal)).toList();
         goalEntity.update(goal.getTitle(), DueDateEmbeddable.from(goal.getDueDate()),
                 goal.isCompleted(), goal.completedAt);
+//        goal.getSubGoals().
+//        goalEntity.updateSubGoal();
         GoalEntity savedGoal = goalJpaRepository.save(goalEntity);
         return GoalMapper.toDomain(savedGoal);
     }

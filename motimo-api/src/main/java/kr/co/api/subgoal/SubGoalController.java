@@ -46,7 +46,7 @@ public class SubGoalController implements SubGoalControllerSwagger {
 
     @PatchMapping("/{subGoalId}")
     public SubGoalIdRs updateSubGoal(@AuthUser UUID userId, @PathVariable UUID subGoalId, @RequestBody SubGoalUpdateRq rq) {
-        return new SubGoalIdRs(subGoalCommandService.updateSubGoal(userId, subGoalId, rq.title(), rq.importance()));
+        return new SubGoalIdRs(subGoalCommandService.updateSubGoal(userId, subGoalId, rq.title(), rq.order()));
     }
 
     @PostMapping("/{subGoalId}/todo")

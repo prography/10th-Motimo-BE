@@ -35,6 +35,10 @@ public class Goal {
         subGoals.addAll(subGoal);
     }
 
+    public void putSubGoals(List<SubGoal> subGoal) {
+        this.subGoals = subGoals;
+    }
+
     public void update(String title, DueDate dueDate, List<SubGoal> subGoals) {
         this.title = title;
         this.dueDate = dueDate;

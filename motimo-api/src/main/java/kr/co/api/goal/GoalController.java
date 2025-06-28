@@ -3,6 +3,7 @@ package kr.co.api.goal;
 import java.util.UUID;
 import kr.co.api.goal.docs.GoalControllerSwagger;
 import kr.co.api.goal.dto.GoalCreateDto;
+import kr.co.api.goal.dto.GoalUpdateDto;
 import kr.co.api.goal.dto.SubGoalCreateDto;
 import kr.co.api.goal.rqrs.GoalCreateRq;
 import kr.co.api.goal.rqrs.GoalIdRs;
@@ -44,8 +45,7 @@ public class GoalController implements GoalControllerSwagger {
     @PutMapping("/{goalId}")
     public GoalIdRs updateGoal(@AuthUser UUID userId, @PathVariable UUID goalId,
             @RequestBody GoalUpdateRq rq) {
-//        goalCommandService.updateGoal(userId, goalId, new GoalUpdateDto());
-        return null;
+        return new GoalIdRs(goalCommandService.updateGoal(userId, goalId, GoalUpdateDto.from(rq)));
     }
 
     @PostMapping("/{goalId}/subGoals")

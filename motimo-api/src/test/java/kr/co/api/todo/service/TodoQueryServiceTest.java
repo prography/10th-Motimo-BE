@@ -189,7 +189,7 @@ class TodoQueryServiceTest {
                     LocalDate.now(),
                     TodoStatus.INCOMPLETE,
                     LocalDateTime.now(),
-                    false));
+                    UUID.randomUUID()));
         }
         return summaries;
     }

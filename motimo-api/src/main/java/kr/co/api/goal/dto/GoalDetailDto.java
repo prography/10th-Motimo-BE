@@ -10,6 +10,7 @@ public record GoalDetailDto(
         LocalDate dueDate,
         float progress,
         LocalDateTime createdAt,
+        boolean isCompleted,
         boolean isJoinedGroup
 ) {
 }

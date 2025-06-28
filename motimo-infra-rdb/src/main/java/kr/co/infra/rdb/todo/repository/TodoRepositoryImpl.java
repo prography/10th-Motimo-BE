@@ -54,7 +54,7 @@ public class TodoRepositoryImpl implements TodoRepository {
                         todoEntity.date,
                         todoEntity.status,
                         todoEntity.createdAt,
-                        todoResultEntity.id.isNotNull()
+                        todoResultEntity.id
                 ))
                 .from(todoEntity)
                 .leftJoin(todoResultEntity).on(todoResultEntity.todoId.eq(todoEntity.id))
@@ -87,7 +87,7 @@ public class TodoRepositoryImpl implements TodoRepository {
                         todoEntity.date,
                         todoEntity.status,
                         todoEntity.createdAt,
-                        todoResultEntity.id.isNotNull()
+                        todoResultEntity.id
                 ))
                 .from(todoEntity)
                 .leftJoin(todoResultEntity).on(todoResultEntity.todoId.eq(todoEntity.id))

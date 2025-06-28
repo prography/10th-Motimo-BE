@@ -34,6 +34,7 @@ public class GoalQueryService {
                 goal.getDueDateValue(),
                 goal.calculateProgress(),
                 goal.getCreatedAt(),
+                goal.completed,
                 new Random().nextBoolean() // TODO: 그룹 기능 구현 시 수정
         );
     }
@@ -51,7 +52,6 @@ public class GoalQueryService {
 
     private List<SubGoalDto> getTodoByIncompleteSubGoalList(List<SubGoal> subGoals) {
         return subGoals.stream()
-                .filter(subGoal -> !subGoal.isCompleted())
                 .sorted(Comparator.comparing(SubGoal::getImportance))
                 .map(subGoal -> {
                     List<TodoSummary> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(

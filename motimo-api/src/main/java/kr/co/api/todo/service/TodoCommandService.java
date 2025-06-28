@@ -1,7 +1,6 @@
 package kr.co.api.todo.service;
 
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.common.event.Events;
 import kr.co.domain.common.event.FileDeletedEvent;
@@ -9,7 +8,6 @@ import kr.co.domain.common.event.FileRollbackEvent;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
-import kr.co.domain.todo.exception.TodoResultNotSubmittedException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.domain.todo.repository.TodoResultRepository;
 import kr.co.infra.storage.service.StorageService;
@@ -37,29 +35,14 @@ public class TodoCommandService {
         return todoRepository.create(todo).getId();
     }
 
-    public UUID submitTodoResult(UUID userId, UUID todoId, Emotion emotion, String content,
+    public UUID upsertTodoResult(UUID userId, UUID todoId, Emotion emotion, String content,
             MultipartFile file) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateOwner(userId);
-        Optional<TodoResult> todoResult = todoResultRepository.findByTodoId(todoId);
 
-        String filePath = "";
-        if (file != null && !file.isEmpty()) {
-            filePath = String.format("todo/%s/%s", todoId, UUID.randomUUID());
-            storageService.store(file, filePath);
-            // 이미지 삭제 이벤트 발행 (트랜잭션 롤백 시 동작)
-            Events.publishEvent(new FileRollbackEvent(filePath));
-        }
-
-        TodoResult result = TodoResult.createTodoResult()
-                .todoId(todoId)
-                .userId(userId)
-                .emotion(emotion)
-                .content(content)
-                .filePath(filePath)
-                .build();
-
-        return todoResultRepository.create(result).getId();
+        return todoResultRepository.findByTodoId(todoId)
+                .map(todoResult -> updateTodoResult(todoResult, userId, emotion, content, file))
+                .orElseGet(() -> createTodoResult(userId, todoId, emotion, content, file));
     }
 
     public UUID toggleTodoCompletion(UUID userId, UUID todoId) {
@@ -87,11 +70,50 @@ public class TodoCommandService {
         todoRepository.deleteById(todoId);
     }
 
-    public void deleteTodoResultByTodoId(UUID userId, UUID todoId) {
-        TodoResult todoResult = todoResultRepository.findByTodoId(todoId)
-                .orElseThrow(TodoResultNotSubmittedException::new);
+    public void deleteTodoResultById(UUID userId, UUID todoResultId) {
+        TodoResult todoResult = todoResultRepository.findById(todoResultId);
         todoResult.validateOwner(userId);
         deleteTodoResult(todoResult);
+    }
+
+    private UUID createTodoResult(UUID userId, UUID todoId, Emotion emotion, String content,
+            MultipartFile file) {
+        String filePath = "";
+        if (file != null && !file.isEmpty()) {
+            filePath = String.format("todo/%s/%s", todoId, UUID.randomUUID());
+            storageService.store(file, filePath);
+            Events.publishEvent(new FileRollbackEvent(filePath));
+        }
+
+        TodoResult result = TodoResult.createTodoResult()
+                .todoId(todoId)
+                .userId(userId)
+                .emotion(emotion)
+                .content(content)
+                .filePath(filePath)
+                .build();
+
+        return todoResultRepository.create(result).getId();
+    }
+
+    private UUID updateTodoResult(TodoResult todoResult, UUID userId, Emotion emotion,
+            String content, MultipartFile file) {
+        todoResult.validateOwner(userId);
+
+        String filePath = todoResult.getFilePath();
+        if (file != null && !file.isEmpty()) {
+            String newFilePath = String.format("todo/%s/%s", todoResult.getTodoId(),
+                    UUID.randomUUID());
+            storageService.store(file, newFilePath);
+            Events.publishEvent(new FileRollbackEvent(newFilePath));
+            if (filePath != null && !filePath.isBlank()) {
+                Events.publishEvent(new FileDeletedEvent(filePath));
+            }
+            filePath = newFilePath;
+        }
+
+        todoResult.update(emotion, content, filePath);
+        return todoResultRepository.update(todoResult).getId();
     }
 
     private void deleteTodoResult(TodoResult todoResult) {

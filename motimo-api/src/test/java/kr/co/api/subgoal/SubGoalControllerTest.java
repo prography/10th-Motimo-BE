@@ -30,6 +30,7 @@ import kr.co.api.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import kr.co.api.security.resolver.AuthTokenArgumentResolver;
 import kr.co.api.security.resolver.AuthUserArgumentResolver;
 import kr.co.api.subgoal.rqrs.TodoCreateRq;
+import kr.co.api.subgoal.service.SubGoalCommandService;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.todo.Todo;
@@ -57,6 +58,9 @@ class SubGoalControllerTest {
 
     @MockitoBean
     private TodoQueryService todoQueryService;
+    
+    @MockitoBean
+    private SubGoalCommandService subGoalCommandService;
 
     @MockitoBean
     private TokenProvider tokenProvider;
@@ -149,6 +153,6 @@ class SubGoalControllerTest {
 
     private TodoSummary createMockTodoSummary(UUID id, String title) {
         return new TodoSummary(id, title, LocalDate.now(), TodoStatus.INCOMPLETE,
-                LocalDateTime.now(), false);
+                LocalDateTime.now(), UUID.randomUUID());
     }
 }

@@ -55,7 +55,7 @@ class GoalQueryServiceTest {
                     LocalDate.now(),
                     TodoStatus.INCOMPLETE,
                     LocalDateTime.now(),
-                    false));
+                    UUID.randomUUID()));
         }
         return summaries;
     }
@@ -87,7 +87,8 @@ class GoalQueryServiceTest {
             givenGoalWithSubGoalsAndTodos(goalId, mockGoal, mockTodos);
 
             // when
-            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId);
+            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(
+                    goalId);
 
             // then
             assertThat(dto).isNotNull();
@@ -123,7 +124,8 @@ class GoalQueryServiceTest {
             givenGoalWithSubGoalsAndTodos(goalId, mockGoal, mockTodos);
 
             // when
-            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId);
+            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(
+                    goalId);
 
             // then
             assertThat(dto).isNotNull();

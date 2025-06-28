@@ -1,6 +1,5 @@
 package kr.co.api.security.oauth2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +14,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 @RequiredArgsConstructor
@@ -22,8 +22,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private final TokenProvider tokenProvider;
     private final RefreshTokenCommandService refreshTokenCommandService;
-    private final ObjectMapper objectMapper;
-    private final OAuth2Properties oAuth2Properties;
+    private final CustomOAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -34,7 +33,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 token.refreshToken());
 
         ResponseCookie accessCookie = ResponseCookie.from("ACCESS_TOKEN", token.accessToken())
-                .httpOnly(true)          // JS로 못 읽음 → XSS 방어
+                .httpOnly(true) // JS로 못 읽음 → XSS 방어
                 .path("/")
                 .build();
 
@@ -46,7 +45,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-        getRedirectStrategy().sendRedirect(request, response,
-                oAuth2Properties.getFrontRedirectUrl());
+        String redirectUri = authorizationRequestRepository.getAndRemoveRedirectUriParam(request);
+
+        if (StringUtils.hasText(redirectUri)) {
+            getRedirectStrategy().sendRedirect(request, response, redirectUri);
+        } else {
+            // 기본 리다이렉션 동작
+            super.onAuthenticationSuccess(request, response, authentication);
+        }
     }
 }

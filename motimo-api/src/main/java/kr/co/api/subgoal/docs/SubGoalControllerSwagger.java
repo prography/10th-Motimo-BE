@@ -36,7 +36,7 @@ public interface SubGoalControllerSwagger {
             @ApiResponse(responseCode = "201", description = "TODO 생성 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content)
     })
     TodoIdRs createTodo(
             UUID userId,

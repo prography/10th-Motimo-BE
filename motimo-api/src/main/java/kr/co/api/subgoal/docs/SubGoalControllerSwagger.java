@@ -47,10 +47,16 @@ public interface SubGoalControllerSwagger {
 
     @Operation(summary = "세부 목표별 TODO 목록 조회", description = "특정 세부 목표의 TODO 목록을 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "TODO 목록 조회 성공",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TodoRs.class)))),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "TODO 목록 조회 성공",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TodoRs.class)))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 요청 데이터",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
     })
     List<TodoRs> getIncompleteOrTodayTodos(
             @Parameter(description = "세부 목표 ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")

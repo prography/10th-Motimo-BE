@@ -17,3 +17,4 @@ logging:
   level:
     org.springframework.web: DEBUG
     com.fasterxml.jackson.databind: DEBUG
+    com.zaxxer.hikari: DEBUG

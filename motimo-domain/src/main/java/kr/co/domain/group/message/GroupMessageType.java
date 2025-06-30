@@ -1,7 +1,7 @@
 package kr.co.domain.group.message;
 
 public enum GroupMessageType {
-    ENTER("그룹 입장"),
+    JOIN("그룹 입장"),
     LEAVE("그룹 퇴장"),
 
     TODO_COMPLETE("투두 완료"),

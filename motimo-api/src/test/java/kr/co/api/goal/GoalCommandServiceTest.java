@@ -3,7 +3,6 @@ package kr.co.api.goal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -142,8 +141,6 @@ class GoalCommandServiceTest {
         when(goalRepository.findById(testGoal.getId())).thenReturn(testGoal);
         when(goalRepository.update(any(Goal.class))).thenReturn(testGoal);
 
-        when(subGoalRepository.findAllByGoalId(testGoal.getId())).thenReturn(List.of());
-
         // when
         goalCommandService.updateGoal(userId, testGoal.getId(), dto);
 
@@ -152,46 +149,29 @@ class GoalCommandServiceTest {
         Goal updatedGoal = goalCaptor.getValue();
         assertThat(updatedGoal.getTitle()).isEqualTo("updated title");
         assertThat(updatedGoal.getDueDate().getMonth()).isEqualTo(5);
-
-        verify(subGoalRepository).findAllByGoalId(testGoal.getId());
-        verify(subGoalRepository).upsertList(eq(testGoal.getId()), eq(List.of()));
-        verify(subGoalRepository).deleteList(eq(Set.of()));
     }
 
 
     @Test
-    void 목표_세부_목표_모두_정상_수정() {
+    void 목표_세부목표_정상_수정() {
         // given
         UUID userId = UUID.randomUUID();
-        Goal testGoal = createTestGoal(userId);
+        UUID goalId = UUID.randomUUID();
 
-        UUID existingSubGoalId = UUID.randomUUID();
-        UUID deletedSubGoalId = UUID.randomUUID();
         SubGoal existingSubGoal = SubGoal.builder()
-                .goalId(testGoal.getId())
-                .title("original sub")
+                .id(UUID.randomUUID())
+                .goalId(goalId)
+                .title("old subgoal")
                 .order(1)
-                .id(existingSubGoalId)
                 .build();
 
-        List<SubGoalUpdateDto> updateDtos = List.of(
-                new SubGoalUpdateDto(existingSubGoalId, "modified sub", 2), // 기존 수정
-                new SubGoalUpdateDto(null, "new sub", 3)                    // 신규 추가
-        );
+        GoalUpdateDto dto = createGoalUpdateDto(existingSubGoal);
 
-        GoalUpdateDto dto = new GoalUpdateDto(
-                "updated goal title",
-                false,
-                null,
-                LocalDate.now().plusDays(7),
-                updateDtos,
-                Set.of(deletedSubGoalId)
-        );
+        Goal testGoal = dommyTestGoal(userId, goalId, convertToSubGoals(dto.subGoals(), goalId, userId));
+        testGoal.putSubGoals(List.of(existingSubGoal));
 
         when(goalRepository.findById(testGoal.getId())).thenReturn(testGoal);
         when(goalRepository.update(any(Goal.class))).thenReturn(testGoal);
-
-        when(subGoalRepository.findAllByGoalId(testGoal.getId())).thenReturn(List.of(existingSubGoal));
 
         // when
         goalCommandService.updateGoal(userId, testGoal.getId(), dto);
@@ -199,21 +179,62 @@ class GoalCommandServiceTest {
         // then
         verify(goalRepository).update(goalCaptor.capture());
         Goal updatedGoal = goalCaptor.getValue();
+
+        // 목표 수정 검증
         assertThat(updatedGoal.getTitle()).isEqualTo("updated goal title");
+        assertThat(updatedGoal.getDueDate().getDate()).isEqualTo(LocalDate.of(2025, 12, 31));
 
-        verify(subGoalRepository).findAllByGoalId(testGoal.getId());
+        // 세부목표 수정 검증
+        List<SubGoal> updatedSubGoals = updatedGoal.getSubGoals();
 
-        // upsertList 검증
-        ArgumentCaptor<List<SubGoal>> subGoalCaptor = ArgumentCaptor.forClass(List.class);
-        verify(subGoalRepository).upsertList(eq(testGoal.getId()), subGoalCaptor.capture());
-        List<SubGoal> savedSubGoals = subGoalCaptor.getValue();
+        SubGoal modifiedSubGoal = updatedSubGoals.stream()
+                .filter(sg -> sg.getId().equals(existingSubGoal.getId()))
+                .findFirst()
+                .orElseThrow();
+        assertThat(modifiedSubGoal.getTitle()).isEqualTo("updated subgoal title");
+        assertThat(modifiedSubGoal.getOrder()).isEqualTo(2);
 
-        assertThat(savedSubGoals).hasSize(2);
-        assertThat(savedSubGoals).anyMatch(sg -> sg.getTitle().equals("modified sub"));
-        assertThat(savedSubGoals).anyMatch(sg -> sg.getTitle().equals("new sub"));
+        // 새로운 subgoal이 추가 검증
+        SubGoal addedSubGoal = updatedSubGoals.stream()
+                .filter(sg -> sg.getTitle().equals("new subgoal"))
+                .findFirst()
+                .orElseThrow();
+        assertThat(addedSubGoal.getOrder()).isEqualTo(3);
+    }
 
-        // 삭제 리스트 검증
-        verify(subGoalRepository).deleteList(eq(Set.of(deletedSubGoalId)));
+    private GoalUpdateDto createGoalUpdateDto(SubGoal existingSubGoal) {
+        return new GoalUpdateDto(
+                "updated goal title",
+                false,
+                null,
+                LocalDate.of(2025, 12, 31),
+                List.of(
+                        new SubGoalUpdateDto(
+                                existingSubGoal.getId(),
+                                "updated subgoal title",
+                                2
+                        ),
+                        new SubGoalUpdateDto(
+                                null,
+                                "new subgoal",
+                                3
+                        )
+                ),
+                Set.of()
+        );
+    }
+
+    private List<SubGoal> convertToSubGoals(List<SubGoalUpdateDto> subGoalDtos, UUID goalId, UUID userId) {
+        return subGoalDtos.stream()
+                .map(dto -> SubGoal.builder()
+                        .id(dto.updateId())
+                        .goalId(goalId)
+                        .userId(userId)
+                        .title(dto.title())
+                        .order(dto.order())
+                        .build()
+                )
+                .toList();
     }
 
 

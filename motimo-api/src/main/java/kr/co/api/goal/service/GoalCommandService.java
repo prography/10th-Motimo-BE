@@ -9,7 +9,6 @@ import kr.co.domain.goal.DueDate;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.subGoal.SubGoal;
-import kr.co.domain.subGoal.repository.SubGoalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class GoalCommandService {
 
     private final GoalRepository goalRepository;
-    private final SubGoalRepository subGoalRepository;
 
     public UUID createGoal(UUID userId, GoalCreateDto dto) {
         DueDate dueDate =

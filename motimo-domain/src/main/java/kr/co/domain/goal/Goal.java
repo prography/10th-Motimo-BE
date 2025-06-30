@@ -36,7 +36,7 @@ public class Goal {
     }
 
     public void putSubGoals(List<SubGoal> subGoal) {
-        this.subGoals = subGoals;
+        this.subGoals = subGoal;
     }
 
     public void update(String title, DueDate dueDate) {

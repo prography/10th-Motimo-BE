@@ -21,7 +21,8 @@ public class GoalRepositoryImpl implements GoalRepository {
     private final SubGoalJpaRepository subGoalJpaRepository;
 
     public GoalRepositoryImpl(GoalJpaRepository goalJpaRepository,
-            SubGoalRepositoryImpl subGoalRepositoryImpl, SubGoalJpaRepository subGoalJpaRepository) {
+            SubGoalRepositoryImpl subGoalRepositoryImpl,
+            SubGoalJpaRepository subGoalJpaRepository) {
         this.goalJpaRepository = goalJpaRepository;
         this.subGoalRepositoryImpl = subGoalRepositoryImpl;
         this.subGoalJpaRepository = subGoalJpaRepository;
@@ -37,17 +38,15 @@ public class GoalRepositoryImpl implements GoalRepository {
         GoalEntity goalEntity = goalJpaRepository.findById(goal.getId()).orElseThrow(
                 GoalNotFoundException::new);
 
-
-        goalEntity.updateSubGoals(goal.getSubGoals().stream().map(s -> {
-            return SubGoalMapper.toEntity(goalEntity, s);
-        }).toList());
-
-//        goal.getSubGoals().removeIf(subGoal -> dto.deletedSubGoalIds().contains(subGoal.getId()));
+        goalEntity.updateSubGoals(
+                goal.getSubGoals().stream().map(s -> SubGoalMapper.toEntity(goalEntity, s))
+                        .toList());
 
         goalEntity.update(goal.getTitle(), DueDateEmbeddable.from(goal.getDueDate()),
                 goal.isCompleted(), goal.completedAt);
 
         GoalEntity savedGoal = goalJpaRepository.save(goalEntity);
+
         return GoalMapper.toDomain(savedGoal);
     }
 
@@ -58,7 +57,8 @@ public class GoalRepositoryImpl implements GoalRepository {
     }
 
     public List<Goal> findAllByUserId(UUID userId) {
-        List<GoalEntity> goalEntities = goalJpaRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+        List<GoalEntity> goalEntities = goalJpaRepository.findAllByUserIdOrderByCreatedAtDesc(
+                userId);
         return goalEntities.stream().map(GoalMapper::toDomain).toList();
     }
 

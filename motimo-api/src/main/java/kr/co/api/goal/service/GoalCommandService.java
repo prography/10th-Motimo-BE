@@ -46,14 +46,8 @@ public class GoalCommandService {
 
         goal.update(dto.title(), getDueDate(dto));
         goal.putSubGoals(makeUpsertSubGoals(goalId, goal.getSubGoals(), dto.subGoals()));
-        UUID updatedGoalId = goalRepository.update(goal).getId();
 
-//        List<SubGoal> subGoals = subGoalRepository.findAllByGoalId(goalId);
-//        subGoalRepository.upsertList(goalId, ));
-//        System.out.println("here");
-//        subGoalRepository.deleteAllByIds(dto.deletedSubGoalIds()); //
-
-        return updatedGoalId;
+        return goalRepository.update(goal).getId();
     }
 
     private DueDate getDueDate(GoalUpdateDto dto) {

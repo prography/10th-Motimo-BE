@@ -2,6 +2,7 @@ package kr.co.api.goal.service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import kr.co.api.goal.dto.GoalCreateDto;
 import kr.co.api.goal.dto.GoalUpdateDto;
 import kr.co.api.goal.dto.SubGoalUpdateDto;
@@ -23,10 +24,17 @@ public class GoalCommandService {
     public UUID createGoal(UUID userId, GoalCreateDto dto) {
         DueDate dueDate =
                 dto.isPeriodByMonth() ? DueDate.of(dto.month()) : DueDate.of(dto.dueDate());
-        List<SubGoal> subGoals = dto.subGoals().stream().map(sub -> SubGoal.createSubGoal()
-                .title(sub.title())
-                .order(0)
-                .build()).toList();
+
+        AtomicInteger index = new AtomicInteger(1);
+
+        List<SubGoal> subGoals = dto.subGoals().stream()
+                .map(sub -> {
+                    int currentIndex = index.getAndIncrement();
+                    return SubGoal.createSubGoal()
+                            .title(sub.title())
+                            .order(currentIndex)
+                            .build();
+                }).toList();
 
         Goal createdGoal = goalRepository.create(Goal.createGoal()
                 .userId(userId)
@@ -52,18 +60,22 @@ public class GoalCommandService {
         return dto.isPeriodByMonth() ? DueDate.of(dto.month()) : DueDate.of(dto.dueDate());
     }
 
-    private List<SubGoal> makeUpsertSubGoals(UUID goalId, List<SubGoal> subGoals, List<SubGoalUpdateDto> newSubGoals) {
+    private List<SubGoal> makeUpsertSubGoals(UUID goalId, List<SubGoal> subGoals,
+            List<SubGoalUpdateDto> newSubGoals) {
         List<UUID> subGoalIds = subGoals.stream().map(SubGoal::getId).toList();
         return newSubGoals.stream().map(
                 subGoal -> {
-                    if(subGoalIds.contains(subGoal.updateId())) {
-                        SubGoal orgSubGoal =  subGoals.stream().filter(s -> s.getId().equals(subGoal.updateId())).findFirst().get();
+                    if (subGoalIds.contains(subGoal.updateId())) {
+                        SubGoal orgSubGoal = subGoals.stream()
+                                .filter(s -> s.getId().equals(subGoal.updateId())).findFirst()
+                                .get();
 
                         orgSubGoal.updateTitle(subGoal.title());
                         orgSubGoal.updateOrder(subGoal.order());
                         return orgSubGoal;
                     }
-                    return SubGoal.createSubGoal().goalId(goalId).title(subGoal.title()).order(subGoal.order()).build();
+                    return SubGoal.createSubGoal().goalId(goalId).title(subGoal.title())
+                            .order(subGoal.order()).build();
                 }
         ).toList();
     }

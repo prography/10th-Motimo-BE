@@ -14,6 +14,7 @@ public record SubGoalUpdateRq(
         @Schema(description = "세부 목표 이름", example = "책 한 권 읽기")
         String title,
 
+        @NotNull
         @Schema(description = "세부 목표 순서")
         int order
 ) {

@@ -23,8 +23,9 @@ public class SubGoal {
     private LocalDateTime completedChangedAt;
 
     @Builder(builderMethodName = "createSubGoal")
-    private SubGoal(UUID goalId, String title, int order) {
+    private SubGoal(UUID goalId, UUID userId, String title, int order) {
         this.goalId = goalId;
+        this.userId = userId;
         this.title = title;
         this.order = order;
         this.completed = false;

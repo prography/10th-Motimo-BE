@@ -9,23 +9,15 @@ import kr.co.infra.rdb.goal.entity.DueDateEmbeddable;
 import kr.co.infra.rdb.goal.entity.GoalEntity;
 import kr.co.infra.rdb.goal.entity.GoalMapper;
 import kr.co.infra.rdb.subGoal.entity.SubGoalMapper;
-import kr.co.infra.rdb.subGoal.repository.SubGoalJpaRepository;
-import kr.co.infra.rdb.subGoal.repository.SubGoalRepositoryImpl;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class GoalRepositoryImpl implements GoalRepository {
 
     private final GoalJpaRepository goalJpaRepository;
-    private final SubGoalRepositoryImpl subGoalRepositoryImpl;
-    private final SubGoalJpaRepository subGoalJpaRepository;
 
-    public GoalRepositoryImpl(GoalJpaRepository goalJpaRepository,
-            SubGoalRepositoryImpl subGoalRepositoryImpl,
-            SubGoalJpaRepository subGoalJpaRepository) {
+    public GoalRepositoryImpl(GoalJpaRepository goalJpaRepository) {
         this.goalJpaRepository = goalJpaRepository;
-        this.subGoalRepositoryImpl = subGoalRepositoryImpl;
-        this.subGoalJpaRepository = subGoalJpaRepository;
     }
 
     public Goal create(Goal goal) {

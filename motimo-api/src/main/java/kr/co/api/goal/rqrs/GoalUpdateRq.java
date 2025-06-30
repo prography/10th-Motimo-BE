@@ -35,5 +35,4 @@ public record GoalUpdateRq(
         @JsonSetter(nulls = Nulls.AS_EMPTY)
         Set<UUID> deletedSubGoalIds
 ) {
-
 }

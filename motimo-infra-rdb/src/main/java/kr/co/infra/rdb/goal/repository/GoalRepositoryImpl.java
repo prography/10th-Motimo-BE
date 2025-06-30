@@ -8,6 +8,7 @@ import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.infra.rdb.goal.entity.DueDateEmbeddable;
 import kr.co.infra.rdb.goal.entity.GoalEntity;
 import kr.co.infra.rdb.goal.entity.GoalMapper;
+import kr.co.infra.rdb.subGoal.entity.SubGoalMapper;
 import kr.co.infra.rdb.subGoal.repository.SubGoalJpaRepository;
 import kr.co.infra.rdb.subGoal.repository.SubGoalRepositoryImpl;
 import org.springframework.stereotype.Repository;
@@ -35,6 +36,13 @@ public class GoalRepositoryImpl implements GoalRepository {
     public Goal update(Goal goal) {
         GoalEntity goalEntity = goalJpaRepository.findById(goal.getId()).orElseThrow(
                 GoalNotFoundException::new);
+
+
+        goalEntity.updateSubGoals(goal.getSubGoals().stream().map(s -> {
+            return SubGoalMapper.toEntity(goalEntity, s);
+        }).toList());
+
+//        goal.getSubGoals().removeIf(subGoal -> dto.deletedSubGoalIds().contains(subGoal.getId()));
 
         goalEntity.update(goal.getTitle(), DueDateEmbeddable.from(goal.getDueDate()),
                 goal.isCompleted(), goal.completedAt);

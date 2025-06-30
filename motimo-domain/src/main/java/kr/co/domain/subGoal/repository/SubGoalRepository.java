@@ -12,5 +12,5 @@ public interface SubGoalRepository {
     SubGoal update(SubGoal subGoal);
     void updateAllOrder(List<SubGoal> subGoal);
     void upsertList(UUID goalId, List<SubGoal> subGoals);
-    void deleteList(Set<UUID> subGoalIds);
+    void deleteAllByIds(Set<UUID> subGoalIds);
 }

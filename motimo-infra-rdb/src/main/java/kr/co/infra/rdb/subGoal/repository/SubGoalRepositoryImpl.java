@@ -41,8 +41,10 @@ public class SubGoalRepositoryImpl implements SubGoalRepository {
         subGoalJpaRepository.saveAll(subGoalEntities);
     }
 
-    public void deleteList(Set<UUID> subGoalIds) {
-        goalJpaRepository.deleteAllById(subGoalIds);
+    public void deleteAllByIds(Set<UUID> subGoalIds) {
+        //
+        subGoalJpaRepository.deleteAllByIdIn(subGoalIds);
+//        subGoalJpaRepository.deleteById(subGoalIds.stream().findFirst().get());
     }
 
     public SubGoal create(SubGoal subGoal) {

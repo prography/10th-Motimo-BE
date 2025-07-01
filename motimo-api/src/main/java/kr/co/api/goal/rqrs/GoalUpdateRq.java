@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public record GoalUpdateRq(
         @NotNull
@@ -15,12 +17,22 @@ public record GoalUpdateRq(
         String title,
 
         @NotNull
+        @Schema(description = "개월 수로 기간 설정 여부")
+        boolean isPeriodByMonth,
+
+        @Size(min = 1, max = 12)
+        @Schema(description = "목표 개월 수")
+        Integer month,
+
         @Schema(description = "목표 완료 날짜", format = "date")
         LocalDate dueDate,
 
+        @Schema(description = "수정/생성할 세부 목표 목록")
         @JsonSetter(nulls = Nulls.AS_EMPTY)
-        @Schema(description = "세부 목표 목록")
-        List<SubGoalUpdateRq> subGoals
-) {
+        List<SubGoalUpdateRq> subGoals,
 
+        @Schema(description = "삭제할 세부 목표 아이디 목록")
+        @JsonSetter(nulls = Nulls.AS_EMPTY)
+        Set<UUID> deletedSubGoalIds
+) {
 }

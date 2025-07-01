@@ -37,7 +37,7 @@ public class SubGoalEntity {
 
     private String title;
 
-    private int importance;
+    private int importance; // TODO 추후 order로 변경
 
     private boolean completed = false;
 
@@ -49,20 +49,25 @@ public class SubGoalEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    protected SubGoalEntity(GoalEntity goal, String title, int importance) {
+    protected SubGoalEntity(GoalEntity goal, UUID id, String title, int order) {
         this.goal = goal;
+        this.id = id;
         this.userId = goal.getUserId();
         this.title = title;
-        this.importance = importance;
+        this.importance = order;
         this.completed = false;
     }
 
-    public void update(String title, int importance, boolean completed) {
+    public void update(String title, int order, boolean completed) {
         this.title = title;
-        this.importance = importance;
+        this.importance = order;
         this.completed = completed;
         if(completed) {
             this.completedChangedAt = LocalDateTime.now();
         }
+    }
+
+    public void updateOrder(int order) {
+        this.importance = order;
     }
 }

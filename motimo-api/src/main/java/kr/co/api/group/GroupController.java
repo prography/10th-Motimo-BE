@@ -6,7 +6,7 @@ import java.util.UUID;
 import kr.co.api.group.docs.GroupControllerSwagger;
 import kr.co.api.group.rqrs.GroupIdRs;
 import kr.co.api.group.rqrs.GroupMemberRs;
-import kr.co.api.group.rqrs.GroupMessageId;
+import kr.co.api.group.rqrs.GroupMessageIdRs;
 import kr.co.api.group.rqrs.GroupMessageItemRs;
 import kr.co.api.group.rqrs.JoinedGroupRs;
 import kr.co.api.group.rqrs.message.TodoMessageContentRs;
@@ -14,6 +14,7 @@ import kr.co.api.security.annotation.AuthUser;
 import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.group.MessageType;
 import kr.co.domain.reaction.ReactionType;
+import kr.co.domain.todo.Emotion;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,7 +41,6 @@ public class GroupController implements GroupControllerSwagger {
         return new GroupIdRs(UUID.randomUUID());
     }
 
-    // TODO
     @GetMapping("/{groupId}/chats")
     public CustomSlice<GroupMessageItemRs> getGroupChat(@PathVariable UUID groupId, @RequestParam int page, @RequestParam int size) {
         List<GroupMessageItemRs> groupChatItems = List.of(
@@ -58,6 +58,7 @@ public class GroupController implements GroupControllerSwagger {
                         new TodoMessageContentRs(
                                 UUID.randomUUID(),
                                 "완료한 투두 제목입니다",
+                                Emotion.PROUD,
                                 "완료한 투두 내용입니다",
                                 "file url입니다."
                         ),
@@ -70,6 +71,7 @@ public class GroupController implements GroupControllerSwagger {
                         new TodoMessageContentRs(
                                 UUID.randomUUID(),
                                 "완료한 투두 제목입니다",
+                                Emotion.GROWN,
                                 null,
                                 null
                         ),
@@ -80,8 +82,8 @@ public class GroupController implements GroupControllerSwagger {
     }
 
     @PostMapping("/message/{messageId}/reaction")
-    public GroupMessageId createGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId, @RequestParam ReactionType type) {
-        return new GroupMessageId(UUID.randomUUID());
+    public GroupMessageIdRs createGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId, @RequestParam ReactionType type) {
+        return new GroupMessageIdRs(UUID.randomUUID());
     }
 
     @GetMapping("/{groupId}/members")

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import kr.co.api.group.rqrs.GroupIdRs;
 import kr.co.api.group.rqrs.GroupMemberRs;
-import kr.co.api.group.rqrs.GroupMessageId;
+import kr.co.api.group.rqrs.GroupMessageIdRs;
 import kr.co.api.group.rqrs.GroupMessageItemRs;
 import kr.co.api.group.rqrs.JoinedGroupRs;
 import kr.co.domain.common.pagination.CustomSlice;
@@ -25,7 +25,7 @@ public interface GroupControllerSwagger {
     CustomSlice<GroupMessageItemRs> getGroupChat(UUID userId, @RequestParam int page, @RequestParam int size);
 
     @Operation(summary = "그룹 리액션 API", description = "그룹 리액션을 생성합니다.")
-    GroupMessageId createGroupReaction(UUID userId, UUID messageId, ReactionType reactionType);
+    GroupMessageIdRs createGroupReaction(UUID userId, UUID messageId, ReactionType reactionType);
 
     @Operation(summary = "그룹 멤버 조회 API", description = "그룹 멤버 목록을 조회합니다.")
     List<GroupMemberRs> getGroupMembers(UUID userId, UUID groupId);

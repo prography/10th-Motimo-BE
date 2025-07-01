@@ -28,6 +28,8 @@ public class Goal {
     private LocalDateTime createdAt;
     public LocalDateTime completedAt;
     @Builder.Default()
+    private UUID groupId = null;
+    @Builder.Default()
     private List<SubGoal> subGoals = new ArrayList<>();
 
     public void addSubGoals(List<SubGoal> subGoal) {

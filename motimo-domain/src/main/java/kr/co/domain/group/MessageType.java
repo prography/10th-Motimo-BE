@@ -1,6 +1,6 @@
 package kr.co.domain.group;
 
-public enum ChatType {
+public enum MessageType {
     ENTER,
     TODO
 }

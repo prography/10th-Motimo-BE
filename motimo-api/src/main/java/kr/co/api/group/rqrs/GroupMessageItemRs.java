@@ -1,14 +1,14 @@
 package kr.co.api.group.rqrs;
 
 import java.util.UUID;
-import kr.co.domain.group.ChatType;
+import kr.co.domain.group.MessageType;
 
 //
-public record GroupChatItemRs(
-        ChatType chatType,
+public record GroupMessageItemRs(
+        MessageType messageType,
         UUID senderId,
         String senderName,
-        GroupMessageRs message,
+        MessageContentRs message,
         int reactionCount
 ) {
 }

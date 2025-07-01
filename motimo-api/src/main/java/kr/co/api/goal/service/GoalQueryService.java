@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.UUID;
 import kr.co.api.goal.dto.GoalDetailDto;
 import kr.co.api.goal.dto.GoalItemDto;
+import kr.co.api.goal.dto.GoalNotInGroupDto;
 import kr.co.api.goal.dto.GoalWithSubGoalTodoDto;
 import kr.co.api.goal.dto.SubGoalDto;
 import kr.co.api.todo.service.TodoQueryService;
@@ -60,5 +61,10 @@ public class GoalQueryService {
                     return new SubGoalDto(subGoal.getId(), subGoal.getTitle(), todos);
                 })
                 .toList();
+    }
+
+    public List<GoalNotInGroupDto> getGoalNotInGroup(UUID userId) {
+       List<Goal> goals = goalRepository.findUnassignedGroupGoalsByUserId(userId);
+       return goals.stream().map(GoalNotInGroupDto::from).toList();
     }
 }

@@ -9,5 +9,6 @@ public interface GoalRepository {
     Goal update(Goal goal);
     Goal findById(UUID id);
     List<Goal> findAllByUserId(UUID userId);
+    List<Goal> findUnassignedGroupGoalsByUserId(UUID userId);
 }
 

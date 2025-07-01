@@ -44,10 +44,6 @@ public class GoalReadController implements GoalReadControllerSwagger {
 
     @GetMapping("/not-joined-group")
     public List<GoalNotInGroupRs> getGoalNotJoinGroup(@AuthUser UUID userId) {
-
-        return List.of(
-                new GoalNotInGroupRs(UUID.randomUUID(), "참여 대기중인 목표"),
-                new GoalNotInGroupRs(UUID.randomUUID(), "메가커피 인수")
-        );
+        return goalQueryService.getGoalNotInGroup(userId).stream().map(GoalNotInGroupRs::from).toList();
     }
 }

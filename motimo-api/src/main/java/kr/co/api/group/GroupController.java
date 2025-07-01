@@ -95,8 +95,8 @@ public class GroupController implements GroupControllerSwagger {
         );
     }
 
-    @DeleteMapping("/{groupId}/exits")
-    public void exitsGroup(@PathVariable UUID groupId) {
+    @DeleteMapping("/{groupId}/members/me")
+    public void exitGroup(@PathVariable UUID groupId) {
 
     }
 }

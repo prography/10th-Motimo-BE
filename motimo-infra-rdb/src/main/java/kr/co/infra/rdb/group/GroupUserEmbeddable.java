@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class GroupUserEmbeddable {
     private UUID userId;
     private LocalDateTime joinedDate;
-    private boolean isLeaved;
+    private boolean isExited;
 }

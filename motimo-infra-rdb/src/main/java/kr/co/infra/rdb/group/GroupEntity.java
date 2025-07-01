@@ -37,5 +37,5 @@ public class GroupEntity extends BaseEntity {
     )
     private List<GroupUserEmbeddable> users = new ArrayList<>();
 
-    private LocalDateTime finishedDated;
+    private LocalDateTime finishedDat;
 }

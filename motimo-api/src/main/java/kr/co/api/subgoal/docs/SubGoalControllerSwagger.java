@@ -24,16 +24,19 @@ public interface SubGoalControllerSwagger {
     @Operation(summary = "세부 목표 완료/완료 취소 API", description = "세부 목표를 완료/완료 취소 합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "완료/취소 처리 성공"),
-            @ApiResponse(responseCode = "403", description = "완료 처리 권한 없음"),
-            @ApiResponse(responseCode = "404", description = "세부 목표를 찾을 수 없음")
+            @ApiResponse(responseCode = "403", description = "완료 처리 권한 없음",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "세부 목표를 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
     })
     SubGoalIdRs subGoalCompleteToggle(UUID userId, @PathVariable UUID subGoalId);
 
     @Operation(summary = "TODO 생성", description = "세부 목표에 새로운 TODO를 생성합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "TODO 생성 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터"),
-            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자")
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content)
     })
     TodoIdRs createTodo(
             UUID userId,

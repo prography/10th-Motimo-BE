@@ -17,15 +17,17 @@ public class SubGoal {
     private UUID goalId;
     private UUID userId;
     private String title;
-    private int importance;
+    private int order;
     @Getter
     private boolean completed;
     private LocalDateTime completedChangedAt;
 
     @Builder(builderMethodName = "createSubGoal")
-    private SubGoal(String title, int importance) {
+    private SubGoal(UUID goalId, UUID userId, String title, int order) {
+        this.goalId = goalId;
+        this.userId = userId;
         this.title = title;
-        this.importance = importance;
+        this.order = order;
         this.completed = false;
     }
 
@@ -34,7 +36,15 @@ public class SubGoal {
         completedChangedAt = LocalDateTime.now();
     }
 
-    public void userChecked(UUID userId) {
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateOrder(int order) {
+        this.order = order;
+    }
+
+    public void validateOwner(UUID userId) {
         if(!userId.equals(this.userId)) {
             throw new AccessDeniedException(SubGoalErrorCode.SUB_GOAL_ACCESS_DENIED);
         }

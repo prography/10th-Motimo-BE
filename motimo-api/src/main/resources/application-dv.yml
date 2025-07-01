@@ -4,8 +4,8 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PW}
     hikari:
-      maximum-pool-size: 4
-      minimum-idle: 0
+      maximum-pool-size: 8
+      minimum-idle: 1
       idle-timeout: 600000
       max-lifetime: 1800000
       connection-timeout: 30000
@@ -17,3 +17,4 @@ logging:
   level:
     org.springframework.web: DEBUG
     com.fasterxml.jackson.databind: DEBUG
+    com.zaxxer.hikari: DEBUG

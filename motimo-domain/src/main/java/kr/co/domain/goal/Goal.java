@@ -9,6 +9,7 @@ import kr.co.domain.common.exception.AccessDeniedException;
 import kr.co.domain.goal.exception.GoalCompleteFailedException;
 import kr.co.domain.goal.exception.GoalErrorCode;
 import kr.co.domain.subGoal.SubGoal;
+import kr.co.domain.subGoal.exception.SubGoalNotFoundException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,10 +37,13 @@ public class Goal {
         subGoals.addAll(subGoal);
     }
 
-    public void update(String title, DueDate dueDate, List<SubGoal> subGoals) {
+    public void putSubGoals(List<SubGoal> subGoal) {
+        this.subGoals = subGoal;
+    }
+
+    public void update(String title, DueDate dueDate) {
         this.title = title;
         this.dueDate = dueDate;
-        this.subGoals = subGoals;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -70,6 +74,32 @@ public class Goal {
 
     public LocalDate getDueDateValue() {
         return this.dueDate.getDate();
+    }
+
+    public void updateSubGoalOrderAndSort(UUID subGoalId, int newOrder) {
+        SubGoal targetSubGoal = this.subGoals.stream()
+                .filter(sg -> sg.getId().equals(subGoalId))
+                .findFirst()
+                .orElseThrow(SubGoalNotFoundException::new);
+
+        int oldOrder = targetSubGoal.getOrder();
+
+        if (oldOrder == newOrder) return;
+
+        shiftOrdersBetween(oldOrder, newOrder);
+        targetSubGoal.updateOrder(newOrder);
+    }
+
+    private void shiftOrdersBetween(int oldOrder, int newOrder) {
+        for (SubGoal subGoal : subGoals) {
+            int order = subGoal.getOrder();
+
+            if (oldOrder < newOrder && order > oldOrder && order <= newOrder) {
+                subGoal.updateOrder(order - 1); // 당김
+            } else if (oldOrder > newOrder && order >= newOrder && order < oldOrder) {
+                subGoal.updateOrder(order + 1); // 밀기
+            }
+        }
     }
 
     @Builder(builderMethodName = "createGoal")

@@ -52,7 +52,7 @@ public class GoalQueryService {
 
     private List<SubGoalDto> getTodoByIncompleteSubGoalList(List<SubGoal> subGoals) {
         return subGoals.stream()
-                .sorted(Comparator.comparing(SubGoal::getImportance))
+                .sorted(Comparator.comparing(SubGoal::getOrder))
                 .map(subGoal -> {
                     List<TodoSummary> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
                             subGoal.getId());

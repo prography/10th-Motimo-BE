@@ -61,9 +61,15 @@ public class GoalEntity {
         this.userId = userId;
         this.title = title;
         this.dueDate = dueDate;
+        this.completed = completed;
     }
 
     public void addSubGoals(List<SubGoalEntity> subGoals) {
+        this.subGoals.addAll(subGoals);
+    }
+
+    public void updateSubGoals(List<SubGoalEntity> subGoals) {
+        this.subGoals.clear();
         this.subGoals.addAll(subGoals);
     }
 

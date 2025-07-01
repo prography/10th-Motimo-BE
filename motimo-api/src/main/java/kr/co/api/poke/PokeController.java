@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1")
 public class PokeController implements PokeControllerSwagger {
 
-    @PostMapping("/groups/members/{targetId}/poke")
-    public void sendPokeNotification(@AuthUser UUID userId, @PathVariable UUID targetId) {
+    @PostMapping("/groups/members/{targetUserId}/poke")
+    public void sendPokeNotification(@AuthUser UUID userId, @PathVariable UUID targetUserId) {
 
     }
 }

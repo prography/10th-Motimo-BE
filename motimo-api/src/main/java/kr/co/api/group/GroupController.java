@@ -87,7 +87,7 @@ public class GroupController implements GroupControllerSwagger {
     }
 
     @GetMapping("/{groupId}/members")
-    public List<GroupMemberRs> getGroupMembers(@AuthUser UUID userId, UUID groupId) {
+    public List<GroupMemberRs> getGroupMembers(@AuthUser UUID userId, @PathVariable UUID groupId) {
         return List.of(
                 new GroupMemberRs(UUID.randomUUID(), "닉네임1", LocalDateTime.now(), true),
                 new GroupMemberRs(UUID.randomUUID(), "닉네임1", LocalDateTime.now(), false),

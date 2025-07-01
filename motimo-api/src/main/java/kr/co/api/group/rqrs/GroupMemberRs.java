@@ -12,7 +12,7 @@ public record GroupMemberRs(
         @Schema(description = "마지막 접속일")
         LocalDateTime lastOnlineDate,
         @Schema(description = "찌르기 활성화 여부")
-        boolean isActivePock
+        boolean isActivePoke
 ) {
 
 }

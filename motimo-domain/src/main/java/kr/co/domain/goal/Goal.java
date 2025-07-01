@@ -47,6 +47,10 @@ public class Goal {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void joinedGroup(UUID groupId) {
+        this.groupId = groupId;
+    }
+
     public void complete() {
         if (subGoals.stream().allMatch(SubGoal::isCompleted)) {
             completed = true;

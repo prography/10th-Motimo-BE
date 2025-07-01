@@ -7,6 +7,7 @@ import kr.co.api.goal.dto.GoalItemDto;
 import kr.co.api.goal.rqrs.GoalDetailRs;
 import kr.co.api.goal.rqrs.GoalItemRs;
 import kr.co.api.goal.rqrs.GoalListRs;
+import kr.co.api.goal.rqrs.GoalNotInGroupRs;
 import kr.co.api.goal.rqrs.GoalWithSubGoalTodoRs;
 import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.security.annotation.AuthUser;
@@ -41,4 +42,12 @@ public class GoalReadController implements GoalReadControllerSwagger {
         return GoalWithSubGoalTodoRs.from(goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId));
     }
 
+    @GetMapping("/not-joined-group")
+    public List<GoalNotInGroupRs> getGoalNotJoinGroup(@AuthUser UUID userId) {
+
+        return List.of(
+                new GoalNotInGroupRs("참여 대기중인 목표"),
+                new GoalNotInGroupRs("메가커피 인수")
+        );
+    }
 }

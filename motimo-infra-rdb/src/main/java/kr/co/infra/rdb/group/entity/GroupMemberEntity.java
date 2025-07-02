@@ -1,5 +1,6 @@
 package kr.co.infra.rdb.group.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
@@ -34,7 +35,16 @@ public class GroupMemberEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private GroupEntity group;
 
+    @Column(updatable = false)
     private LocalDateTime joinedDate;
 
     private boolean isNotificationActive;
+
+    public GroupMemberEntity(UUID id, UUID userId, UUID goalId, GroupEntity group, LocalDateTime joinedDate) {
+        this.id = id;
+        this.userId = userId;
+        this.goalId = goalId;
+        this.group = group;
+        this.joinedDate = joinedDate;
+    }
 }

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 import kr.co.infra.rdb.common.entity.BaseEntity;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
@@ -23,7 +22,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "groups")
 @SoftDelete(columnName = "is_deleted")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class GroupEntity extends BaseEntity {
     @Id
     @GeneratedUuidV7Value

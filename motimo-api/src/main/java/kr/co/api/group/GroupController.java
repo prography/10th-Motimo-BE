@@ -14,7 +14,7 @@ import kr.co.api.group.rqrs.message.TodoMessageContentRs;
 import kr.co.api.security.annotation.AuthUser;
 import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.group.MessageType;
-import kr.co.domain.reaction.ReactionType;
+import kr.co.domain.group.reaction.ReactionType;
 import kr.co.domain.todo.Emotion;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +44,8 @@ public class GroupController implements GroupControllerSwagger {
     }
 
     @GetMapping("/{groupId}/chats")
-    public CustomSlice<GroupMessageItemRs> getGroupChat(@PathVariable UUID groupId, @RequestParam int page, @RequestParam int size) {
+    public CustomSlice<GroupMessageItemRs> getGroupChat(@PathVariable UUID groupId,
+            @RequestParam int page, @RequestParam int size) {
         List<GroupMessageItemRs> groupChatItems = List.of(
                 new GroupMessageItemRs(
                         MessageType.ENTER,
@@ -87,7 +88,8 @@ public class GroupController implements GroupControllerSwagger {
     }
 
     @PostMapping("/message/{messageId}/reaction")
-    public GroupMessageIdRs createGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId, @RequestParam ReactionType type) {
+    public GroupMessageIdRs createGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId,
+            @RequestParam ReactionType type) {
         return new GroupMessageIdRs(UUID.randomUUID());
     }
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import kr.co.api.group.docs.GroupControllerSwagger;
 import kr.co.api.group.rqrs.GroupIdRs;
+import kr.co.api.group.rqrs.GroupJoinRq;
 import kr.co.api.group.rqrs.GroupMemberRs;
 import kr.co.api.group.rqrs.GroupMessageIdRs;
 import kr.co.api.group.rqrs.GroupMessageItemRs;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +39,7 @@ public class GroupController implements GroupControllerSwagger {
     }
 
     @PostMapping("/random-join")
-    public GroupIdRs joinRandomGroup(@AuthUser UUID userId) {
+    public GroupIdRs joinRandomGroup(@AuthUser UUID userId, @RequestBody GroupJoinRq rq) {
         return new GroupIdRs(UUID.randomUUID());
     }
 
@@ -49,7 +51,8 @@ public class GroupController implements GroupControllerSwagger {
                         UUID.randomUUID(),
                         "김하얀",
                         null,
-                        4
+                        4,
+                        false
                 ),
                 new GroupMessageItemRs(
                         MessageType.TODO,
@@ -62,7 +65,8 @@ public class GroupController implements GroupControllerSwagger {
                                 "완료한 투두 내용입니다",
                                 "file url입니다."
                         ),
-                        4
+                        4,
+                        true
                 ),
                 new GroupMessageItemRs(
                         MessageType.TODO,
@@ -75,7 +79,8 @@ public class GroupController implements GroupControllerSwagger {
                                 null,
                                 null
                         ),
-                        0
+                        0,
+                        false
                 )
         );
         return new CustomSlice<>(groupChatItems, true);

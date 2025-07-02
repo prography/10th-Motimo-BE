@@ -14,6 +14,8 @@ public record GroupMessageItemRs(
         @Schema(description = "메세지 내용")
         MessageContentRs message,
         @Schema(description = "리액션 갯수")
-        int reactionCount
+        int reactionCount,
+        @Schema(description = "로그인한 사용자 리액션 여부")
+        boolean hasReacted
 ) {
 }

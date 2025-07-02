@@ -4,11 +4,14 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import kr.co.domain.group.message.GroupMessageType;
@@ -34,18 +37,23 @@ public class GroupMessageEntity {
     @Column(name = "id")
     private UUID id;
 
+    @Column(nullable = false)
     private UUID groupId;
 
+    @Column(nullable = false)
     private UUID senderId;
 
+    @Column(nullable = false)
     private String senderName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private GroupMessageType type;
 
     private UUID targetId; // nullable
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "group_message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReactionEntity> reactions;
+    private List<ReactionEntity> reactions = new ArrayList<>();
 
     @CreatedDate
     private LocalDateTime sendAt;

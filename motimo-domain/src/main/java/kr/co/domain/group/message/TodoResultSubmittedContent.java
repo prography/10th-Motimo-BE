@@ -6,7 +6,7 @@ import kr.co.domain.todo.Emotion;
 public record TodoResultSubmittedContent(
         UUID todoId,
         String todoTitle,
-        UUID TodoResultId,
+        UUID todoResultId,
         Emotion emotion,
         String content,
         String fileUrl) implements GroupMessageContent {

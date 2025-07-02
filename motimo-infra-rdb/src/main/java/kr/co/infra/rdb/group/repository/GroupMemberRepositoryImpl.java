@@ -1,4 +1,4 @@
-package kr.co.infra.rdb.group.reposiotry;
+package kr.co.infra.rdb.group.repository;
 
 import kr.co.domain.group.repository.GroupMemberRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package kr.co.infra.rdb.group.reposiotry;
+package kr.co.infra.rdb.group.repository;
 
 import java.util.List;
 import java.util.UUID;

@@ -14,11 +14,17 @@ CREATE TABLE group_users
     goal_id                UUID NOT NULL,
     group_id               UUID NOT NULL,
     joined_date            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_notification_active BOOLEAN DEFAULT TRUE,
+    is_notification_active BOOLEAN   DEFAULT TRUE,
     created_at             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_deleted             BOOLEAN DEFAULT FALSE,
+    is_deleted             BOOLEAN   DEFAULT FALSE
 );
 
 ALTER TABLE group_users
     ADD CONSTRAINT FK_GROUP_USERS_ON_GROUP FOREIGN KEY (group_id) REFERENCES groups (id);
+
+ALTER TABLE goals
+    ADD COLUMN group_id UUID,
+ADD CONSTRAINT fk_goal_group
+    FOREIGN KEY (group_id)
+    REFERENCES groups(id);

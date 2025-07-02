@@ -50,7 +50,7 @@ public class GroupMessageEntity {
     @Column(nullable = false)
     private GroupMessageType type;
 
-    private UUID targetId; // nullable
+    private UUID targetId;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "group_message", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReactionEntity> reactions = new ArrayList<>();

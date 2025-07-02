@@ -1,5 +1,6 @@
 package kr.co.domain.group.reaction;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,4 +19,6 @@ public class Reaction {
     private UUID senderId;
     private UUID targetId;
     private ReactionType reactionType;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

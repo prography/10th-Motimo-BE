@@ -8,6 +8,7 @@ import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.infra.rdb.goal.entity.DueDateEmbeddable;
 import kr.co.infra.rdb.goal.entity.GoalEntity;
 import kr.co.infra.rdb.goal.entity.GoalMapper;
+import kr.co.infra.rdb.subGoal.entity.SubGoalMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -28,9 +29,16 @@ public class GoalRepositoryImpl implements GoalRepository {
     public Goal update(Goal goal) {
         GoalEntity goalEntity = goalJpaRepository.findById(goal.getId()).orElseThrow(
                 GoalNotFoundException::new);
+
+        goalEntity.updateSubGoals(
+                goal.getSubGoals().stream().map(s -> SubGoalMapper.toEntity(goalEntity, s))
+                        .toList());
+
         goalEntity.update(goal.getTitle(), DueDateEmbeddable.from(goal.getDueDate()),
                 goal.isCompleted(), goal.completedAt);
+
         GoalEntity savedGoal = goalJpaRepository.save(goalEntity);
+
         return GoalMapper.toDomain(savedGoal);
     }
 
@@ -41,8 +49,15 @@ public class GoalRepositoryImpl implements GoalRepository {
     }
 
     public List<Goal> findAllByUserId(UUID userId) {
-        List<GoalEntity> goalEntities = goalJpaRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+        List<GoalEntity> goalEntities = goalJpaRepository.findAllByUserIdOrderByCreatedAtDesc(
+                userId);
         return goalEntities.stream().map(GoalMapper::toDomain).toList();
+    }
+
+    public List<Goal> findUnassignedGroupGoalsByUserId(UUID userId) {
+        return goalJpaRepository.findAllByGroupNullAndUserId(userId).stream().map(
+                GoalMapper::toDomainWithoutSubGoal
+        ).toList();
     }
 
 }

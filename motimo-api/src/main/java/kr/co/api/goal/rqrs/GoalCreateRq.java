@@ -29,5 +29,4 @@ public record GoalCreateRq(
         @JsonSetter(nulls = Nulls.AS_EMPTY)
         List<SubGoalCreateRq> subGoals
 ) {
-
 }

@@ -6,11 +6,13 @@ import java.util.Random;
 import java.util.UUID;
 import kr.co.api.goal.dto.GoalDetailDto;
 import kr.co.api.goal.dto.GoalItemDto;
+import kr.co.api.goal.dto.GoalNotInGroupDto;
 import kr.co.api.goal.dto.GoalWithSubGoalTodoDto;
 import kr.co.api.goal.dto.SubGoalDto;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
+import kr.co.domain.group.repository.GroupMemberRepository;
 import kr.co.domain.subGoal.SubGoal;
 import kr.co.domain.todo.dto.TodoSummary;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GoalQueryService {
 
     private final GoalRepository goalRepository;
+    private final GroupMemberRepository groupMemberRepository;
     private final TodoQueryService todoQueryService;
 
     public GoalDetailDto getGoalDetail(UUID goalId) {
@@ -52,7 +55,7 @@ public class GoalQueryService {
 
     private List<SubGoalDto> getTodoByIncompleteSubGoalList(List<SubGoal> subGoals) {
         return subGoals.stream()
-                .sorted(Comparator.comparing(SubGoal::getImportance))
+                .sorted(Comparator.comparing(SubGoal::getOrder))
                 .map(subGoal -> {
                     List<TodoSummary> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
                             subGoal.getId());
@@ -60,5 +63,10 @@ public class GoalQueryService {
                     return new SubGoalDto(subGoal.getId(), subGoal.getTitle(), todos);
                 })
                 .toList();
+    }
+
+    public List<GoalNotInGroupDto> getGoalNotInGroup(UUID userId) {
+       List<Goal> goals = goalRepository.findUnassignedGroupGoalsByUserId(userId);
+       return goals.stream().map(GoalNotInGroupDto::from).toList();
     }
 }

@@ -1,5 +1,6 @@
 package kr.co.infra.rdb.subGoal.repository;
 
+import java.util.List;
 import java.util.UUID;
 import kr.co.domain.goal.exception.GoalNotFoundException;
 import kr.co.domain.subGoal.SubGoal;
@@ -29,6 +30,10 @@ public class SubGoalRepositoryImpl implements SubGoalRepository {
         return SubGoalMapper.toDomain(subGoalEntity);
     }
 
+    public List<SubGoal> findAllByGoalId(UUID goalId) {
+        return subGoalJpaRepository.findByGoalId(goalId).stream().map(SubGoalMapper::toDomain).toList();
+    }
+
     public SubGoal create(SubGoal subGoal) {
         GoalEntity goalEntity = goalJpaRepository.findById(subGoal.getGoalId()).orElseThrow(GoalNotFoundException::new);
         SubGoalEntity subGoalEntity = SubGoalMapper.toEntity(goalEntity, subGoal);
@@ -38,8 +43,21 @@ public class SubGoalRepositoryImpl implements SubGoalRepository {
 
     public SubGoal update(SubGoal subGoal) {
         SubGoalEntity subGoalEntity = subGoalJpaRepository.findById(subGoal.getId()).orElseThrow(SubGoalNotFoundException::new);
-        subGoalEntity.update(subGoal.getTitle(), subGoal.getImportance(), subGoal.isCompleted());
+        subGoalEntity.update(subGoal.getTitle(), subGoal.getOrder(), subGoal.isCompleted());
         SubGoalEntity savedSubGoal = subGoalJpaRepository.save(subGoalEntity);
         return SubGoalMapper.toDomain(savedSubGoal);
+    }
+
+    public void updateAllOrder(List<SubGoal> subGoals) {
+        List<SubGoalEntity> subGoalEntities = subGoalJpaRepository.findAllById(subGoals.stream().map(SubGoal::getId).toList());
+
+        subGoalEntities.forEach(subGoalEntity -> {
+            subGoals.stream()
+                    .filter(subGoal -> subGoal.getId().equals(subGoalEntity.getId()))
+                    .findFirst()
+                    .ifPresent(matched -> subGoalEntity.updateOrder(matched.getOrder()));
+        });
+
+        subGoalJpaRepository.saveAll(subGoalEntities);
     }
 }

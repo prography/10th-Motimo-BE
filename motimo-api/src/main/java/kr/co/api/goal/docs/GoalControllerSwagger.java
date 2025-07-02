@@ -10,9 +10,7 @@ import java.util.UUID;
 import kr.co.api.exception.ErrorResponse;
 import kr.co.api.goal.rqrs.GoalCreateRq;
 import kr.co.api.goal.rqrs.GoalIdRs;
-import kr.co.api.goal.rqrs.GoalListRs;
 import kr.co.api.goal.rqrs.GoalUpdateRq;
-import kr.co.api.goal.rqrs.GoalWithSubGoalTodoRs;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "목표 API", description = "목표 관련 API 목록입니다")
@@ -22,7 +20,7 @@ public interface GoalControllerSwagger {
     GoalIdRs createGoal(UUID userId, GoalCreateRq rq);
 
     @Operation(summary = "목표 수정 API", description = "목표를 수정합니다.")
-    GoalIdRs updateGoal(UUID userId, String id, GoalUpdateRq rq);
+    GoalIdRs updateGoal(UUID userId, UUID goalId, GoalUpdateRq rq);
 
     @Operation(summary = "목표 완료 API", description = "목표를 완료합니다.")
     @ApiResponses({
@@ -35,10 +33,4 @@ public interface GoalControllerSwagger {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     GoalIdRs goalComplete(UUID userId, @PathVariable UUID goalId);
-
-    @Operation(summary = "목표 목록 API", description = "목표 목록을 조회합니다.")
-    GoalListRs getGoalList(UUID userId);
-
-    @Operation(summary = "목표 투두 목록 API", description = "목표에 해당하는 세부 목표와 투두 목록을 조회합니다.")
-    GoalWithSubGoalTodoRs getTodoListByGoal(@PathVariable UUID goalId);
 }

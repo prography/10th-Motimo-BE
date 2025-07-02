@@ -54,14 +54,14 @@ class GoalMapperTest {
 
         SubGoal subGoal = SubGoal.createSubGoal()
                 .title("goal title")
-                .importance(1)
+                .order(1)
                 .build();
 
         SubGoalEntity entity = SubGoalMapper.toEntity(goalEntity, subGoal);
 
         assertThat(entity).isNotNull();
         assertThat(entity.getTitle()).isEqualTo(subGoal.getTitle());
-        assertThat(entity.getImportance()).isEqualTo(subGoal.getImportance());
+        assertThat(entity.getImportance()).isEqualTo(subGoal.getOrder());
         assertThat(entity.isCompleted()).isFalse();
         assertThat(entity.getCompletedChangedAt()).isNull();
     }

@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 import kr.co.infra.rdb.common.entity.BaseEntity;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
-import kr.co.infra.rdb.group.GroupEntity;
 import kr.co.infra.rdb.subGoal.entity.SubGoalEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -49,9 +47,6 @@ public class GoalEntity extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<SubGoalEntity> subGoals = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private GroupEntity group = null;
-
     protected GoalEntity(UUID id, UUID userId, String title, DueDateEmbeddable dueDate, boolean completed) {
         this.id = id;
         this.userId = userId;
@@ -74,10 +69,6 @@ public class GoalEntity extends BaseEntity {
         this.dueDate = dueDate;
         this.completed = completed;
         this.completedAt = completedAt;
-    }
-
-    public void joinedGroup(GroupEntity group) {
-        this.group = group;
     }
 
 }

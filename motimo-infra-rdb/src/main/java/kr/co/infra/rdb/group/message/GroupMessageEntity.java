@@ -41,10 +41,7 @@ public class GroupMessageEntity {
     private UUID groupId;
 
     @Column(nullable = false)
-    private UUID senderId;
-
-    @Column(nullable = false)
-    private String senderName;
+    private UUID userId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -52,7 +49,7 @@ public class GroupMessageEntity {
 
     private UUID targetId;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group_message", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReactionEntity> reactions = new ArrayList<>();
 
     @CreatedDate

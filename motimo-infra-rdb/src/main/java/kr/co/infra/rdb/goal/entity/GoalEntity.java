@@ -1,26 +1,26 @@
 package kr.co.infra.rdb.goal.entity;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import kr.co.infra.rdb.common.entity.BaseEntity;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
+import kr.co.infra.rdb.group.entity.GroupEntity;
 import kr.co.infra.rdb.subGoal.entity.SubGoalEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -29,7 +29,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @SoftDelete(columnName = "is_deleted")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GoalEntity {
+public class GoalEntity extends BaseEntity {
 
     @Id
     @GeneratedUuidV7Value
@@ -42,19 +42,15 @@ public class GoalEntity {
     @Embedded
     private DueDateEmbeddable dueDate;
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
     private boolean completed;
 
     private LocalDateTime completedAt;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<SubGoalEntity> subGoals = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private GroupEntity group = null;
 
     protected GoalEntity(UUID id, UUID userId, String title, DueDateEmbeddable dueDate, boolean completed) {
         this.id = id;
@@ -78,6 +74,10 @@ public class GoalEntity {
         this.dueDate = dueDate;
         this.completed = completed;
         this.completedAt = completedAt;
+    }
+
+    public void joinGroup(GroupEntity group) {
+        this.group = group;
     }
 
 }

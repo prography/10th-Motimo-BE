@@ -29,6 +29,8 @@ public class Goal {
     private LocalDateTime createdAt;
     public LocalDateTime completedAt;
     @Builder.Default()
+    private UUID groupId = null;
+    @Builder.Default()
     private List<SubGoal> subGoals = new ArrayList<>();
 
     public void addSubGoals(List<SubGoal> subGoal) {
@@ -43,6 +45,10 @@ public class Goal {
         this.title = title;
         this.dueDate = dueDate;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void joinedGroup(UUID groupId) {
+        this.groupId = groupId;
     }
 
     public void complete() {

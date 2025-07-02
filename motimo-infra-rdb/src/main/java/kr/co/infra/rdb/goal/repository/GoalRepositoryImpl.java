@@ -54,4 +54,10 @@ public class GoalRepositoryImpl implements GoalRepository {
         return goalEntities.stream().map(GoalMapper::toDomain).toList();
     }
 
+    public List<Goal> findUnassignedGroupGoalsByUserId(UUID userId) {
+        return goalJpaRepository.findAllByGroupNullAndUserId(userId).stream().map(
+                GoalMapper::toDomainWithoutSubGoal
+        ).toList();
+    }
+
 }

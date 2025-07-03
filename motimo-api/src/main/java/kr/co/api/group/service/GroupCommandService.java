@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class GroupCommandService {
 
     private final GoalRepository goalRepository;
     private final GroupRepository groupRepository;
 
+    @Transactional
     public UUID joinGroup(UUID userId, UUID goalId) {
         Goal goal = goalRepository.findByIdWithoutSubGoals(goalId);
 

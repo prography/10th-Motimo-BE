@@ -14,6 +14,7 @@ import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SoftDelete;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -38,6 +39,7 @@ public class GroupMemberEntity extends BaseEntity {
     @Column(updatable = false)
     private LocalDateTime joinedDate;
 
+    @ColumnDefault(value = "true")
     private boolean isNotificationActive;
 
     public GroupMemberEntity(UUID id, UUID userId, UUID goalId, GroupEntity group, LocalDateTime joinedDate) {

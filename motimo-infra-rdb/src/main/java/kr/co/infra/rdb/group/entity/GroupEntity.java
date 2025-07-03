@@ -33,7 +33,7 @@ public class GroupEntity extends BaseEntity {
 
     private LocalDateTime finishedDate;
 
-    GroupEntity(UUID id) {
+    public GroupEntity(UUID id) {
         this.id = id;
     }
 }

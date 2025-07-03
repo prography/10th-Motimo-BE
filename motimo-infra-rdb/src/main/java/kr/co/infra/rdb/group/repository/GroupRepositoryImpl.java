@@ -22,6 +22,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class GroupRepositoryImpl implements GroupRepository {
+
     private static final long MAX_GROUP_COUNT = 6;
 
 
@@ -45,7 +46,7 @@ public class GroupRepositoryImpl implements GroupRepository {
         groupMemberJpaRepository.save(
                 new GroupMemberEntity(
                         null,
-                       dto.userId(),
+                        dto.userId(),
                         dto.goalId(),
                         groupEntity,
                         LocalDateTime.now()

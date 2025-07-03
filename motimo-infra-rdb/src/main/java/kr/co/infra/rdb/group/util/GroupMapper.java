@@ -14,7 +14,7 @@ public class GroupMapper {
                 .build();
     }
 
-    public static GroupEntity toEntity(Group goal) {
-        return new GroupEntity();
+    public static GroupEntity toEntity(Group group) {
+        return new GroupEntity(group.getId());
     }
 }

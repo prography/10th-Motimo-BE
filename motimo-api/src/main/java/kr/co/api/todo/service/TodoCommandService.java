@@ -5,6 +5,7 @@ import java.util.UUID;
 import kr.co.domain.common.event.Events;
 import kr.co.domain.common.event.FileDeletedEvent;
 import kr.co.domain.common.event.FileRollbackEvent;
+import kr.co.domain.common.event.group.message.TodoCompletedEvent;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
@@ -49,6 +50,12 @@ public class TodoCommandService {
         Todo todo = todoRepository.findById(todoId);
         todo.validateOwner(userId);
         todo.toggleCompletion();
+        
+        if (todo.isComplete()) {
+            Events.publishEvent(
+                    new TodoCompletedEvent(userId, todo.getSubGoalId(), todo.getId(),
+                            todo.getTitle()));
+        }
         return todoRepository.update(todo).getId();
     }
 

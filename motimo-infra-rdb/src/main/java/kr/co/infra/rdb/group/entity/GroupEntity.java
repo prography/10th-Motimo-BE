@@ -19,7 +19,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "groups")
+@Table(name = "goal_groups")
 @SoftDelete(columnName = "is_deleted")
 @Getter
 @NoArgsConstructor
@@ -32,4 +32,8 @@ public class GroupEntity extends BaseEntity {
     private List<GroupMemberEntity> groupMembers;
 
     private LocalDateTime finishedDate;
+
+    GroupEntity(UUID id) {
+        this.id = id;
+    }
 }

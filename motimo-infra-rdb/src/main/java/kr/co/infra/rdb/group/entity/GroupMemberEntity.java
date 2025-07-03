@@ -19,7 +19,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "group_users")
+@Table(name = "group_members")
 @SoftDelete(columnName = "is_deleted")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

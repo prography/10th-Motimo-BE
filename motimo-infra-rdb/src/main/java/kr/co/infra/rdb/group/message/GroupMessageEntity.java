@@ -1,22 +1,17 @@
 package kr.co.infra.rdb.group.message;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import kr.co.domain.group.message.GroupMessageType;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
-import kr.co.infra.rdb.group.reaction.ReactionEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,11 +42,9 @@ public class GroupMessageEntity {
     @Column(nullable = false)
     private GroupMessageType type;
 
-    private UUID targetId;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReactionEntity> reactions = new ArrayList<>();
-
+    @Embedded
+    private MessageRefEmbeddable messageReference;
+    
     @CreatedDate
     private LocalDateTime sendAt;
 }

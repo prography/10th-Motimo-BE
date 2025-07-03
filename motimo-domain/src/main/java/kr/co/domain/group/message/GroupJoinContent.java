@@ -1,6 +1,6 @@
 package kr.co.domain.group.message;
 
-public record JoinContent() implements GroupMessageContent {
+public record GroupJoinContent() implements GroupMessageContent {
 
     @Override
     public GroupMessageType getType() {

@@ -93,6 +93,8 @@ public class TodoCommandService {
                 .filePath(filePath)
                 .build();
 
+        // 투두 결과 제출시 이벤트 발생
+
         return todoResultRepository.create(result).getId();
     }
 

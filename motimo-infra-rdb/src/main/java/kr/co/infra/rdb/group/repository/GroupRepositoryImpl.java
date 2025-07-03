@@ -14,10 +14,10 @@ import kr.co.domain.group.dto.GroupJoinDto;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.infra.rdb.goal.entity.QGoalEntity;
 import kr.co.infra.rdb.group.entity.GroupEntity;
-import kr.co.infra.rdb.group.entity.GroupMapper;
 import kr.co.infra.rdb.group.entity.GroupMemberEntity;
 import kr.co.infra.rdb.group.entity.QGroupEntity;
 import kr.co.infra.rdb.group.entity.QGroupMemberEntity;
+import kr.co.infra.rdb.group.util.GroupMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -35,6 +35,7 @@ public class GroupRepositoryImpl implements GroupRepository {
         GroupEntity groupEntity = groupJpaRepository.save(
                 GroupMapper.toEntity(group)
         );
+
         return GroupMapper.toDomain(groupEntity);
     }
 
@@ -68,7 +69,7 @@ public class GroupRepositoryImpl implements GroupRepository {
 
         // 각 그룹 멤버들의 목표 완료날짜 평균을 계산
         JPAQuery<Double> avgDueDateSubquery = jpaQueryFactory
-                .select(goal.dueDate.dueDate.dayOfYear().avg())
+                .select(goal.dueDate.dueDate.dayOfYear().castToNum(Double.class).avg())
                 .from(member)
                 .join(goal).on(member.goalId.eq(goal.id))
                 .where(member.group.id.eq(group.id));
@@ -97,7 +98,7 @@ public class GroupRepositoryImpl implements GroupRepository {
                 .limit(1)
                 .fetchOne();
 
-        return Optional.ofNullable(GroupMapper.toDomain(result));
+        return result == null ? Optional.empty() : Optional.of(GroupMapper.toDomain(result));
     }
 
 }

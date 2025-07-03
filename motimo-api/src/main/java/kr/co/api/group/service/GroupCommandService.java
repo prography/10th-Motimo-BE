@@ -1,6 +1,5 @@
 package kr.co.api.group.service;
 
-import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
@@ -22,23 +21,31 @@ public class GroupCommandService {
     public UUID joinGroup(UUID userId, UUID goalId) {
         Goal goal = goalRepository.findByIdWithoutSubGoals(goalId);
 
-        Optional<Group> matchedGroup = groupRepository.findAvailableGroupBySimilarDueDate(userId,
-                goal.getDueDateValue());
-
-        if (matchedGroup.isPresent()) {
-            groupRepository.join(GroupJoinDto.builder()
-                    .groupId(matchedGroup.get().getId())
-                    .userId(userId)
-                    .goalId(goalId).build());
-            return matchedGroup.get().getId();
-        }
-
-        Group group = groupRepository.create(Group.createGoal().build());
-        groupRepository.join(GroupJoinDto.builder()
-                .groupId(group.getId())
-                .userId(userId)
-                .goalId(goalId).build());
-
-        return group.getId();
+        return groupRepository.findAvailableGroupBySimilarDueDate(userId, goal.getDueDateValue())
+                .map(group -> joinUserToGroup(group.getId(), userId, goalId))
+                .orElseGet(() -> createAndJoinNewGroup(userId, goalId));
     }
+
+    private UUID joinUserToGroup(UUID groupId, UUID userId, UUID goalId) {
+        GroupJoinDto joinDto = GroupJoinDto.builder()
+                .groupId(groupId)
+                .userId(userId)
+                .goalId(goalId)
+                .build();
+
+        return groupRepository.join(joinDto).getId();
+    }
+
+    private UUID createAndJoinNewGroup(UUID userId, UUID goalId) {
+        UUID newGroupId = createNewGroup();
+        joinUserToGroup(newGroupId, userId, goalId);
+        return newGroupId;
+    }
+
+    private UUID createNewGroup() {
+        Group newGroup = groupRepository.create(Group.createGroup().build());
+        return newGroup.getId();
+    }
+
+
 }

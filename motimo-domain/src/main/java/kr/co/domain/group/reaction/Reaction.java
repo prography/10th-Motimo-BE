@@ -16,8 +16,8 @@ public class Reaction {
 
     @Builder.Default
     private UUID id = null;
-    private UUID senderId;
-    private UUID targetId;
+    private UUID userId;
+    private UUID messageId;
     private ReactionType reactionType;
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

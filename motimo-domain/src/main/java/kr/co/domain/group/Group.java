@@ -13,9 +13,10 @@ import lombok.Getter;
 public class Group {
     @Builder.Default()
     private UUID id = null;
-    private LocalDateTime lastActiveDate;
+//    private List<GroupMember> members = new ArrayList<>();
+    private LocalDateTime finishedDate;
 
-    @Builder(builderMethodName = "createGoal")
+    @Builder(builderMethodName = "createGroup")
     private Group() {
     }
 }

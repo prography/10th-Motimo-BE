@@ -1,0 +1,30 @@
+package kr.co.infra.rdb.group.message;
+
+import kr.co.domain.group.message.GroupMessage;
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class GroupMessageMapper {
+
+    public static GroupMessageEntity toEntity(GroupMessage groupMessage) {
+        return new GroupMessageEntity(
+                groupMessage.getId(),
+                groupMessage.getGroupId(),
+                groupMessage.getUserId(),
+                groupMessage.getContent().getType(),
+                MessageReferenceEmbeddable.from(groupMessage.getMessageReference()),
+                groupMessage.getSendAt()
+        );
+    }
+
+    public static GroupMessage toDomain(GroupMessageEntity groupMessageEntity) {
+        return GroupMessage.builder()
+                .id(groupMessageEntity.getId())
+                .groupId(groupMessageEntity.getGroupId())
+                .userId(groupMessageEntity.getUserId())
+                .messageReference(groupMessageEntity.getMessageReference().toDomain())
+                .sendAt(groupMessageEntity.getSendAt())
+                .build();
+    }
+
+}

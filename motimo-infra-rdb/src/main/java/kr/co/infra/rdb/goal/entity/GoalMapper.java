@@ -10,7 +10,10 @@ import lombok.experimental.UtilityClass;
 public class GoalMapper {
 
     public static Goal toDomain(GoalEntity entity) {
-        List<SubGoal> subGoals = entity.getSubGoals().stream().map(SubGoalMapper::toDomain).toList();
+        List<SubGoal> subGoals = entity.getSubGoals()
+                .stream()
+                .map(SubGoalMapper::toDomain)
+                .toList();
 
         return Goal.builder()
                 .id(entity.getId())
@@ -21,7 +24,9 @@ public class GoalMapper {
                 .updatedAt(entity.getUpdatedAt())
                 .completed(entity.isCompleted())
                 .completedAt(entity.getCompletedAt())
-                .subGoals(subGoals).build();
+                .subGoals(subGoals)
+                .groupId(entity.getGroup().getId())
+                .build();
     }
 
     public static Goal toDomainWithoutSubGoal(GoalEntity entity) {
@@ -34,7 +39,9 @@ public class GoalMapper {
                 .updatedAt(entity.getUpdatedAt())
                 .completed(entity.isCompleted())
                 .completedAt(entity.getCompletedAt())
-                .subGoals(null).build();
+                .subGoals(null)
+                .groupId(entity.getGroup().getId())
+                .build();
     }
 
     public static GoalEntity toEntity(Goal goal) {
@@ -46,7 +53,9 @@ public class GoalMapper {
                 goal.isCompleted()
         );
 
-        goalEntity.addSubGoals(goal.getSubGoals().stream().map(s -> SubGoalMapper.toEntity(goalEntity, s)).toList());
+        goalEntity.addSubGoals(
+                goal.getSubGoals().stream().map(s -> SubGoalMapper.toEntity(goalEntity, s))
+                        .toList());
 
         return goalEntity;
     }

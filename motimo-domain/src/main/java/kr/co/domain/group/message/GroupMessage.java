@@ -1,7 +1,9 @@
 package kr.co.domain.group.message;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import kr.co.domain.group.reaction.Reaction;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,19 +18,22 @@ public class GroupMessage {
     private UUID id = null;
     private UUID groupId;
     private UUID userId;
-    private String userName;
+    private GroupMessageType messageType;
     private MessageReference messageReference;
-    private GroupMessageContent content;
+    private List<Reaction> reactions;
     @Builder.Default
     private LocalDateTime sendAt = LocalDateTime.now();
 
+    public int getReactionCount() {
+        return reactions.size();
+    }
+
     @Builder(builderMethodName = "createGroupMessage")
-    private GroupMessage(UUID groupId, UUID userId, String userName,
-            MessageReference messageReference, GroupMessageContent content) {
+    private GroupMessage(UUID groupId, UUID userId, String userName, GroupMessageType messageType,
+            MessageReference messageReference) {
         this.groupId = groupId;
         this.userId = userId;
-        this.userName = userName;
+        this.messageType = messageType;
         this.messageReference = messageReference;
-        this.content = content;
     }
 }

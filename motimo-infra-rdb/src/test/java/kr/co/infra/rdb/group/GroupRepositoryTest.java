@@ -16,6 +16,7 @@ import kr.co.infra.rdb.goal.entity.GoalEntity;
 import kr.co.infra.rdb.group.entity.GroupEntity;
 import kr.co.infra.rdb.group.entity.GroupMemberEntity;
 import kr.co.infra.rdb.group.repository.GroupRepositoryImpl;
+import kr.co.infra.rdb.group.repository.query.GroupJpaSubQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ import org.springframework.test.context.ActiveProfiles;
 @DataJpaTest
 @ActiveProfiles("test")
 @Transactional
-@Import({GroupRepositoryImpl.class, QueryDslConfig.class})
+@Import({GroupRepositoryImpl.class, QueryDslConfig.class, GroupJpaSubQuery.class})
 @EntityScan(basePackages = "kr.co.infra.rdb")
 class GroupRepositoryTest {
 
@@ -40,38 +41,31 @@ class GroupRepositoryTest {
     private GroupRepository groupRepository;
 
     private UUID testUserId;
-    private UUID otherUserId;
-    private LocalDate testDueDate;
+    private static final int MAX_GROUP_COUNT = 6;
+    private LocalDate standardDueDate;
 
     @BeforeEach
     void setUp() {
         testUserId = UUID.randomUUID();
-        otherUserId = UUID.randomUUID();
-        testDueDate = LocalDate.of(2024, 6, 15); // Day of year: 167
+        standardDueDate = LocalDate.of(2024, 6, 15);
     }
 
     @Test
-    @DisplayName("사용 가능한 그룹이 존재하지 않을 때 빈 Optional 반환")
-    void shouldReturnEmptyWhenNoAvailableGroup() {
-        // Given
-        LocalDate searchDueDate = LocalDate.of(2024, 6, 15);
-
+    void 사용_가능한_그룹이_없다면_빈_값_반환() {
         // When
-        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, searchDueDate);
+        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, standardDueDate);
 
         // Then
         assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("멤버 수가 6명 미만이고 날짜 차이가 30일 이내인 그룹 찾기 성공")
-    void shouldFindAvailableGroupWithSimilarDueDate() {
+    void 멤버수가_6명_미만이고_날짜_차이가_30일_이내인_그룹_찾기_성공() {
         // Given
         GroupEntity group = createGroup();
         entityManager.persistAndFlush(group);
 
-        // 5명의 멤버 추가 (MAX_GROUP_COUNT 미만)
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < MAX_GROUP_COUNT - 1; i++) {
             UUID memberId = UUID.randomUUID();
 
             // 목표 완료날짜를 비슷하게 설정 (6월 10일 ~ 6월 20일)
@@ -94,16 +88,13 @@ class GroupRepositoryTest {
     }
 
     @Test
-    @DisplayName("멤버 수가 6명 이상인 그룹은 제외")
-    void shouldExcludeGroupWithMaxMembers() {
+    void 멤버_수가_6명_이상인_그룹_제외() {
         // Given
         GroupEntity group = createGroup();
         entityManager.persistAndFlush(group);
 
-        // 6명의 멤버 추가 (MAX_GROUP_COUNT 이상)
         for (int i = 0; i < 6; i++) {
             UUID memberId = UUID.randomUUID();
-            UUID goalId = UUID.randomUUID();
 
             LocalDate memberDueDate = LocalDate.of(2024, 6, 15);
 
@@ -113,23 +104,19 @@ class GroupRepositoryTest {
             entityManager.persistAndFlush(member);
         }
 
-        LocalDate searchDueDate = LocalDate.of(2024, 6, 15);
-
         // When
-        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, searchDueDate);
+        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, standardDueDate);
 
         // Then
         assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("사용자가 이미 속한 그룹은 제외")
-    void shouldExcludeGroupUserAlreadyJoined() {
+    void 사용자가_이미_속한_그룹_제외() {
         // Given
         GroupEntity group = createGroup();
         entityManager.persistAndFlush(group);
 
-        UUID goalId = UUID.randomUUID();
         LocalDate memberDueDate = LocalDate.of(2024, 6, 15);
 
         GoalEntity goal = entityManager.persistAndFlush(createGoal(memberDueDate));
@@ -137,10 +124,8 @@ class GroupRepositoryTest {
 
         entityManager.persistAndFlush(member);
 
-        LocalDate searchDueDate = LocalDate.of(2024, 6, 15);
-
         // When
-        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, searchDueDate);
+        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, standardDueDate);
 
         // Then
         assertThat(result).isEmpty();
@@ -148,17 +133,16 @@ class GroupRepositoryTest {
 
     @Test
     @DisplayName("평균 완료날짜와 30일 초과 차이나는 그룹은 제외")
-    void shouldExcludeGroupWithFarDueDate() {
+    void 평균_완료_날짜와_30일_초과_차이나는_그룹_제외() {
         // Given
         GroupEntity group = createGroup();
         entityManager.persistAndFlush(group);
 
-        // 3명의 멤버 추가 (완료날짜를 8월로 설정)
         for (int i = 0; i < 3; i++) {
             UUID memberId = UUID.randomUUID();
-            UUID goalId = UUID.randomUUID();
 
-            LocalDate memberDueDate = LocalDate.of(2024, 8, 15); // Day of year: 228
+            // 완료 날짜 8월로 설정
+            LocalDate memberDueDate = LocalDate.of(2024, 8, 15);
 
             GoalEntity goal = entityManager.persistAndFlush(createGoal(memberDueDate));
             GroupMemberEntity member = createGroupMember(group, memberId, goal.getId());
@@ -166,18 +150,15 @@ class GroupRepositoryTest {
             entityManager.persistAndFlush(member);
         }
 
-        LocalDate searchDueDate = LocalDate.of(2024, 6, 15); // Day of year: 167, 차이: 61일
-
         // When
-        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, searchDueDate);
+        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, standardDueDate);
 
         // Then
         assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("여러 조건을 만족하는 그룹 중 첫 번째 그룹 반환")
-    void shouldReturnFirstAvailableGroup() {
+    void 여러_조건을_만족하는_그룹_중_첫_번째_반환() {
         // Given
         GroupEntity group1 = createGroup();
         GroupEntity group2 = createGroup();
@@ -188,38 +169,31 @@ class GroupRepositoryTest {
         setupGroupWithMembers(group1, 3);
         setupGroupWithMembers(group2, 4);
 
-        LocalDate searchDueDate = LocalDate.of(2024, 6, 15);
-
         // When
-        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, searchDueDate);
+        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, standardDueDate);
 
         // Then
         assertThat(result).isPresent();
-        // limit(1)로 인해 첫 번째 그룹이 반환되어야 함
     }
 
     @Test
-    @DisplayName("경계값 테스트: 정확히 30일 차이나는 경우")
-    void shouldIncludeGroupWithExactly30DaysDifference() {
+    @DisplayName("경계값 테스트")
+    void 정확히_30일_차이나는_경우() {
         // Given
         GroupEntity group = createGroup();
         entityManager.persistAndFlush(group);
 
-        // 평균 완료날짜가 정확히 30일 차이나도록 설정
         UUID memberId = UUID.randomUUID();
-        UUID goalId = UUID.randomUUID();
 
-        LocalDate memberDueDate = LocalDate.of(2024, 7, 15); // Day of year: 197
+        LocalDate memberDueDate = LocalDate.of(2024, 7, 15);
 
         GoalEntity goal = entityManager.persistAndFlush(createGoal(memberDueDate));
         GroupMemberEntity member = createGroupMember(group, memberId, goal.getId());
 
         entityManager.persistAndFlush(member);
 
-        LocalDate searchDueDate = LocalDate.of(2024, 6, 15); // Day of year: 167, 차이: 30일
-
         // When
-        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, searchDueDate);
+        Optional<Group> result = groupRepository.findAvailableGroupBySimilarDueDate(testUserId, standardDueDate);
 
         // Then
         assertThat(result).isPresent();
@@ -254,9 +228,7 @@ class GroupRepositoryTest {
         for (int i = 0; i < memberCount; i++) {
             UUID memberId = UUID.randomUUID();
 
-            LocalDate memberDueDate = LocalDate.of(2024, 6, 15);
-
-            GoalEntity goal = entityManager.persistAndFlush(createGoal(memberDueDate));
+            GoalEntity goal = entityManager.persistAndFlush(createGoal(standardDueDate));
             GroupMemberEntity member = createGroupMember(group, memberId, goal.getId());
 
             entityManager.persistAndFlush(member);

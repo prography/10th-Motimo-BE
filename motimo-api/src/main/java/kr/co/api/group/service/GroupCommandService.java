@@ -37,13 +37,8 @@ public class GroupCommandService {
     }
 
     private UUID createAndJoinNewGroup(UUID userId, UUID goalId) {
-        UUID newGroupId = createNewGroup();
-        joinUserToGroup(newGroupId, userId, goalId);
-        return newGroupId;
-    }
-
-    private UUID createNewGroup() {
         Group newGroup = groupRepository.create(Group.createGroup().build());
+        joinUserToGroup(newGroup.getId(), userId, goalId);
         return newGroup.getId();
     }
 

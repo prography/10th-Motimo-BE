@@ -25,7 +25,7 @@ public class GoalMapper {
                 .completed(entity.isCompleted())
                 .completedAt(entity.getCompletedAt())
                 .subGoals(subGoals)
-                .groupId(entity.getGroup().getId())
+                .groupId(entity.getGroup() != null ? entity.getGroup().getId() : null)
                 .build();
     }
 
@@ -40,7 +40,7 @@ public class GoalMapper {
                 .completed(entity.isCompleted())
                 .completedAt(entity.getCompletedAt())
                 .subGoals(null)
-                .groupId(entity.getGroup().getId())
+                .groupId(entity.getGroup() != null ? entity.getGroup().getId() : null)
                 .build();
     }
 

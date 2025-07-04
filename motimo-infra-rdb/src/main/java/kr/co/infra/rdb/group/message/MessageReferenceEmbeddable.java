@@ -5,7 +5,8 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.util.UUID;
-import kr.co.domain.group.message.MessageRefType;
+import kr.co.domain.group.message.MessageReference;
+import kr.co.domain.group.message.MessageReferenceType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,12 +16,21 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MessageRefEmbeddable {
+public class MessageReferenceEmbeddable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "reference_type")
-    private MessageRefType messageRefType;
+    private MessageReferenceType messageRefType;
 
     @Column(name = "reference_id")
     private UUID referenceId;
+
+    public static MessageReferenceEmbeddable from(MessageReference messageReference) {
+        return new MessageReferenceEmbeddable(messageReference.messageRefType(),
+                messageReference.referenceId());
+    }
+
+    public MessageReference toDomain() {
+        return new MessageReference(messageRefType, referenceId);
+    }
 }

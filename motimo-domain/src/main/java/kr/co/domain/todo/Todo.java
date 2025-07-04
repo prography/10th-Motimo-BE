@@ -41,6 +41,10 @@ public class Todo {
             throw new AccessDeniedException(TodoErrorCode.TODO_ACCESS_DENIED);
         }
     }
+    
+    public boolean isComplete() {
+        return this.status == TodoStatus.COMPLETE;
+    }
 
     @Builder(builderMethodName = "createTodo")
     private Todo(UUID subGoalId, UUID userId, String title, LocalDate date) {

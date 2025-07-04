@@ -19,6 +19,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Goal {
+
     @Builder.Default()
     private UUID id = null;
     public boolean completed;
@@ -61,13 +62,13 @@ public class Goal {
     }
 
     public void validateOwner(UUID userId) {
-        if(!userId.equals(this.userId)) {
+        if (!userId.equals(this.userId)) {
             throw new AccessDeniedException(GoalErrorCode.GOAL_ACCESS_DENIED);
         }
     }
 
     public float calculateProgress() {
-        if(subGoals.isEmpty()) {
+        if (subGoals.isEmpty()) {
             return 0;
         }
 
@@ -88,7 +89,9 @@ public class Goal {
 
         int oldOrder = targetSubGoal.getOrder();
 
-        if (oldOrder == newOrder) return;
+        if (oldOrder == newOrder) {
+            return;
+        }
 
         shiftOrdersBetween(oldOrder, newOrder);
         targetSubGoal.updateOrder(newOrder);
@@ -104,6 +107,10 @@ public class Goal {
                 subGoal.updateOrder(order + 1); // 밀기
             }
         }
+    }
+
+    public boolean isJoinedGroup() {
+        return this.groupId != null;
     }
 
     @Builder(builderMethodName = "createGoal")

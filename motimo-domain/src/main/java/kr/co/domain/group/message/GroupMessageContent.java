@@ -1,7 +1,7 @@
 package kr.co.domain.group.message;
 
 public sealed interface GroupMessageContent permits
-        JoinContent, LeaveContent, TodoCompletedContent, TodoResultSubmittedContent {
+        GroupJoinContent, GroupLeaveContent, TodoCompletedContent, TodoResultSubmittedContent {
 
     GroupMessageType getType();
 }

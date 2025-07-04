@@ -26,9 +26,9 @@ public interface GroupControllerSwagger {
     GroupIdRs joinRandomGroup(UUID userId, @RequestBody GroupJoinRq rq);
 
     @Operation(summary = "그룹 채팅 조회 API", description = "그룹 채팅을 조회합니다.")
-    CustomSlice<GroupMessageItemRs> getGroupChat(UUID groupId, @RequestParam int page,
+    CustomSlice<GroupMessageItemRs> getGroupChat(UUID userId, UUID groupId, @RequestParam int page,
             @RequestParam int size);
-
+    
     @Operation(summary = "그룹 리액션 API", description = "그룹 리액션을 생성합니다.")
     GroupMessageIdRs createGroupReaction(UUID userId, @PathVariable UUID messageId,
             @RequestParam ReactionType reactionType);

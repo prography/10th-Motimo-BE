@@ -1,7 +1,6 @@
 package kr.co.domain.group.message;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import kr.co.domain.group.reaction.Reaction;
@@ -18,11 +17,23 @@ public class GroupMessage {
     @Builder.Default
     private UUID id = null;
     private UUID groupId;
-    private UUID senderId;
-    private String senderName;
-    private GroupMessageContent content;
-    @Builder.Default
-    private List<Reaction> reactions = new ArrayList<>();
+    private UUID userId;
+    private GroupMessageType messageType;
+    private MessageReference messageReference;
+    private List<Reaction> reactions;
     @Builder.Default
     private LocalDateTime sendAt = LocalDateTime.now();
+
+    public int getReactionCount() {
+        return reactions.size();
+    }
+
+    @Builder(builderMethodName = "createGroupMessage")
+    private GroupMessage(UUID groupId, UUID userId, String userName, GroupMessageType messageType,
+            MessageReference messageReference) {
+        this.groupId = groupId;
+        this.userId = userId;
+        this.messageType = messageType;
+        this.messageReference = messageReference;
+    }
 }

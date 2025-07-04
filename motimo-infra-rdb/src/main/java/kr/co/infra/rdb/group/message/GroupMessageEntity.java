@@ -13,6 +13,7 @@ import java.util.UUID;
 import kr.co.domain.group.message.GroupMessageType;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
@@ -24,6 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "group_message")
 @SoftDelete(columnName = "is_deleted")
 @Getter
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GroupMessageEntity {
 
@@ -43,8 +45,9 @@ public class GroupMessageEntity {
     private GroupMessageType type;
 
     @Embedded
-    private MessageRefEmbeddable messageReference;
-    
+    private MessageReferenceEmbeddable messageReference;
+
     @CreatedDate
+    @Column(nullable = false, updatable = false)
     private LocalDateTime sendAt;
 }

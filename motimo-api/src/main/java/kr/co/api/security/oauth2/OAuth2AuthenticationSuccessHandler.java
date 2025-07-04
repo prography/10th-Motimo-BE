@@ -9,12 +9,11 @@ import kr.co.api.security.UserPrincipal;
 import kr.co.api.security.jwt.TokenProvider;
 import kr.co.api.security.jwt.TokenResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @RequiredArgsConstructor
@@ -32,26 +31,27 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         refreshTokenCommandService.saveRefreshToken(userPrincipal.getId(), token.tokenId(),
                 token.refreshToken());
 
-        ResponseCookie accessCookie = ResponseCookie.from("ACCESS_TOKEN", token.accessToken())
-                .httpOnly(true) // JS로 못 읽음 → XSS 방어
-                .path("/")
-                .build();
-
-        ResponseCookie refreshCookie = ResponseCookie.from("REFRESH_TOKEN", token.refreshToken())
-                .httpOnly(true)
-                .path("/")
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
-
         String redirectUri = authorizationRequestRepository.getAndRemoveRedirectUriParam(request);
 
         if (StringUtils.hasText(redirectUri)) {
-            getRedirectStrategy().sendRedirect(request, response, redirectUri);
+            // 토큰을 request parameter로 추가
+            String finalRedirectUri = buildRedirectUriWithTokens(redirectUri, token);
+            getRedirectStrategy().sendRedirect(request, response, finalRedirectUri);
         } else {
-            // 기본 리다이렉션 동작
+            // 기본 리다이렉션
             super.onAuthenticationSuccess(request, response, authentication);
+        }
+    }
+
+    private String buildRedirectUriWithTokens(String redirectUri, TokenResponse token) {
+        try {
+            UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(redirectUri)
+                    .queryParam("access_token", token.accessToken())
+                    .queryParam("refresh_token", token.refreshToken());
+            return uriBuilder.build().toUriString();
+        } catch (Exception e) {
+            // 예외 발생 시 원본 URI 반환
+            return redirectUri;
         }
     }
 }

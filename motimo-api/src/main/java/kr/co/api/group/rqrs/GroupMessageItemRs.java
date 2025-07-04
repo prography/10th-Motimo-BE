@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import kr.co.api.group.rqrs.message.GroupMessageContentRs;
+import kr.co.api.group.service.GroupMessageDto;
 
 public record GroupMessageItemRs(
         UUID messageId,
@@ -21,4 +22,14 @@ public record GroupMessageItemRs(
         LocalDateTime sendAt
 ) {
 
+    public static GroupMessageItemRs from(GroupMessageDto dto) {
+        return new GroupMessageItemRs(
+                dto.messageId(),
+                dto.userId(),
+                dto.userName(),
+                new GroupMessageContentRs(dto.content()),
+                dto.reactionCount(),
+                dto.hasUserReacted(),
+                dto.sendAt());
+    }
 }

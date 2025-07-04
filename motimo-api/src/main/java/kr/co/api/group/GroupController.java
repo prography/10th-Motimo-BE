@@ -10,8 +10,6 @@ import kr.co.api.group.rqrs.GroupMemberRs;
 import kr.co.api.group.rqrs.GroupMessageIdRs;
 import kr.co.api.group.rqrs.GroupMessageItemRs;
 import kr.co.api.group.rqrs.JoinedGroupRs;
-import kr.co.api.group.rqrs.message.GroupMessageContentRs;
-import kr.co.api.group.service.GroupMessageDto;
 import kr.co.api.group.service.GroupMessageQueryService;
 import kr.co.api.security.annotation.AuthUser;
 import kr.co.domain.common.pagination.CustomSlice;
@@ -54,7 +52,7 @@ public class GroupController implements GroupControllerSwagger {
             @PathVariable UUID groupId, @RequestParam int page, @RequestParam int size) {
 
         return groupMessageQueryService.findAllByGroupId(userId, groupId, page, size)
-                .map(this::toGroupMessageItemRs);
+                .map(GroupMessageItemRs::from);
     }
 
     @PostMapping("/message/{messageId}/reaction")
@@ -75,17 +73,5 @@ public class GroupController implements GroupControllerSwagger {
     @DeleteMapping("/{groupId}/members/me")
     public void exitGroup(@PathVariable UUID groupId) {
 
-    }
-
-    private GroupMessageItemRs toGroupMessageItemRs(GroupMessageDto groupMessage) {
-        return new GroupMessageItemRs(
-                groupMessage.messageId(),
-                groupMessage.userId(),
-                groupMessage.userName(),
-                new GroupMessageContentRs(groupMessage.content()),
-                groupMessage.reactionCount(),
-                groupMessage.hasUserReacted(),
-                groupMessage.sendAt()
-        );
     }
 }

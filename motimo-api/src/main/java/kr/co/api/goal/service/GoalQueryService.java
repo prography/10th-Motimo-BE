@@ -12,7 +12,6 @@ import kr.co.api.goal.dto.SubGoalDto;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
-import kr.co.domain.group.repository.GroupMemberRepository;
 import kr.co.domain.subGoal.SubGoal;
 import kr.co.domain.todo.dto.TodoSummary;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class GoalQueryService {
 
     private final GoalRepository goalRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final TodoQueryService todoQueryService;
 
     public GoalDetailDto getGoalDetail(UUID goalId) {

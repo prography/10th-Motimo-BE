@@ -10,13 +10,12 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Group {
-    @Builder.Default()
-    private UUID id = null;
-//    private List<GroupMember> members = new ArrayList<>();
-    private LocalDateTime finishedDate;
-
-    @Builder(builderMethodName = "createGroup")
-    private Group() {
-    }
+public class GroupMember {
+    private UUID memberId;
+    private String name;
+    private String email;
+    private String profileImageUrl;
+    private UUID goalId;
+    private LocalDateTime joinedDate;
+    private boolean isNotificationActive;
 }

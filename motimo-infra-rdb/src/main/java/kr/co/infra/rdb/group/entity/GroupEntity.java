@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 import kr.co.infra.rdb.common.entity.BaseEntity;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
@@ -20,10 +19,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "groups")
+@Table(name = "goal_groups")
 @SoftDelete(columnName = "is_deleted")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class GroupEntity extends BaseEntity {
     @Id
     @GeneratedUuidV7Value
@@ -33,4 +32,8 @@ public class GroupEntity extends BaseEntity {
     private List<GroupMemberEntity> groupMembers;
 
     private LocalDateTime finishedDate;
+
+    public GroupEntity(UUID id) {
+        this.id = id;
+    }
 }

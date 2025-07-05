@@ -216,7 +216,6 @@ class GroupRepositoryTest {
 
     private GroupMemberEntity createGroupMember(GroupEntity group, UUID userId, UUID goalId) {
         return new GroupMemberEntity(
-                null,
                 userId,
                 goalId,
                 group,

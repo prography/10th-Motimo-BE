@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SoftDelete;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -36,14 +37,14 @@ public class GroupMemberEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private GroupEntity group;
 
+    @CreatedDate
     @Column(updatable = false)
     private LocalDateTime joinedDate;
 
     @ColumnDefault(value = "true")
     private boolean isNotificationActive;
 
-    public GroupMemberEntity(UUID id, UUID userId, UUID goalId, GroupEntity group, LocalDateTime joinedDate) {
-        this.id = id;
+    public GroupMemberEntity(UUID userId, UUID goalId, GroupEntity group, LocalDateTime joinedDate) {
         this.userId = userId;
         this.goalId = goalId;
         this.group = group;

@@ -45,7 +45,6 @@ public class GroupRepositoryImpl implements GroupRepository {
 
         groupMemberJpaRepository.save(
                 new GroupMemberEntity(
-                        null,
                         dto.userId(),
                         dto.goalId(),
                         groupEntity,

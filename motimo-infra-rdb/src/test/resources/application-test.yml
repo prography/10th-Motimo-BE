@@ -1,0 +1,8 @@
+spring:
+  flyway:
+    locations: classpath:test-db/migration
+
+logging:
+  level:
+    org.flywaydb: DEBUG
+    org.springframework.boot.autoconfigure.flyway: DEBUG

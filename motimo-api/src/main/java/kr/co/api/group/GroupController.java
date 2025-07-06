@@ -51,7 +51,7 @@ public class GroupController implements GroupControllerSwagger {
     public CustomSlice<GroupMessageItemRs> getGroupChat(@AuthUser UUID userId,
             @PathVariable UUID groupId, @RequestParam int page, @RequestParam int size) {
 
-        return groupMessageQueryService.findAllByGroupId(userId, groupId, page, size)
+        return groupMessageQueryService.findAllByGroupIdWithPaging(userId, groupId, page, size)
                 .map(GroupMessageItemRs::from);
     }
 

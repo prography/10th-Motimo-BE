@@ -29,7 +29,8 @@ public class GroupMessageQueryService {
     private final MessageContentLoader contentLoader;
     private final MessageContentStrategyFactory strategyFactory;
 
-    public CustomSlice<GroupMessageDto> findAllByGroupId(UUID userId, UUID groupId, int offset,
+    public CustomSlice<GroupMessageDto> findAllByGroupIdWithPaging(UUID userId, UUID groupId,
+            int offset,
             int limit) {
         Group group = groupRepository.findById(groupId);
         // TODO: group에 참여하고 있는 유저인지 확인 로직 필요

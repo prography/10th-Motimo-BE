@@ -6,7 +6,7 @@ import kr.co.domain.group.message.content.GroupMessageContent;
 
 public interface MessageContentStrategy {
 
-    GroupMessageContent createContent(GroupMessage message, MessageContentDataProvider provider);
+    GroupMessageContent createContent(GroupMessage message, MessageContentData provider);
 
     GroupMessageType getMessageType();
 }

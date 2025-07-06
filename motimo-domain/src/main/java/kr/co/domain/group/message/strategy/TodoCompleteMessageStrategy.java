@@ -13,9 +13,9 @@ public class TodoCompleteMessageStrategy implements MessageContentStrategy {
 
     @Override
     public GroupMessageContent createContent(GroupMessage message,
-            MessageContentDataProvider provider) {
+            MessageContentData contentData) {
         UUID todoId = message.getMessageReference().referenceId();
-        Todo todo = provider.getTodo(todoId);
+        Todo todo = contentData.getTodo(todoId);
 
         if (todo == null) {
             return null;

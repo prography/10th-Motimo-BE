@@ -14,15 +14,15 @@ public class TodoResultSubmitMessageStrategy implements MessageContentStrategy {
 
     @Override
     public GroupMessageContent createContent(GroupMessage message,
-            MessageContentDataProvider provider) {
+            MessageContentData contentData) {
         UUID todoResultId = message.getMessageReference().referenceId();
-        TodoResult todoResult = provider.getTodoResult(todoResultId);
+        TodoResult todoResult = contentData.getTodoResult(todoResultId);
 
         if (todoResult == null) {
             return null;
         }
 
-        Todo todo = provider.getTodo(todoResult.getTodoId());
+        Todo todo = contentData.getTodo(todoResult.getTodoId());
 
         if (todo == null) {
             return null;

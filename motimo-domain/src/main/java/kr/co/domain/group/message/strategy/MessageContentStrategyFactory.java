@@ -1,11 +1,10 @@
-package kr.co.api.group.service.message;
+package kr.co.domain.group.message.strategy;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import kr.co.domain.group.exception.UnsupportedGroupMessageTypeException;
 import kr.co.domain.group.message.GroupMessageType;
-import kr.co.domain.group.message.strategy.MessageContentStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

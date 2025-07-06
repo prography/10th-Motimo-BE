@@ -11,6 +11,7 @@ import kr.co.domain.group.exception.MessageContentLoadingException;
 import kr.co.domain.group.message.GroupMessage;
 import kr.co.domain.group.message.MessageReference;
 import kr.co.domain.group.message.MessageReferenceType;
+import kr.co.domain.group.message.strategy.MessageContentData;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.repository.TodoRepository;

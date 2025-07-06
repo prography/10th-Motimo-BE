@@ -25,6 +25,6 @@ ALTER TABLE group_users
 
 ALTER TABLE goals
     ADD COLUMN group_id UUID,
-    ADD CONSTRAINT fk_goal_group
-        FOREIGN KEY (group_id)
-            REFERENCES groups(id);
+ADD CONSTRAINT fk_goal_group
+    FOREIGN KEY (group_id)
+    REFERENCES groups(id);

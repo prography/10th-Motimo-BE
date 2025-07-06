@@ -42,7 +42,8 @@ public class MessageContentLoader {
         for (GroupMessage m : messages) {
             MessageReference msgReference = m.getMessageReference();
             if (msgReference != null) {
-                referenceTypeIds.get(msgReference.messageRefType()).add(msgReference.referenceId());
+                referenceTypeIds.get(msgReference.messageReferenceType())
+                        .add(msgReference.referenceId());
             }
         }
 

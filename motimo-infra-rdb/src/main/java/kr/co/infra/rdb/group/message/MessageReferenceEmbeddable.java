@@ -20,17 +20,17 @@ public class MessageReferenceEmbeddable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "reference_type")
-    private MessageReferenceType messageRefType;
+    private MessageReferenceType messageReferenceType;
 
     @Column(name = "reference_id")
     private UUID referenceId;
 
     public static MessageReferenceEmbeddable from(MessageReference messageReference) {
-        return new MessageReferenceEmbeddable(messageReference.messageRefType(),
+        return new MessageReferenceEmbeddable(messageReference.messageReferenceType(),
                 messageReference.referenceId());
     }
 
     public MessageReference toDomain() {
-        return new MessageReference(messageRefType, referenceId);
+        return new MessageReference(messageReferenceType, referenceId);
     }
 }

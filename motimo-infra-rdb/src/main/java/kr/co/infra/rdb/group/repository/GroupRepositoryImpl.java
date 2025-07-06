@@ -23,8 +23,6 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class GroupRepositoryImpl implements GroupRepository {
 
-    private static final long MAX_GROUP_COUNT = 6;
-
 
     private final GroupJpaRepository groupJpaRepository;
     private final GroupMemberJpaRepository groupMemberJpaRepository;
@@ -65,7 +63,7 @@ public class GroupRepositoryImpl implements GroupRepository {
         GroupEntity result = jpaQueryFactory
                 .selectFrom(group)
                 .where(
-                        memberCountSubquery.lt(MAX_GROUP_COUNT),
+                        memberCountSubquery.lt((long) Group.MAX_GROUP_MEMBER_COUNT),
 
                         groupJpaQuery.userNotInGroup(userId, group, member),
 

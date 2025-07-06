@@ -1,5 +1,11 @@
 package kr.co.api.security;
 
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import kr.co.domain.user.model.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -7,24 +13,20 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 @Getter
 public class UserPrincipal implements UserDetails, OAuth2User {
 
     private UUID id;
     private String email;
+    private LocalDateTime createdAt;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(UUID id, String email,
+    public UserPrincipal(UUID id, String email, LocalDateTime createdAt,
             Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
+        this.createdAt = createdAt;
         this.authorities = authorities;
     }
 
@@ -35,6 +37,7 @@ public class UserPrincipal implements UserDetails, OAuth2User {
         return new UserPrincipal(
                 user.getId(),
                 user.getEmail(),
+                user.getCreatedAt(),
                 authorities
         );
     }

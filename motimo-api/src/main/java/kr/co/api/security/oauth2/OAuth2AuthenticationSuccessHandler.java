@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import kr.co.api.auth.service.RefreshTokenCommandService;
 import kr.co.api.security.UserPrincipal;
 import kr.co.api.security.jwt.TokenProvider;
@@ -35,7 +36,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         if (StringUtils.hasText(redirectUri)) {
             // 토큰을 request parameter로 추가
-            String finalRedirectUri = buildRedirectUriWithTokens(redirectUri, token);
+            String finalRedirectUri = buildRedirectUriWithTokens(redirectUri, token,
+                    userPrincipal.getCreatedAt());
             getRedirectStrategy().sendRedirect(request, response, finalRedirectUri);
         } else {
             // 기본 리다이렉션
@@ -43,11 +45,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
     }
 
-    private String buildRedirectUriWithTokens(String redirectUri, TokenResponse token) {
+    private String buildRedirectUriWithTokens(String redirectUri, TokenResponse token,
+            LocalDateTime createdAt) {
         try {
             UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(redirectUri)
                     .queryParam("access_token", token.accessToken())
-                    .queryParam("refresh_token", token.refreshToken());
+                    .queryParam("refresh_token", token.refreshToken())
+                    .queryParam("created_at", createdAt);
             return uriBuilder.build().toUriString();
         } catch (Exception e) {
             // 예외 발생 시 원본 URI 반환

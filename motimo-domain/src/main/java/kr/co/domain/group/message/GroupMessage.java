@@ -31,7 +31,7 @@ public class GroupMessage {
     }
 
     @Builder(builderMethodName = "createGroupMessage")
-    private GroupMessage(UUID groupId, UUID userId, String userName, GroupMessageType messageType,
+    private GroupMessage(UUID groupId, UUID userId, GroupMessageType messageType,
             MessageReference messageReference) {
         this.groupId = groupId;
         this.userId = userId;

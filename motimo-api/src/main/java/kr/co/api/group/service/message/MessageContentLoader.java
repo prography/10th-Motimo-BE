@@ -60,14 +60,17 @@ public class MessageContentLoader {
     }
 
     private Map<UUID, Todo> loadTodos(Set<UUID> todoIds, Map<UUID, TodoResult> todoResults) {
-        // TodoResult에 필요한 투두 ID들도 추가
-        todoIds.addAll(todoResults.values().stream().map(TodoResult::getTodoId).toList());
 
-        if (todoResults.isEmpty()) {
+        Set<UUID> todoIdSet = new HashSet<>(todoIds);
+
+        // TodoResult에 필요한 투두 ID들도 추가
+        todoIdSet.addAll(todoResults.values().stream().map(TodoResult::getTodoId).toList());
+
+        if (todoIdSet.isEmpty()) {
             return Map.of();
         }
 
-        return todoRepository.findAllByIdsIn(todoIds).stream()
+        return todoRepository.findAllByIdsIn(todoIdSet).stream()
                 .collect(Collectors.toMap(Todo::getId, todo -> todo));
     }
 

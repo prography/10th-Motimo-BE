@@ -1,4 +1,6 @@
-package kr.co.domain.group.message;
+package kr.co.domain.group.message.content;
+
+import kr.co.domain.group.message.GroupMessageType;
 
 public record GroupJoinContent() implements GroupMessageContent {
 

@@ -3,7 +3,7 @@ package kr.co.api.group.service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import kr.co.domain.group.message.GroupMessage;
-import kr.co.domain.group.message.GroupMessageContent;
+import kr.co.domain.group.message.content.GroupMessageContent;
 import kr.co.domain.group.message.MessageReference;
 
 public record GroupMessageDto(

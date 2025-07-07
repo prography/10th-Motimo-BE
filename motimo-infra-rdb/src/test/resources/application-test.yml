@@ -1,0 +1,12 @@
+spring:
+  flyway:
+    locations: classpath:test-db/migration
+  jpa:
+    properties:
+      hibernate:
+        auto_quote_keyword: true
+
+logging:
+  level:
+    org.flywaydb: DEBUG
+    org.springframework.boot.autoconfigure.flyway: DEBUG

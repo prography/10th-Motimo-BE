@@ -11,9 +11,14 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Group {
+    public static final int MAX_GROUP_MEMBER_COUNT = 6;
+
     @Builder.Default()
     private UUID id = null;
-    private UUID goalId;
-    private String title;
-    private LocalDateTime lastActiveDate;
+//    private List<GroupMember> members = new ArrayList<>();
+    private LocalDateTime finishedDate;
+
+    @Builder(builderMethodName = "createGroup")
+    private Group() {
+    }
 }

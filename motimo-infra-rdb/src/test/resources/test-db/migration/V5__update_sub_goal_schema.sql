@@ -1,0 +1,1 @@
+ALTER TABLE sub_goals ADD COLUMN user_id UUID;

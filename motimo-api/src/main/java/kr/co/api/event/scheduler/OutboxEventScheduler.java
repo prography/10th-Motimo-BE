@@ -22,8 +22,7 @@ public class OutboxEventScheduler {
     private final GroupMessageCommandService groupMessageCommandService;
     private final OutboxEventHandlerRegistry outboxEventHandlerRegistry;
 
-    //    @Scheduled(cron = "0 0 * * * *")
-    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0 0 * * * *")
     @Transactional
     public void processOutboxEvents() {
         List<OutboxEvent> events = outboxEventRepository.findTop100ByOrderByCreatedAtAsc();

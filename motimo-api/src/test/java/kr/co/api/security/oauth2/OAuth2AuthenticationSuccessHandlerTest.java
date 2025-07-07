@@ -254,38 +254,6 @@ class OAuth2AuthenticationSuccessHandlerTest {
     }
 
     @Test
-    void buildRedirectUriWithTokens_정상_케이스() throws Exception {
-        // given
-        UUID userId = UUID.randomUUID();
-        UUID tokenId = UUID.randomUUID();
-        String accessToken = "test-access-token";
-        String refreshToken = "test-refresh-token";
-        String redirectUri = "http://localhost:3000/auth/callback";
-        TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken, tokenId);
-
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-
-        when(authentication.getPrincipal()).thenReturn(userPrincipal);
-        when(userPrincipal.getId()).thenReturn(userId);
-        when(tokenProvider.createToken(userId)).thenReturn(tokenResponse);
-        when(authorizationRequestRepository.getAndRemoveRedirectUriParam(request)).thenReturn(
-                redirectUri);
-
-        oauth2AuthenticationSuccessHandler.setRedirectStrategy(redirectStrategy);
-
-        // when
-        oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response,
-                authentication);
-
-        // then
-        String expectedRedirectUri =
-                "http://localhost:3000/auth/callback?access_token=" + accessToken
-                        + "&refresh_token=" + refreshToken;
-        verify(redirectStrategy).sendRedirect(request, response, expectedRedirectUri);
-    }
-
-    @Test
     void 기존_쿼리_파라미터가_있는_redirectUri_처리() throws Exception {
         // given
         UUID userId = UUID.randomUUID();

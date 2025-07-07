@@ -18,7 +18,7 @@ public class OutboxEventHandlerRegistry {
         // ex) key = "FileRollbackEvent", value = "FileRollbackEventHandler"
         this.handlers = list.stream()
                 .collect(Collectors.toMap(
-                        handler -> handler.payloadType().getSimpleName(),
+                        handler -> handler.payloadType().getName(),
                         handler -> handler));
     }
 

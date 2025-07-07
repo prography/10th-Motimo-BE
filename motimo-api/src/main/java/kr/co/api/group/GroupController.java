@@ -33,7 +33,7 @@ public class GroupController implements GroupControllerSwagger {
     private final GroupMessageQueryService groupMessageQueryService;
     private final GroupCommandService groupCommandService;
 
-    public GroupController(GroupMessageQueryService groupMessageQueryService,
+    public GroupController(final GroupMessageQueryService groupMessageQueryService,
             final GroupCommandService groupCommandService) {
         this.groupMessageQueryService = groupMessageQueryService;
         this.groupCommandService = groupCommandService;

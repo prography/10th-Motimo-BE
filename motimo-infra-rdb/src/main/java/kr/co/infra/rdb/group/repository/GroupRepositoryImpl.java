@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.group.Group;
 import kr.co.domain.group.dto.GroupJoinDto;
+import kr.co.domain.group.exception.GroupNotFoundException;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.infra.rdb.goal.entity.QGoalEntity;
 import kr.co.infra.rdb.group.entity.GroupEntity;
@@ -50,6 +51,13 @@ public class GroupRepositoryImpl implements GroupRepository {
                 )
         );
 
+        return GroupMapper.toDomain(groupEntity);
+    }
+
+    @Override
+    public Group findById(UUID groupId) {
+        GroupEntity groupEntity = groupJpaRepository.findById(groupId)
+                .orElseThrow(GroupNotFoundException::new);
         return GroupMapper.toDomain(groupEntity);
     }
 

@@ -8,11 +8,12 @@ import kr.co.api.group.rqrs.GroupIdRs;
 import kr.co.api.group.rqrs.GroupJoinRq;
 import kr.co.api.group.rqrs.GroupMemberRs;
 import kr.co.api.group.rqrs.GroupMessageIdRs;
-import kr.co.api.group.rqrs.GroupMessageItemRs;
 import kr.co.api.group.rqrs.JoinedGroupRs;
+import kr.co.api.group.rqrs.message.GroupChatRs;
+import kr.co.api.group.rqrs.message.NewMessageRs;
 import kr.co.api.group.service.GroupMessageQueryService;
 import kr.co.api.security.annotation.AuthUser;
-import kr.co.domain.common.pagination.CustomSlice;
+import kr.co.domain.common.pagination.PagingDirection;
 import kr.co.domain.group.reaction.ReactionType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,12 +48,24 @@ public class GroupController implements GroupControllerSwagger {
         return new GroupIdRs(UUID.randomUUID());
     }
 
-    @GetMapping("/{groupId}/chats")
-    public CustomSlice<GroupMessageItemRs> getGroupChat(@AuthUser UUID userId,
-            @PathVariable UUID groupId, @RequestParam int page, @RequestParam int size) {
+    @GetMapping("/{groupId}/new-chats")
+    public NewMessageRs getNewGroupMessages(@AuthUser UUID userId, @PathVariable UUID groupId,
+            @RequestParam(required = false) String latestCursor) {
+        return NewMessageRs.from(
+                groupMessageQueryService.findNewChats(userId, groupId, latestCursor));
+    }
 
-        return groupMessageQueryService.findAllByGroupIdWithPaging(userId, groupId, page, size)
-                .map(GroupMessageItemRs::from);
+    @GetMapping("/{groupId}/chats")
+    public GroupChatRs getGroupChat(
+            @AuthUser UUID userId,
+            @PathVariable UUID groupId,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(required = false) String cursor,
+            @RequestParam(defaultValue = "BEFORE") PagingDirection direction) {
+
+        return GroupChatRs.from(
+                groupMessageQueryService.findMessagesByGroupIdWithCursor(
+                        userId, groupId, cursor, limit, direction));
     }
 
     @PostMapping("/message/{messageId}/reaction")

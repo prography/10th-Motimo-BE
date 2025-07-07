@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GroupMessageJpaRepository extends JpaRepository<GroupMessageEntity, UUID> {
 
+    void deleteAllByReferenceId(UUID referenceId);
+
 }

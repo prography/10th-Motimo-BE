@@ -1,11 +1,13 @@
 package kr.co.api.event.listener;
 
 import java.util.UUID;
+import kr.co.api.event.service.OutboxCommandService;
 import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.group.service.GroupCommandService;
-import kr.co.api.user.service.UserQueryService;
+import kr.co.domain.common.event.group.message.GroupMessageDeletedEvent;
 import kr.co.domain.common.event.group.message.TodoCompletedEvent;
 import kr.co.domain.common.event.group.message.TodoResultSubmittedEvent;
+import kr.co.domain.common.outbox.OutboxEvent;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.group.message.GroupMessage;
 import kr.co.domain.group.message.GroupMessageType;
@@ -24,8 +26,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class GroupMessageEventListener {
 
     private final GoalQueryService goalQueryService;
-    private final UserQueryService userQueryService;
     private final GroupCommandService groupCommandService;
+    private final OutboxCommandService outboxCommandService;
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -70,5 +72,19 @@ public class GroupMessageEventListener {
                 .build();
 
         groupCommandService.createGroupMessage(groupMessage);
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleGroupMessageDeletedEvent(GroupMessageDeletedEvent event) {
+        // 모든 그룹의 메시지들에서 해당 referenceId를 가지고 있는 메시지들을 삭제해주어야 한다.
+//        groupCommandService.deleteAllByReferenceId(event.getReferenceId());
+        try {
+            // 모든 그룹의 메시지들에서 해당 referenceId를 가지고 있는 메시지들을 삭제
+            groupCommandService.deleteAllByReferenceId(event.getReferenceId());
+        } catch (Exception e) {
+            log.error("그룹 메시지 삭제에 실패 메시지 관련 ID: {}", event.getReferenceId(), e);
+            outboxCommandService.createOutboxEvent(OutboxEvent.from(event));
+        }
     }
 }

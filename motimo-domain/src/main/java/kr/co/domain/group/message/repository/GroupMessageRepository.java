@@ -18,4 +18,5 @@ public interface GroupMessageRepository {
     NewGroupMessages findNewMessagesFromLatestDate(
             UUID groupId, LocalDateTime latestDate, UUID latestMessageId);
 
+    void deleteAllByReferenceId(UUID referenceId);
 }

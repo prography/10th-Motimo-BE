@@ -5,6 +5,7 @@ import java.util.UUID;
 import kr.co.domain.common.event.Events;
 import kr.co.domain.common.event.FileDeletedEvent;
 import kr.co.domain.common.event.FileRollbackEvent;
+import kr.co.domain.common.event.group.message.GroupMessageDeletedEvent;
 import kr.co.domain.common.event.group.message.TodoCompletedEvent;
 import kr.co.domain.common.event.group.message.TodoResultSubmittedEvent;
 import kr.co.domain.todo.Emotion;
@@ -74,6 +75,7 @@ public class TodoCommandService {
     public void deleteById(UUID userId, UUID todoId) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateOwner(userId);
+        Events.publishEvent(new GroupMessageDeletedEvent(todoId));
         todoResultRepository.findByTodoId(todoId)
                 .ifPresent(todoResult -> {
                     todoResult.validateOwner(userId);
@@ -134,6 +136,7 @@ public class TodoCommandService {
         if (todoResult.getFilePath() != null && !todoResult.getFilePath().isBlank()) {
             Events.publishEvent(new FileDeletedEvent(todoResult.getFilePath()));
         }
+        Events.publishEvent(new GroupMessageDeletedEvent(todoResult.getId()));
         todoResultRepository.deleteById(todoResult.getId());
     }
 }

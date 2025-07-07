@@ -1,5 +1,6 @@
 package kr.co.api.group.service;
 
+import java.util.UUID;
 import kr.co.domain.group.message.GroupMessage;
 import kr.co.domain.group.message.repository.GroupMessageRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,4 +20,8 @@ public class GroupCommandService {
         groupMessageRepository.create(groupMessage);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deleteAllByReferenceId(UUID referenceId) {
+        groupMessageRepository.deleteAllByReferenceId(referenceId);
+    }
 }

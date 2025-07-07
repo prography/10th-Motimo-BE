@@ -135,6 +135,11 @@ public class GroupMessageRepositoryImpl implements GroupMessageRepository {
         );
     }
 
+    @Override
+    public void deleteAllByReferenceId(UUID referenceId) {
+        groupMessageJpaRepository.deleteAllByReferenceId(referenceId);
+    }
+
     private List<GroupMessage> processMessagesWithReactions(List<GroupMessageEntity> messages) {
         if (messages.isEmpty()) {
             return List.of();

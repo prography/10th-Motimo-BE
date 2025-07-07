@@ -3,7 +3,6 @@ package kr.co.infra.rdb.todo.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -35,10 +35,7 @@ class TodoRepositoryImplTest {
     private TodoRepository todoRepository;
 
     @Autowired
-    private TodoJpaRepository todoJpaRepository;
-
-    @Autowired
-    private EntityManager testEntityManager;
+    private TestEntityManager testEntityManager;
 
     private JPAQueryFactory jpaQueryFactory;
 
@@ -98,8 +95,6 @@ class TodoRepositoryImplTest {
                 title,
                 date,
                 status
-//                LocalDateTime.now(),  // createdAt
-//                null   // updatedAt - JPA가 자동으로 설정
         );
 
         testEntityManager.persist(todo);
@@ -134,4 +129,3 @@ class TodoRepositoryImplTest {
                         "오늘 완료 투두 결과없음", "오늘 완료 투두 결과있음");
     }
 }
-

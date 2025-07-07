@@ -2,8 +2,10 @@ package kr.co.api.event.scheduler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import kr.co.api.group.service.GroupMessageCommandService;
 import kr.co.domain.common.event.FileDeletedEvent;
 import kr.co.domain.common.event.FileRollbackEvent;
+import kr.co.domain.common.event.group.message.GroupMessageDeletedEvent;
 import kr.co.domain.common.outbox.OutboxEvent;
 import kr.co.domain.common.outbox.OutboxEventRepository;
 import kr.co.infra.storage.service.StorageService;
@@ -20,6 +22,7 @@ public class OutboxEventScheduler {
 
     private final OutboxEventRepository outboxEventRepository;
     private final StorageService storageService;
+    private final GroupMessageCommandService groupMessageCommandService;
 
     @Scheduled(cron = "0 0 * * * *")
     @Transactional
@@ -36,6 +39,11 @@ public class OutboxEventScheduler {
                     FileDeletedEvent delete = new ObjectMapper().readValue(event.getPayload(),
                             FileDeletedEvent.class);
                     storageService.delete(delete.getFilePath());
+                } else if ("GroupMessageDeletedEvent".equals(event.getEventType())) {
+                    GroupMessageDeletedEvent delete = new ObjectMapper().readValue(
+                            event.getPayload(),
+                            GroupMessageDeletedEvent.class);
+                    groupMessageCommandService.deleteAllByReferenceId(delete.getReferenceId());
                 }
                 outboxEventRepository.deleteById(event.getId());
             } catch (Exception e) {

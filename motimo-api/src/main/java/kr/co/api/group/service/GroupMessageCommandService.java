@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class GroupCommandService {
+public class GroupMessageCommandService {
 
     private final GroupMessageRepository groupMessageRepository;
 

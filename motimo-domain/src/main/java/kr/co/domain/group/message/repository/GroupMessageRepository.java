@@ -15,6 +15,7 @@ public interface GroupMessageRepository {
     CursorResult<GroupMessage> findAllByGroupIdWithCursor(
             UUID groupId, CustomCursor cursor, int limit, PagingDirection direction);
 
-    NewGroupMessages findNewMessagesFromLatestDate(UUID groupId, LocalDateTime since);
+    NewGroupMessages findNewMessagesFromLatestDate(
+            UUID groupId, LocalDateTime latestDate, UUID latestMessageId);
 
 }

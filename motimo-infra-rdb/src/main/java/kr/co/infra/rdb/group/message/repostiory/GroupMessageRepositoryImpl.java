@@ -69,15 +69,21 @@ public class GroupMessageRepositoryImpl implements GroupMessageRepository {
             }
         }
 
-        OrderSpecifier<?> orderBy = direction == PagingDirection.BEFORE
-                ? messageEntity.sendAt.desc()
-                : messageEntity.sendAt.asc();
+        OrderSpecifier<?>[] orderSpecifiers = (direction == PagingDirection.BEFORE)
+                ? new OrderSpecifier[]{
+                messageEntity.sendAt.desc().nullsLast(),
+                messageEntity.id.desc()
+        }
+                : new OrderSpecifier[]{
+                        messageEntity.sendAt.asc().nullsLast(),
+                        messageEntity.id.asc()
+                };
 
         // 메시지 조회 (limit + 1로 더 많은 데이터 확인)
         List<GroupMessageEntity> messages = jpaQueryFactory
                 .selectFrom(messageEntity)
                 .where(whereCondition)
-                .orderBy(orderBy)
+                .orderBy(orderSpecifiers)
                 .limit(limit + 1)
                 .fetch();
 
@@ -101,7 +107,8 @@ public class GroupMessageRepositoryImpl implements GroupMessageRepository {
     }
 
     @Override
-    public NewGroupMessages findNewMessagesFromLatestDate(UUID groupId, LocalDateTime since) {
+    public NewGroupMessages findNewMessagesFromLatestDate(UUID groupId, LocalDateTime latestDate,
+            UUID latestMessageId) {
         QGroupMessageEntity messageEntity = QGroupMessageEntity.groupMessageEntity;
 
         Tuple result = jpaQueryFactory
@@ -112,7 +119,9 @@ public class GroupMessageRepositoryImpl implements GroupMessageRepository {
                 )
                 .from(messageEntity)
                 .where(messageEntity.groupId.eq(groupId)
-                        .and(messageEntity.sendAt.after(since)))
+                        .and(messageEntity.sendAt.after(latestDate)
+                                .or(messageEntity.sendAt.eq(latestDate)
+                                        .and(messageEntity.id.gt(latestMessageId)))))
                 .fetchOne();
 
         if (result == null || result.get(messageEntity.count()) == null) {

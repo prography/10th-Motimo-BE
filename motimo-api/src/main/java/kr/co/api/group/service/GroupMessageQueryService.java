@@ -100,7 +100,7 @@ public class GroupMessageQueryService {
         CustomCursor cursor = cursorUtil.parseCursor(latestCursor);
 
         NewGroupMessages newMessages = groupMessageRepository.findNewMessagesFromLatestDate(
-                groupId, cursor.dateTime());
+                groupId, cursor.dateTime(), cursor.id());
 
         String newLatestCursor = null;
         if (newMessages.latestMessageId() != null && newMessages.latestTime() != null) {

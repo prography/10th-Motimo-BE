@@ -1,18 +1,24 @@
-package kr.co.domain.reaction;
+package kr.co.domain.group.reaction;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Reaction {
-    @Builder.Default()
+
+    @Builder.Default
     private UUID id = null;
     private UUID senderId;
     private UUID targetId;
-    private ReactionType type;
+    private ReactionType reactionType;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

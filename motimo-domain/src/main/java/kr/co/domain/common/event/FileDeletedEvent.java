@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FileDeletedEvent extends Event {
 
-    String filePath;
+    private String filePath;
 
     public FileDeletedEvent(String filePath) {
         super();

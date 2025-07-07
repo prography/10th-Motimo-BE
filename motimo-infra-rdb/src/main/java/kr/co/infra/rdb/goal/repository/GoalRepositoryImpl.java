@@ -48,6 +48,12 @@ public class GoalRepositoryImpl implements GoalRepository {
         return GoalMapper.toDomain(goalEntity);
     }
 
+    public Goal findByIdWithoutSubGoals(UUID id) {
+        GoalEntity goalEntity = goalJpaRepository.findById(id)
+                .orElseThrow(GoalNotFoundException::new);
+        return GoalMapper.toDomainWithoutSubGoal(goalEntity);
+    }
+
     @Override
     public Goal findBySubGoalId(UUID subGoalId) {
         GoalEntity goalEntity = goalJpaRepository.findBySubGoalsId(subGoalId)

@@ -52,8 +52,7 @@ public class GoalEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private GroupEntity group = null;
 
-    protected GoalEntity(UUID id, UUID userId, String title, DueDateEmbeddable dueDate,
-            boolean completed) {
+    public GoalEntity(UUID id, UUID userId, String title, DueDateEmbeddable dueDate, boolean completed) {
         this.id = id;
         this.userId = userId;
         this.title = title;
@@ -70,8 +69,7 @@ public class GoalEntity extends BaseEntity {
         this.subGoals.addAll(subGoals);
     }
 
-    public void update(String title, DueDateEmbeddable dueDate, boolean completed,
-            LocalDateTime completedAt) {
+    public void update(String title, DueDateEmbeddable dueDate, boolean completed, LocalDateTime completedAt) {
         this.title = title;
         this.dueDate = dueDate;
         this.completed = completed;

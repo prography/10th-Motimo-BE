@@ -48,7 +48,7 @@ public class Goal {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void joinedGroup(UUID groupId) {
+    public void joinGroup(UUID groupId) {
         this.groupId = groupId;
     }
 

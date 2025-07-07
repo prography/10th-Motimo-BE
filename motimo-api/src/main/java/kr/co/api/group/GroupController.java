@@ -9,6 +9,7 @@ import kr.co.api.group.rqrs.GroupJoinRq;
 import kr.co.api.group.rqrs.GroupMemberRs;
 import kr.co.api.group.rqrs.GroupMessageIdRs;
 import kr.co.api.group.rqrs.JoinedGroupRs;
+import kr.co.api.group.service.GroupCommandService;
 import kr.co.api.group.rqrs.message.GroupChatRs;
 import kr.co.api.group.rqrs.message.NewMessageRs;
 import kr.co.api.group.service.GroupMessageQueryService;
@@ -30,13 +31,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupController implements GroupControllerSwagger {
 
     private final GroupMessageQueryService groupMessageQueryService;
+    private final GroupCommandService groupCommandService;
 
-    public GroupController(GroupMessageQueryService groupMessageQueryService) {
+    public GroupController(GroupMessageQueryService groupMessageQueryService,
+            final GroupCommandService groupCommandService) {
         this.groupMessageQueryService = groupMessageQueryService;
+        this.groupCommandService = groupCommandService;
     }
 
     @GetMapping("/me")
     public List<JoinedGroupRs> getJoinedGroup(@AuthUser UUID userId) {
+
         return List.of(
                 new JoinedGroupRs("백다방 백잔 먹기", LocalDateTime.now(), false),
                 new JoinedGroupRs("충전기 만들기", LocalDateTime.now(), true)
@@ -45,7 +50,7 @@ public class GroupController implements GroupControllerSwagger {
 
     @PostMapping("/random-join")
     public GroupIdRs joinRandomGroup(@AuthUser UUID userId, @RequestBody GroupJoinRq rq) {
-        return new GroupIdRs(UUID.randomUUID());
+        return new GroupIdRs(groupCommandService.joinGroup(userId, rq.goalId()));
     }
 
     @GetMapping("/{groupId}/new-chats")

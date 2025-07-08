@@ -1,17 +1,33 @@
 package kr.co.infra.rdb.user.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import kr.co.domain.user.model.InterestType;
 import kr.co.domain.user.model.ProviderType;
 import kr.co.domain.user.model.Role;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SoftDelete;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -37,6 +53,12 @@ public class UserEntity {
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "user_interest", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "interest")
+    private Set<InterestType> interests = new HashSet<>();
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
@@ -55,4 +77,12 @@ public class UserEntity {
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public void update(String nickname, String profileImageUrl, Set<InterestType> interests) {
+        this.nickname = nickname;
+        this.profileImageUrl = profileImageUrl;
+        this.interests.clear();
+        this.interests.addAll(interests);
+    }
+
 }

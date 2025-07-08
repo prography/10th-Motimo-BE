@@ -1,12 +1,13 @@
 package kr.co.domain.user.model;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.UUID;
 
 @Getter
 @Builder
@@ -19,6 +20,8 @@ public class User {
     private String nickname;
     private String profileImageUrl;
     @Builder.Default
+    private Set<InterestType> interests = new HashSet<>();
+    @Builder.Default
     private Role role = Role.USER;
     @Builder.Default
     private ProviderType providerType = ProviderType.LOCAL;
@@ -26,7 +29,17 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public void updateProfile(String newNickname, String newImageUrl) {
+    public void update(String nickname, String profileImageUrl,
+            Set<InterestType> interests) {
+        updateProfile(nickname, profileImageUrl);
+        updateInterests(interests);
+    }
+
+    public void updateInterests(Set<InterestType> newInterests) {
+        this.interests = new HashSet<>(newInterests);
+    }
+
+    private void updateProfile(String newNickname, String newImageUrl) {
         if (!Objects.equals(this.nickname, newNickname)) {
             this.nickname = newNickname;
         }

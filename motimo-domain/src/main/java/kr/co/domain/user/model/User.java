@@ -35,8 +35,12 @@ public class User {
         updateInterests(interests);
     }
 
-    public void updateInterests(Set<InterestType> newInterests) {
-        this.interests = new HashSet<>(newInterests);
+    public void updateInterests(Set<InterestType> interests) {
+        if (interests == null) {
+            this.interests = new HashSet<>();
+            return;
+        }
+        this.interests = new HashSet<>(interests);
     }
 
     private void updateProfile(String newNickname, String newImageUrl) {

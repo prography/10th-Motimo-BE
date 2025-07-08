@@ -8,6 +8,8 @@ import kr.co.domain.user.model.User;
 public record UserRs(
         @Schema(description = "유저 Id", example = "0197157f-aea4-77bb-8581-3213eb5bd2ae")
         UUID id,
+        @Schema(description = "유저 이메일")
+        String email,
         @Schema(description = "유저 닉네임")
         String nickname,
         @Schema(description = "유저 프로필 이미지 url")
@@ -16,7 +18,7 @@ public record UserRs(
         LocalDateTime createdAt) {
 
     public static UserRs from(User user) {
-        return new UserRs(
-                user.getId(), user.getNickname(), user.getProfileImageUrl(), user.getCreatedAt());
+        return new UserRs(user.getId(), user.getEmail(), user.getNickname(),
+                user.getProfileImageUrl(), user.getCreatedAt());
     }
 }

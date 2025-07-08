@@ -13,8 +13,7 @@ import org.springframework.stereotype.Component;
 public class TodoResultSubmitMessageStrategy implements MessageContentStrategy {
 
     @Override
-    public GroupMessageContent createContent(GroupMessage message,
-            MessageContentData contentData) {
+    public GroupMessageContent createContent(GroupMessage message, MessageContentData contentData) {
         UUID todoResultId = message.getMessageReference().referenceId();
         TodoResult todoResult = contentData.getTodoResult(todoResultId);
 

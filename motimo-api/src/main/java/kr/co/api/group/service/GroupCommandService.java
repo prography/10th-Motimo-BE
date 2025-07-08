@@ -1,6 +1,8 @@
 package kr.co.api.group.service;
 
 import java.util.UUID;
+import kr.co.domain.common.event.Events;
+import kr.co.domain.common.event.group.message.GroupJoinedEvent;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.group.Group;
@@ -32,7 +34,7 @@ public class GroupCommandService {
                 .userId(userId)
                 .goalId(goalId)
                 .build();
-
+        Events.publishEvent(new GroupJoinedEvent(groupId, userId));
         return groupRepository.join(joinDto).getId();
     }
 

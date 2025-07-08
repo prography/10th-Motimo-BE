@@ -20,7 +20,8 @@ public class GroupMessage {
     private UUID groupId;
     private UUID userId;
     private GroupMessageType messageType;
-    private MessageReference messageReference;
+    @Builder.Default
+    private MessageReference messageReference = null;
     @Builder.Default
     private List<Reaction> reactions = new ArrayList<>();
     @Builder.Default

@@ -25,7 +25,9 @@ public class GroupMessageMapper {
                 .groupId(groupMessageEntity.getGroupId())
                 .userId(groupMessageEntity.getUserId())
                 .messageType(groupMessageEntity.getType())
-                .messageReference(groupMessageEntity.getMessageReference().toDomain())
+                .messageReference(
+                        groupMessageEntity.getMessageReference() != null
+                                ? groupMessageEntity.getMessageReference().toDomain() : null)
                 .sendAt(groupMessageEntity.getSendAt())
                 .build();
     }
@@ -37,7 +39,9 @@ public class GroupMessageMapper {
                 .groupId(groupMessageEntity.getGroupId())
                 .userId(groupMessageEntity.getUserId())
                 .messageType(groupMessageEntity.getType())
-                .messageReference(groupMessageEntity.getMessageReference().toDomain())
+                .messageReference(
+                        groupMessageEntity.getMessageReference() != null
+                                ? groupMessageEntity.getMessageReference().toDomain() : null)
                 .reactions(reactions)
                 .sendAt(groupMessageEntity.getSendAt())
                 .build();

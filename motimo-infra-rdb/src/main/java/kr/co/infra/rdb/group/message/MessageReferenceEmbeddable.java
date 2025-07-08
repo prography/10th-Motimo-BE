@@ -26,6 +26,9 @@ public class MessageReferenceEmbeddable {
     private UUID referenceId;
 
     public static MessageReferenceEmbeddable from(MessageReference messageReference) {
+        if (messageReference == null) {
+            return null;
+        }
         return new MessageReferenceEmbeddable(messageReference.messageReferenceType(),
                 messageReference.referenceId());
     }

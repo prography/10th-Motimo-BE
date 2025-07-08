@@ -5,6 +5,7 @@ import kr.co.api.event.service.OutboxCommandService;
 import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.group.service.GroupMessageCommandService;
 import kr.co.domain.common.event.group.message.GroupJoinedEvent;
+import kr.co.domain.common.event.group.message.GroupLeftEvent;
 import kr.co.domain.common.event.group.message.GroupMessageDeletedEvent;
 import kr.co.domain.common.event.group.message.TodoCompletedEvent;
 import kr.co.domain.common.event.group.message.TodoResultSubmittedEvent;
@@ -82,6 +83,18 @@ public class GroupMessageEventListener {
                 .groupId(event.getGroupId())
                 .userId(event.getUserId())
                 .messageType(GroupMessageType.JOIN)
+                .build();
+
+        groupMessageCommandService.createGroupMessage(groupMessage);
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleGroupLeftEvent(GroupLeftEvent event) {
+        GroupMessage groupMessage = GroupMessage.createGroupMessage()
+                .groupId(event.getGroupId())
+                .userId(event.getUserId())
+                .messageType(GroupMessageType.LEAVE)
                 .build();
 
         groupMessageCommandService.createGroupMessage(groupMessage);

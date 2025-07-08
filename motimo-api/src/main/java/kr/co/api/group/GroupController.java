@@ -89,7 +89,7 @@ public class GroupController implements GroupControllerSwagger {
     }
 
     @DeleteMapping("/{groupId}/members/me")
-    public void exitGroup(@PathVariable UUID groupId) {
-
+    public void exitGroup(@AuthUser UUID userId, @PathVariable UUID groupId) {
+        groupCommandService.leaveGroup(userId, groupId);
     }
 }

@@ -83,4 +83,14 @@ public class GroupRepositoryImpl implements GroupRepository {
         return result == null ? Optional.empty() : Optional.of(GroupMapper.toDomain(result));
     }
 
+    @Override
+    public boolean existsByGoalId(UUID goalId) {
+        return groupMemberJpaRepository.existsByGoalId(goalId);
+    }
+
+    @Override
+    public void leave(UUID groupId, UUID userId) {
+        groupMemberJpaRepository.deleteByGroupIdAndUserId(groupId, userId);
+    }
+
 }

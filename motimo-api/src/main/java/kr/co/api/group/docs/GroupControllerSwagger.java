@@ -50,5 +50,5 @@ public interface GroupControllerSwagger {
     List<GroupMemberRs> getGroupMembers(UUID userId, @PathVariable UUID groupId);
 
     @Operation(summary = "그룹 나가기 API", description = "그룹에서 나가게 됩니다.")
-    void exitGroup(@PathVariable UUID groupId);
+    void exitGroup(UUID userId, @PathVariable UUID groupId);
 }

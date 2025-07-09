@@ -12,6 +12,10 @@ import lombok.Getter;
 public class Notification {
     @Builder.Default()
     private UUID id = null;
-    private UUID targetId;
+    private UUID senderId;
+    private UUID receiverId;
+    private UUID referenceId;
+    private String title;
+    private String content;
     private NotificationType type;
 }

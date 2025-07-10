@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class NotificationQueryService {
     private final NotificationRepository notificationRepository;
 
-    public CustomSlice<NotificationItemDto> readNotificationList(UUID userId, int offset, int limit) {
+    public CustomSlice<NotificationItemDto> getNotificationList(UUID userId, int offset, int limit) {
         List<NotificationItemDto> notificationListRs = List.of(
                 new NotificationItemDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()),
                 new NotificationItemDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())

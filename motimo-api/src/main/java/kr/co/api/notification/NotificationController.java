@@ -24,7 +24,7 @@ public class NotificationController implements NotificationControllerSwagger {
 
     @GetMapping
     public CustomSlice<NotificationItemRs> getNotificationList(@AuthUser UUID userId, @RequestParam int offset, @RequestParam int limit) {
-        CustomSlice<NotificationItemDto> dtos = notificationQueryService.readNotificationList(
+        CustomSlice<NotificationItemDto> dtos = notificationQueryService.getNotificationList(
                 userId, offset, limit);
 
         return new CustomSlice<>(dtos.content().stream().map(NotificationItemRs::from).toList(),

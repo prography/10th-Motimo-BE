@@ -4,8 +4,6 @@ import static com.querydsl.core.types.ExpressionUtils.anyOf;
 
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
@@ -123,15 +121,6 @@ public class TodoRepositoryImpl implements TodoRepository {
                 .where(goalEntity.id.in(goalIds))
                 .groupBy(goalEntity.id)
                 .fetch();
-    }
-
-    private NumberExpression<Integer> getPriorityOrder(QTodoEntity todoEntity,
-            QTodoResultEntity todoResultEntity) {
-        return new CaseBuilder()
-                .when(todoEntity.status.eq(TodoStatus.INCOMPLETE)).then(0)
-                .when(todoEntity.status.eq(TodoStatus.COMPLETE).and(todoResultEntity.id.isNull()))
-                .then(1)
-                .otherwise(2);
     }
 
     private JPAQuery<TodoItem> todoItemJPAQuery(QTodoEntity todoEntity,

@@ -9,6 +9,7 @@ import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.group.Group;
 import kr.co.domain.group.dto.GroupJoinDto;
 import kr.co.domain.group.exception.AlreadyJoinedGroupException;
+import kr.co.domain.group.repository.GroupMemberRepository;
 import kr.co.domain.group.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class GroupCommandService {
 
     private final GoalRepository goalRepository;
     private final GroupRepository groupRepository;
+    private final GroupMemberRepository groupMemberRepository;
 
     public UUID joinGroup(UUID userId, UUID goalId) {
         if (groupRepository.existsByGoalId(goalId)) {
@@ -39,7 +41,7 @@ public class GroupCommandService {
 //        group.removeMember(userId);
 
         Events.publishEvent(new GroupLeftEvent(groupId, userId));
-        groupRepository.leave(groupId, userId);
+        groupMemberRepository.deleteByGroupIdAndMemberId(groupId, userId);
     }
 
     private UUID joinUserToGroup(UUID groupId, UUID userId, UUID goalId) {

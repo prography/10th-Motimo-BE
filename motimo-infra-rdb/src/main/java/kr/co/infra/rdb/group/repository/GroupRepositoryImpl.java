@@ -88,9 +88,4 @@ public class GroupRepositoryImpl implements GroupRepository {
         return groupMemberJpaRepository.existsByGoalId(goalId);
     }
 
-    @Override
-    public void leave(UUID groupId, UUID userId) {
-        groupMemberJpaRepository.deleteByGroupIdAndUserId(groupId, userId);
-    }
-
 }

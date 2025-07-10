@@ -7,11 +7,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class NotificationServiceImpl implements NotificationService {
+public class NotificationCommandServiceImpl implements NotificationCommandService {
     private final NotificationRepository notificationRepository;
 
-    @Override
     public void save(Notification notification) {
-
+        notificationRepository.save(notification);
     }
 }

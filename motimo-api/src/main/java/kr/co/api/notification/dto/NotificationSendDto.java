@@ -1,5 +1,7 @@
 package kr.co.api.notification.dto;
 
-public class NotificationSendDto {
+public record NotificationSendDto(
+
+) {
 
 }

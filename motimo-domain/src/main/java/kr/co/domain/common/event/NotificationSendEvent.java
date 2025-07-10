@@ -11,6 +11,7 @@ public class NotificationSendEvent extends Event{
     private NotificationType type;
     private UUID senderId;
     private UUID receiverId;
+    private UUID referenceId;
     private String title;
     private String content;
 

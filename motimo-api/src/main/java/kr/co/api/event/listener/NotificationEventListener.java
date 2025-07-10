@@ -1,8 +1,10 @@
 package kr.co.api.event.listener;
 
+import kr.co.api.notification.NotificationCommandService;
 import kr.co.api.notification.NotificationSendService;
 import kr.co.api.notification.dto.NotificationSendDto;
 import kr.co.domain.common.event.NotificationSendEvent;
+import kr.co.domain.notification.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,12 +16,22 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class NotificationEventListener {
     private final NotificationSendService notificationService;
+    private final NotificationCommandService notificationCommandService;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleFileRollback(NotificationSendEvent event) {
+        Notification notification = Notification.createNotification()
+                .senderId(event.getSenderId())
+                .receiverId(event.getReceiverId())
+                .referenceId(event.getReferenceId())
+                .title(event.getTitle())
+                .content(event.getContent()).build();
+
+
         NotificationSendDto dto = new NotificationSendDto();
 
         try {
+            notificationCommandService.save(notification);
             notificationService.send(dto);
         } catch (Exception e) {
             log.error("알림 보내기 실패 {}:", e.getMessage());

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoSummary;
+import kr.co.domain.todo.dto.TodoItem;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.infra.rdb.config.QueryDslConfig;
 import kr.co.infra.rdb.todo.entity.TodoEntity;
@@ -98,8 +98,6 @@ class TodoRepositoryImplTest {
                 title,
                 date,
                 status
-//                LocalDateTime.now(),  // createdAt
-//                null   // updatedAt - JPA가 자동으로 설정
         );
 
         testEntityManager.persist(todo);
@@ -122,16 +120,16 @@ class TodoRepositoryImplTest {
     @Test
     void 완료되지않은_상태거나_오늘의_투두들만_조회되고_정렬된다() {
         // when
-        List<TodoSummary> todos = todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId,
+        List<TodoItem> todos = todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId,
                 today);
 
         // then
 
         assertThat(todos).hasSize(6); // 완료되지 않은 것 4 + 오늘인 것만 2
         assertThat(todos)
-                .extracting(TodoSummary::title)
-                .containsExactly("어제 미완료 투두", "오늘 미완료 투두", "내일 미완료 투두", "미완료 투두 날짜없음",
-                        "오늘 완료 투두 결과없음", "오늘 완료 투두 결과있음");
+                .extracting(TodoItem::title)
+                .containsExactly("어제 미완료 투두", "오늘 미완료 투두", "오늘 완료 투두 결과없음", "오늘 완료 투두 결과있음",
+                        "내일 미완료 투두", "미완료 투두 날짜없음");
     }
 }
 

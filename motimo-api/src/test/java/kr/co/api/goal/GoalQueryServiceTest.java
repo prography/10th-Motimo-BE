@@ -16,8 +16,10 @@ import kr.co.domain.goal.DueDate;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.subGoal.SubGoal;
+import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoSummary;
+import kr.co.domain.todo.dto.TodoItem;
+import kr.co.domain.todo.dto.TodoResultItem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -46,16 +48,21 @@ class GoalQueryServiceTest {
                 .subGoals(subGoals).build();
     }
 
-    private List<TodoSummary> createMockTodos(int count) {
-        List<TodoSummary> summaries = new ArrayList<>();
+    private List<TodoItem> createMockTodos(int count) {
+        List<TodoItem> summaries = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            summaries.add(new TodoSummary(
+            summaries.add(new TodoItem(
                     UUID.randomUUID(),
                     "테스트 투두",
                     LocalDate.now(),
                     TodoStatus.INCOMPLETE,
                     LocalDateTime.now(),
-                    UUID.randomUUID()));
+                    new TodoResultItem(
+                            UUID.randomUUID(),
+                            Emotion.PROUD,
+                            "todo result",
+                            ""
+                    )));
         }
         return summaries;
     }
@@ -82,7 +89,7 @@ class GoalQueryServiceTest {
             );
 
             // given
-            List<TodoSummary> mockTodos = createMockTodos(3);
+            List<TodoItem> mockTodos = createMockTodos(3);
             Goal mockGoal = createMockGoal(userId, goalId, subGoals);
             givenGoalWithSubGoalsAndTodos(goalId, mockGoal, mockTodos);
 
@@ -119,7 +126,7 @@ class GoalQueryServiceTest {
             final UUID goalId = UUID.randomUUID();
 
             // given
-            List<TodoSummary> mockTodos = createMockTodos(3);
+            List<TodoItem> mockTodos = createMockTodos(3);
             Goal mockGoal = createMockGoal(userId, goalId, List.of());
             givenGoalWithSubGoalsAndTodos(goalId, mockGoal, mockTodos);
 
@@ -133,7 +140,7 @@ class GoalQueryServiceTest {
         }
 
         private void givenGoalWithSubGoalsAndTodos(UUID goalId, Goal mockGoal,
-                List<TodoSummary> mockTodos) {
+                List<TodoItem> mockTodos) {
             when(goalRepository.findById(goalId)).thenReturn(mockGoal);
 
             mockGoal.getSubGoals().forEach(subGoal ->

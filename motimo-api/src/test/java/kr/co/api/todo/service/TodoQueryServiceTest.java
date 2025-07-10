@@ -12,11 +12,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import kr.co.api.todo.rqrs.TodoResultRs;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoSummary;
+import kr.co.domain.todo.dto.TodoItem;
+import kr.co.domain.todo.dto.TodoResultItem;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
@@ -66,13 +66,13 @@ class TodoQueryServiceTest {
         void 세부목표_ID로_투두_리스트_조회() {
             // given
             LocalDate today = LocalDate.now();
-            List<TodoSummary> mockSummaries = createMockTodoSummaries(3);
+            List<TodoItem> mockSummaries = createMockTodoSummaries(3);
 
             when(todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId, today))
                     .thenReturn(mockSummaries);
 
             // when
-            List<TodoSummary> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
+            List<TodoItem> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
                     subGoalId);
 
             // then
@@ -92,12 +92,12 @@ class TodoQueryServiceTest {
             // given
             int page = 0;
             int size = 10;
-            List<TodoSummary> mockSummaries = createMockTodoSummaries(3);
+            List<TodoItem> mockSummaries = createMockTodoSummaries(3);
 
             when(todoRepository.findAllByUserId(userId)).thenReturn(mockSummaries);
 
             // when
-            List<TodoSummary> todos = todoQueryService.getTodosByUserId(userId);
+            List<TodoItem> todos = todoQueryService.getTodosByUserId(userId);
 
             // then
             assertThat(todos).isNotNull();
@@ -111,11 +111,11 @@ class TodoQueryServiceTest {
             int page = 0;
             int size = 10;
             UUID nonExistsUserId = UUID.randomUUID();
-            List<TodoSummary> emptyList = Collections.emptyList();
+            List<TodoItem> emptyList = Collections.emptyList();
             when(todoRepository.findAllByUserId(nonExistsUserId)).thenReturn(emptyList);
 
             // when
-            List<TodoSummary> todos = todoQueryService.getTodosByUserId(nonExistsUserId);
+            List<TodoItem> todos = todoQueryService.getTodosByUserId(nonExistsUserId);
 
             // then
             assertThat(todos).isEmpty();
@@ -142,12 +142,11 @@ class TodoQueryServiceTest {
             when(todoRepository.existsById(todoId)).thenReturn(true);
 
             // when
-            Optional<TodoResultRs> result = todoQueryService.getTodoResultByTodoId(todoId);
+            Optional<TodoResultItem> result = todoQueryService.getTodoResultByTodoId(todoId);
 
             // then
             assertThat(result).isNotNull();
             assertThat(result).isPresent();
-            assertThat(result.get().todoId()).isEqualTo(todoId);
             assertThat(result.get().emotion()).isEqualTo(Emotion.PROUD);
             assertThat(result.get().content()).isEqualTo("투두 완료!");
             verify(todoResultRepository).findByTodoId(todoId);
@@ -161,7 +160,7 @@ class TodoQueryServiceTest {
             when(todoRepository.existsById(todoId)).thenReturn(true);
 
             // when
-            Optional<TodoResultRs> result = todoQueryService.getTodoResultByTodoId(todoId);
+            Optional<TodoResultItem> result = todoQueryService.getTodoResultByTodoId(todoId);
 
             // then
             assertThat(result).isEmpty();
@@ -180,16 +179,16 @@ class TodoQueryServiceTest {
         }
     }
 
-    private List<TodoSummary> createMockTodoSummaries(int count) {
-        List<TodoSummary> summaries = new ArrayList<>();
+    private List<TodoItem> createMockTodoSummaries(int count) {
+        List<TodoItem> summaries = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            summaries.add(new TodoSummary(
+            summaries.add(new TodoItem(
                     UUID.randomUUID(),
                     "테스트 투두",
                     LocalDate.now(),
                     TodoStatus.INCOMPLETE,
                     LocalDateTime.now(),
-                    UUID.randomUUID()));
+                    new TodoResultItem(UUID.randomUUID(), Emotion.PROUD, "todo result", "")));
         }
         return summaries;
     }

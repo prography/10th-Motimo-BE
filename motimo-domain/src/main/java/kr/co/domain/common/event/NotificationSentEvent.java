@@ -16,6 +16,7 @@ public class NotificationSentEvent extends Event{
     private String content;
 
     public NotificationSentEvent(NotificationType type, UUID senderId, UUID receiverId, UUID referenceId, String title, String content) {
+        super();
         this.type = type;
         this.senderId = senderId;
         this.receiverId = receiverId;

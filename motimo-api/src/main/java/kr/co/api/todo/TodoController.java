@@ -1,5 +1,6 @@
 package kr.co.api.todo;
 
+import java.util.List;
 import java.util.UUID;
 import kr.co.api.security.annotation.AuthUser;
 import kr.co.api.todo.docs.TodoControllerSwagger;
@@ -7,6 +8,7 @@ import kr.co.api.todo.rqrs.TodoIdRs;
 import kr.co.api.todo.rqrs.TodoResultIdRs;
 import kr.co.api.todo.rqrs.TodoResultRq;
 import kr.co.api.todo.rqrs.TodoResultRs;
+import kr.co.api.todo.rqrs.TodoRs;
 import kr.co.api.todo.rqrs.TodoUpdateRq;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
@@ -48,6 +50,14 @@ public class TodoController implements TodoControllerSwagger {
                 userId, todoId, request.emotion(), request.content(), file);
 
         return new TodoResultIdRs(id);
+    }
+
+    @GetMapping("/me")
+    public List<TodoRs> getMyTodos(@AuthUser UUID userId) {
+        return todoQueryService.getTodosByUserId(userId)
+                .stream()
+                .map(TodoRs::from)
+                .toList();
     }
 
     @GetMapping("/{todoId}/result")

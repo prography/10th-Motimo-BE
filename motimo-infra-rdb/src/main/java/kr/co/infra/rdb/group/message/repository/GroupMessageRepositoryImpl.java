@@ -48,26 +48,8 @@ public class GroupMessageRepositoryImpl implements GroupMessageRepository {
         QGroupMessageEntity messageEntity = QGroupMessageEntity.groupMessageEntity;
 
         // 쿼리 조건 구성
-        BooleanBuilder whereCondition = new BooleanBuilder();
-        whereCondition.and(messageEntity.groupId.eq(groupId));
-
-        if (cursor != null) {
-            if (direction == PagingDirection.BEFORE) {
-                // 이전 메시지 (과거 메시지)
-                whereCondition.and(
-                        messageEntity.sendAt.lt(cursor.dateTime())
-                                .or(messageEntity.sendAt.eq(cursor.dateTime())
-                                        .and(messageEntity.id.lt(cursor.id())))
-                );
-            } else {
-                // 이후 메시지 (최신 메시지)
-                whereCondition.and(
-                        messageEntity.sendAt.gt(cursor.dateTime())
-                                .or(messageEntity.sendAt.eq(cursor.dateTime())
-                                        .and(messageEntity.id.gt(cursor.id())))
-                );
-            }
-        }
+        BooleanBuilder whereCondition = createGroupMessageWhereConditionByCursor(
+                groupId, cursor, direction, messageEntity);
 
         OrderSpecifier<?>[] orderSpecifiers = (direction == PagingDirection.BEFORE)
                 ? new OrderSpecifier[]{
@@ -172,5 +154,30 @@ public class GroupMessageRepositoryImpl implements GroupMessageRepository {
                     return GroupMessageMapper.toDomainWithReactions(msgEntity, messageReactions);
                 })
                 .toList();
+    }
+
+    private BooleanBuilder createGroupMessageWhereConditionByCursor(UUID groupId,
+            CustomCursor cursor, PagingDirection direction, QGroupMessageEntity messageEntity) {
+        BooleanBuilder whereCondition = new BooleanBuilder();
+        whereCondition.and(messageEntity.groupId.eq(groupId));
+
+        if (cursor != null) {
+            if (direction == PagingDirection.BEFORE) {
+                // 이전 메시지 (과거 메시지)
+                whereCondition.and(
+                        messageEntity.sendAt.lt(cursor.dateTime())
+                                .or(messageEntity.sendAt.eq(cursor.dateTime())
+                                        .and(messageEntity.id.lt(cursor.id())))
+                );
+            } else {
+                // 이후 메시지 (최신 메시지)
+                whereCondition.and(
+                        messageEntity.sendAt.gt(cursor.dateTime())
+                                .or(messageEntity.sendAt.eq(cursor.dateTime())
+                                        .and(messageEntity.id.gt(cursor.id())))
+                );
+            }
+        }
+        return whereCondition;
     }
 }

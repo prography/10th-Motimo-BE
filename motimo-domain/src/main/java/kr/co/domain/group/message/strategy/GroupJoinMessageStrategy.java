@@ -7,7 +7,7 @@ import kr.co.domain.group.message.content.GroupMessageContent;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GroupJoinMessageMessageStrategy implements MessageContentStrategy {
+public class GroupJoinMessageStrategy implements MessageContentStrategy {
 
     @Override
     public GroupMessageContent createContent(GroupMessage message, MessageContentData contentData) {

@@ -2,6 +2,8 @@ package kr.co.infra.rdb.notification;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
@@ -32,6 +34,7 @@ public class NotificationEntity extends BaseEntity {
 
     private String content;
 
+    @Enumerated(EnumType.STRING)
     private NotificationType type;
 
     private UUID referenceId;

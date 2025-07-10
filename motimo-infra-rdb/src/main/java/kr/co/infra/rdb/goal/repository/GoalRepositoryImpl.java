@@ -66,4 +66,10 @@ public class GoalRepositoryImpl implements GoalRepository {
         ).toList();
     }
 
+    @Override
+    public List<Goal> findCompletedGoalsByUserId(UUID userId) {
+        return goalJpaRepository.findAllByUserIdAndCompleted(userId, true)
+                .stream().map(GoalMapper::toDomain).toList();
+    }
+
 }

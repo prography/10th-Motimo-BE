@@ -3,18 +3,23 @@ package kr.co.domain.todo.repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Todo;
-import kr.co.domain.todo.dto.TodoSummary;
+import kr.co.domain.todo.dto.TodoItem;
 
 public interface TodoRepository {
 
     Todo create(Todo todo);
-    
+
     Todo findById(UUID id);
 
-    List<TodoSummary> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date);
+    List<TodoItem> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date);
 
-    List<TodoSummary> findAllByUserId(UUID userId);
+    List<TodoItem> findAllByUserId(UUID userId);
+
+    List<TodoItem> findAllBySubGoalId(UUID subGoalId);
+    
+    List<GoalTodoCount> countTodosByGoalIds(List<UUID> goalId);
 
     boolean existsById(UUID id);
 

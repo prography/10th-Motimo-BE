@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import kr.co.api.goal.docs.GoalReadControllerSwagger;
 import kr.co.api.goal.dto.GoalItemDto;
+import kr.co.api.goal.rqrs.CompletedGoalListRs;
 import kr.co.api.goal.rqrs.GoalDetailRs;
 import kr.co.api.goal.rqrs.GoalItemRs;
 import kr.co.api.goal.rqrs.GoalListRs;
@@ -32,18 +33,31 @@ public class GoalReadController implements GoalReadControllerSwagger {
         return new GoalListRs(goalList.stream().map(GoalItemRs::from).toList());
     }
 
+    @GetMapping("/completed")
+    public CompletedGoalListRs getCompletedGoals(@AuthUser UUID userId) {
+        return CompletedGoalListRs.from(goalQueryService.getCompletedGoalsByUserId(userId));
+    }
+
     @GetMapping("/{goalId}")
     public GoalDetailRs getGoalDetail(@PathVariable UUID goalId) {
         return GoalDetailRs.from(goalQueryService.getGoalDetail(goalId));
     }
 
-    @GetMapping("/{goalId}/sub-goals/all")
+    @GetMapping("/{goalId}/sub-goals")
     public GoalWithSubGoalTodoRs getGoalWithSubGoalAndTodo(@PathVariable UUID goalId) {
-        return GoalWithSubGoalTodoRs.from(goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId));
+        return GoalWithSubGoalTodoRs.from(
+                goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId));
+    }
+
+    @GetMapping("/{goalId}/sub-goals/all")
+    public GoalWithSubGoalTodoRs getGoalWithAllSubGoalAndTodos(@PathVariable UUID goalId) {
+        return GoalWithSubGoalTodoRs.from(
+                goalQueryService.getGoalWithSubGoalAndTodos(goalId));
     }
 
     @GetMapping("/not-joined-group")
     public List<GoalNotInGroupRs> getGoalNotJoinGroup(@AuthUser UUID userId) {
-        return goalQueryService.getGoalNotInGroup(userId).stream().map(GoalNotInGroupRs::from).toList();
+        return goalQueryService.getGoalNotInGroup(userId).stream().map(GoalNotInGroupRs::from)
+                .toList();
     }
 }

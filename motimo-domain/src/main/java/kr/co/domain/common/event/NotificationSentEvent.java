@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class NotificationSendEvent extends Event{
+public class NotificationSentEvent extends Event{
     private NotificationType type;
     private UUID senderId;
     private UUID receiverId;
@@ -15,7 +15,7 @@ public class NotificationSendEvent extends Event{
     private String title;
     private String content;
 
-    public NotificationSendEvent(NotificationType type, UUID senderId, UUID receiverId, UUID referenceId, String title, String content) {
+    public NotificationSentEvent(NotificationType type, UUID senderId, UUID receiverId, UUID referenceId, String title, String content) {
         this.type = type;
         this.senderId = senderId;
         this.receiverId = receiverId;

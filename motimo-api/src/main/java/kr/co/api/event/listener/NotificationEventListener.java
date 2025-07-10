@@ -3,7 +3,7 @@ package kr.co.api.event.listener;
 import kr.co.api.notification.dto.NotificationSendDto;
 import kr.co.api.notification.service.NotificationCommandService;
 import kr.co.api.notification.service.NotificationSendService;
-import kr.co.domain.common.event.NotificationSendEvent;
+import kr.co.domain.common.event.NotificationSentEvent;
 import kr.co.domain.notification.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ public class NotificationEventListener {
     private final NotificationCommandService notificationCommandService;
 
     @EventListener
-    public void handleNotificationSend(NotificationSendEvent event) {
+    public void handleNotificationSent(NotificationSentEvent event) {
         Notification notification = Notification.createNotification()
                 .senderId(event.getSenderId())
                 .receiverId(event.getReceiverId())

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 
 public record GroupIdRs(
-        @Schema(description = "가입된 그룹 아이디")
+        @Schema(description = "가입된 그룹 아이디", requiredMode = Schema.RequiredMode.REQUIRED)
         UUID id
 ) {
 

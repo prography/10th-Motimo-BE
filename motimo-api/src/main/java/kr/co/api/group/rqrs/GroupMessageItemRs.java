@@ -5,7 +5,7 @@ import java.util.UUID;
 import kr.co.domain.group.MessageType;
 
 public record GroupMessageItemRs(
-        @Schema(description = "메세지 타입 (TODO, ENTER)")
+        @Schema(description = "메세지 타입 (TODO, ENTER)", requiredMode = Schema.RequiredMode.REQUIRED)
         MessageType messageType,
         @Schema(description = "보낸 사용자 아이디")
         UUID senderId,

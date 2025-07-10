@@ -5,9 +5,9 @@ import java.util.UUID;
 import kr.co.api.goal.dto.GoalNotInGroupDto;
 
 public record GoalNotInGroupRs(
-        @Schema(description = "목표 아이디")
+        @Schema(description = "목표 아이디", requiredMode = Schema.RequiredMode.REQUIRED)
         UUID id,
-        @Schema(description = "목표 제목")
+        @Schema(description = "목표 제목", requiredMode = Schema.RequiredMode.REQUIRED)
         String title
 ) {
 

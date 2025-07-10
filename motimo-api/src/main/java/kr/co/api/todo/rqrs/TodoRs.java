@@ -8,7 +8,7 @@ import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.dto.TodoSummary;
 
 public record TodoRs(
-        @Schema(description = "투두 Id", example = "0197157f-aea4-77bb-8581-3213eb5bd2ae")
+        @Schema(description = "투두 Id", example = "0197157f-aea4-77bb-8581-3213eb5bd2ae", requiredMode = Schema.RequiredMode.REQUIRED)
         UUID id,
 
         @Schema(description = "투두 제목", example = "영단어 10개 이상 외우기")

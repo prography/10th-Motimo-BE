@@ -18,5 +18,4 @@ public interface GroupRepository {
 
     boolean existsByGoalId(UUID goalId);
 
-    void leave(UUID groupId, UUID userId);
 }

@@ -7,9 +7,8 @@ import kr.co.domain.common.event.NotificationSendEvent;
 import kr.co.domain.notification.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
 @Component
@@ -18,14 +17,15 @@ public class NotificationEventListener {
     private final NotificationSendService notificationService;
     private final NotificationCommandService notificationCommandService;
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleFileRollback(NotificationSendEvent event) {
+    @EventListener
+    public void handleNotificationSend(NotificationSendEvent event) {
         Notification notification = Notification.createNotification()
                 .senderId(event.getSenderId())
                 .receiverId(event.getReceiverId())
                 .referenceId(event.getReferenceId())
                 .title(event.getTitle())
-                .content(event.getContent()).build();
+                .content(event.getContent())
+                .type(event.getType()).build();
 
 
         NotificationSendDto dto = new NotificationSendDto();

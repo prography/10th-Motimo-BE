@@ -28,7 +28,10 @@ public record GoalDetailRs(
         boolean isCompleted,
 
         @Schema(description = "그룹 참여 여부")
-        boolean isJoinedGroup
+        boolean isJoinedGroup,
+
+        @Schema(description = "그룹 아이디")
+        UUID groupId
 ) {
 
     public static GoalDetailRs from(GoalDetailDto dto) {
@@ -40,7 +43,8 @@ public record GoalDetailRs(
                 dto.dueDate(),
                 dto.progress(),
                 dto.isCompleted(),
-                dto.isJoinedGroup()
+                dto.isJoinedGroup(),
+                dto.groupId()
         );
     }
 }

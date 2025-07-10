@@ -1,4 +1,4 @@
-package kr.co.api.notification;
+package kr.co.api.notification.service;
 
 import kr.co.domain.notification.Notification;
 

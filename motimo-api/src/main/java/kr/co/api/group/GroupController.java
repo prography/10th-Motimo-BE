@@ -92,7 +92,7 @@ public class GroupController implements GroupControllerSwagger {
                         false
                 )
         );
-        return new CustomSlice<>(groupChatItems, true);
+        return new CustomSlice<>(groupChatItems, true, 10, 10);
     }
 
     @PostMapping("/message/{messageId}/reaction")

@@ -1,8 +1,8 @@
 package kr.co.api.event.listener;
 
-import kr.co.api.notification.NotificationCommandService;
-import kr.co.api.notification.NotificationSendService;
 import kr.co.api.notification.dto.NotificationSendDto;
+import kr.co.api.notification.service.NotificationCommandService;
+import kr.co.api.notification.service.NotificationSendService;
 import kr.co.domain.common.event.NotificationSendEvent;
 import kr.co.domain.notification.Notification;
 import lombok.RequiredArgsConstructor;

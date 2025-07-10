@@ -5,4 +5,5 @@ import kr.co.domain.notification.Notification;
 
 public interface NotificationRepository {
     UUID save(Notification notification);
+
 }

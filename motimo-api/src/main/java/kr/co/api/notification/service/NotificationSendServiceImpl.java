@@ -1,4 +1,4 @@
-package kr.co.api.notification;
+package kr.co.api.notification.service;
 
 import kr.co.api.notification.dto.NotificationSendDto;
 import kr.co.api.notification.util.NotificationSender;

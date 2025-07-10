@@ -18,4 +18,14 @@ public class Notification {
     private String title;
     private String content;
     private NotificationType type;
+
+    @Builder(builderMethodName = "createNotification")
+    private Notification(UUID senderId, UUID receiverId, UUID referenceId, String title, String content, NotificationType type) {
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.referenceId = referenceId;
+        this.title = title;
+        this.content = content;
+        this.type = type;
+    }
 }

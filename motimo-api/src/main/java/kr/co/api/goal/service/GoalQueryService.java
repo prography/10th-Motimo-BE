@@ -32,6 +32,8 @@ public class GoalQueryService {
         return new GoalDetailDto(
                 goal.getId(),
                 goal.getTitle(),
+                goal.getDueDate().isMonth(),
+                goal.getDueDate().getMonth(),
                 goal.getDueDateValue(),
                 goal.calculateProgress(),
                 goal.getCreatedAt(),

@@ -1,20 +1,25 @@
 package kr.co.api.user.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.UUID;
 import kr.co.domain.user.exception.UserNotFoundException;
 import kr.co.domain.user.model.ProviderType;
+import kr.co.domain.user.model.Role;
 import kr.co.domain.user.model.User;
 import kr.co.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("User Service Query 테스트")
@@ -25,6 +30,45 @@ class UserQueryServiceTest {
 
     @InjectMocks
     private UserQueryService userQueryService;
+
+    @Test
+    void ID로_유저_조회_성공() {
+        // given
+        UUID userId = UUID.randomUUID();
+        User expectedUser = User.builder()
+                .id(userId)
+                .email("test@gmail.com")
+                .nickname("테스트 사용자")
+                .providerType(ProviderType.GOOGLE)
+                .role(Role.USER)
+                .build();
+
+        when(userRepository.findById(userId)).thenReturn(expectedUser);
+
+        // when
+        User foundUser = userQueryService.findById(userId);
+
+        // then
+        assertThat(foundUser).isNotNull();
+        assertThat(foundUser.getId()).isEqualTo(userId);
+        assertThat(foundUser.getEmail()).isEqualTo("test@gmail.com");
+        assertThat(foundUser.getNickname()).isEqualTo("테스트 사용자");
+        assertThat(foundUser.getProviderType()).isEqualTo(ProviderType.GOOGLE);
+        assertThat(foundUser.getRole()).isEqualTo(Role.USER);
+
+        verify(userRepository, times(1)).findById(userId);
+    }
+
+    @Test
+    void 존재하지_않는_ID로_유저_조회시_예외_반환() {
+        // given
+        UUID nonExistentId = UUID.randomUUID();
+        when(userRepository.findById(nonExistentId)).thenThrow(new UserNotFoundException());
+
+        // when & then
+        assertThatThrownBy(() -> userQueryService.findById(nonExistentId))
+                .isInstanceOf(UserNotFoundException.class);
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"google", "kakao", "GOOGLE", "KAKAO"})

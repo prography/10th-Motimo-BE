@@ -36,6 +36,8 @@ public class NotificationEntity extends BaseEntity {
 
     private UUID referenceId;
 
+    private boolean isRead = false;
+
     public NotificationEntity(UUID senderId, UUID receiverId, String title, String content, NotificationType type, UUID referenceId) {
         this.senderId = senderId;
         this.receiverId = receiverId;
@@ -43,5 +45,9 @@ public class NotificationEntity extends BaseEntity {
         this.content = content;
         this.type = type;
         this.referenceId = referenceId;
+    }
+
+    public void readComplete() {
+        isRead = true;
     }
 }

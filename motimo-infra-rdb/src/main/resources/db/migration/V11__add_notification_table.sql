@@ -7,6 +7,7 @@ CREATE TABLE notifications
     content      VARCHAR(255),
     type         CHAR(100),
     reference_id UUID,
+    is_read      BOOLEAN   DEFAULT FALSE,
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -1,7 +1,8 @@
 package kr.co.infra.rdb.user.util;
 
-import kr.co.infra.rdb.user.entity.UserEntity;
+import java.util.HashSet;
 import kr.co.domain.user.model.User;
+import kr.co.infra.rdb.user.entity.UserEntity;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -16,6 +17,7 @@ public class UserMapper {
                 .email(entity.getEmail())
                 .nickname(entity.getNickname())
                 .profileImageUrl(entity.getProfileImageUrl())
+                .interests(new HashSet<>(entity.getInterests()))
                 .role(entity.getRole())
                 .providerType(entity.getProviderType())
                 .providerId(entity.getProviderId())
@@ -33,6 +35,7 @@ public class UserMapper {
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .profileImageUrl(user.getProfileImageUrl())
+                .interests(new HashSet<>(user.getInterests()))
                 .role(user.getRole())
                 .providerType(user.getProviderType())
                 .providerId(user.getProviderId())

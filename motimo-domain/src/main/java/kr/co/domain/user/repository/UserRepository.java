@@ -12,8 +12,10 @@ public interface UserRepository {
     User findByEmail(String email);
 
     User findByEmailAndProviderType(String email, ProviderType providerType);
+    
+    User create(User user);
 
-    User save(User user);
+    User update(User user);
 
     boolean existsByEmailAndProviderType(String email, ProviderType providerType);
 }

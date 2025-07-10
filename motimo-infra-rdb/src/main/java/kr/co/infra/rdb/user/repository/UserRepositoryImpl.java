@@ -41,10 +41,18 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
+    public User create(User user) {
         UserEntity entity = UserMapper.toEntity(user);
         UserEntity saved = userJpaRepository.save(entity);
         return UserMapper.toDomain(saved);
+    }
+
+    @Override
+    public User update(User user) {
+        UserEntity entity = userJpaRepository.findById(user.getId())
+                .orElseThrow(UserNotFoundException::new);
+        entity.update(user.getNickname(), user.getProfileImageUrl(), user.getInterests());
+        return UserMapper.toDomain(entity);
     }
 
     @Override

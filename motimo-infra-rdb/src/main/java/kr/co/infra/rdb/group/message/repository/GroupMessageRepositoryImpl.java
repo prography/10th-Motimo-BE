@@ -1,4 +1,4 @@
-package kr.co.infra.rdb.group.message.repostiory;
+package kr.co.infra.rdb.group.message.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;

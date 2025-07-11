@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FileRollbackEvent extends Event {
 
-    String filePath;
+    private String filePath;
 
     public FileRollbackEvent(String filePath) {
         super();

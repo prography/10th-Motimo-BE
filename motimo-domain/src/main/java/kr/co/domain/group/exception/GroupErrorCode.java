@@ -12,7 +12,9 @@ public enum GroupErrorCode implements ErrorCode {
     MESSAGE_LOAD_FAIL("메시지를 로드하는데 실패했습니다.", 500),
     UNSUPPORTED_MESSAGE_TYPE("지원하지 않는 메시지 타입입니다.", 400),
 
-    USER_NOT_IN_GROUP("해당 그룹에 존재하지 않는 사용자입니다.", 404);
+    USER_NOT_IN_GROUP("해당 그룹에 존재하지 않는 사용자입니다.", 404),
+
+    ALREADY_TODAY_POKE("오늘 찌르기를 이미 완료했습니다.", 400);
 
     private final String message;
     private final int statusCode;

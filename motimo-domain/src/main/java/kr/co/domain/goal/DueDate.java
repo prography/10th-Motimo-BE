@@ -18,4 +18,8 @@ public class DueDate {
     public static DueDate of(LocalDate localDate) {
         return new DueDate(null, localDate);
     }
+
+    public boolean isMonth() {
+        return month != null;
+    }
 }

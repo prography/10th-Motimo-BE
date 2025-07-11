@@ -13,7 +13,7 @@ public interface GroupRepository {
     Group create(Group group);
 
     Group join(GroupJoinDto dto);
-
+    Optional<Group> findByGoalId(UUID goalId);
     Optional<Group> findAvailableGroupBySimilarDueDate(UUID userId, LocalDate dueDate);
 
     boolean existsByGoalId(UUID goalId);

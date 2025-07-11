@@ -1,2 +1,0 @@
-ALTER TABLE users
-    ADD COLUMN bio VARCHAR(255);

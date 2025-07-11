@@ -25,6 +25,7 @@ import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.exception.TodoErrorCode;
+import kr.co.domain.todo.exception.TodoNotCompleteException;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.exception.TodoResultNotSubmittedException;
 import kr.co.domain.todo.repository.TodoRepository;
@@ -157,7 +158,7 @@ class TodoCommandServiceTest {
                     .subGoalId(subGoalId)
                     .title("Test Todo")
                     .date(LocalDate.now())
-                    .status(TodoStatus.INCOMPLETE)
+                    .status(TodoStatus.COMPLETE)
                     .build();
 
             expectedResult = TodoResult.builder()
@@ -191,7 +192,6 @@ class TodoCommandServiceTest {
             assertThat(id).isEqualTo(expectedResult.getId());
 
             verify(storageService, never()).store(any(), any());
-            mockedEvents.verify(() -> Events.publishEvent(any()), never());
         }
 
         @Test
@@ -214,7 +214,6 @@ class TodoCommandServiceTest {
             assertThat(id).isEqualTo(expectedResult.getId());
 
             verify(storageService, never()).store(any(), any());
-            mockedEvents.verify(() -> Events.publishEvent(any()), never());
         }
 
         @Test
@@ -247,6 +246,26 @@ class TodoCommandServiceTest {
                 assertThat(id).isEqualTo(expectedResult.getId());
                 mockedEvents.verify(() -> Events.publishEvent(any(FileRollbackEvent.class)));
             }
+        }
+
+        @Test
+        void 투두_미완료_상태시_투두결과_제출시_예외반환() {
+            // given
+            Todo otherTodo = Todo.builder()
+                    .id(todoId)
+                    .userId(userId)
+                    .subGoalId(subGoalId)
+                    .title("Test Todo")
+                    .date(LocalDate.now())
+                    .status(TodoStatus.INCOMPLETE)
+                    .build();
+            when(todoRepository.findById(todoId)).thenReturn(otherTodo);
+
+            // when & then
+            assertThatThrownBy(() -> todoCommandService.upsertTodoResult(userId, todoId,
+                    Emotion.PROUD, "투두 완료!", null))
+                    .isInstanceOf(TodoNotCompleteException.class)
+                    .hasMessage(TodoErrorCode.TODO_NOT_COMPLETE.getMessage());
         }
 
         @Test

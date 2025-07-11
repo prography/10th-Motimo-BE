@@ -8,6 +8,7 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoStatus;
@@ -115,6 +116,14 @@ public class TodoRepositoryImpl implements TodoRepository {
     @Override
     public void deleteById(UUID id) {
         todoJpaRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Todo> findAllByIdsIn(Set<UUID> todoIds) {
+        return todoJpaRepository.findAllByIdIn(todoIds)
+                .stream()
+                .map(TodoMapper::toDomain)
+                .toList();
     }
 
     private NumberExpression<Integer> getPriorityOrder(QTodoEntity todoEntity,

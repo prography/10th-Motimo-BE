@@ -18,11 +18,25 @@ public class GroupMessage {
     @Builder.Default
     private UUID id = null;
     private UUID groupId;
-    private UUID senderId;
-    private String senderName;
-    private GroupMessageContent content;
+    private UUID userId;
+    private GroupMessageType messageType;
+    @Builder.Default
+    private MessageReference messageReference = null;
     @Builder.Default
     private List<Reaction> reactions = new ArrayList<>();
     @Builder.Default
     private LocalDateTime sendAt = LocalDateTime.now();
+
+    public int getReactionCount() {
+        return reactions.size();
+    }
+
+    @Builder(builderMethodName = "createGroupMessage")
+    private GroupMessage(UUID groupId, UUID userId, GroupMessageType messageType,
+            MessageReference messageReference) {
+        this.groupId = groupId;
+        this.userId = userId;
+        this.messageType = messageType;
+        this.messageReference = messageReference;
+    }
 }

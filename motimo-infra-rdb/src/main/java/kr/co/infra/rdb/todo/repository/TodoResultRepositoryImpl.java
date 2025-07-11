@@ -1,6 +1,8 @@
 package kr.co.infra.rdb.todo.repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.exception.TodoResultNotSubmittedException;
@@ -47,5 +49,13 @@ public class TodoResultRepositoryImpl implements TodoResultRepository {
     @Override
     public void deleteById(UUID id) {
         todoResultJpaRepository.deleteById(id);
+    }
+
+    @Override
+    public List<TodoResult> findAllByIdsIn(Set<UUID> todoResultIds) {
+        return todoResultJpaRepository.findAllByIdIn(todoResultIds)
+                .stream()
+                .map(TodoResultMapper::toDomain)
+                .toList();
     }
 }

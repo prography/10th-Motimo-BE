@@ -2,8 +2,8 @@ package kr.co.domain.group.message;
 
 import java.util.UUID;
 
-public record MessageRef(
-        MessageRefType messageRefType,
+public record MessageReference(
+        MessageReferenceType messageReferenceType,
         UUID referenceId
 ) {
 

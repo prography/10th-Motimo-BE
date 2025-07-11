@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 public class NotificationRepositoryImpl implements NotificationRepository {
     private final NotificationJpaRepository notificationJpaRepository;
 
-    public UUID save(Notification notification) {
+    public UUID create(Notification notification) {
         NotificationEntity entity = notificationJpaRepository.save(
                 NotificationMapper.toEntity(notification)
         );

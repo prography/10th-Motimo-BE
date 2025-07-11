@@ -7,8 +7,6 @@ import kr.co.api.group.rqrs.message.GroupMessageContentRs;
 import kr.co.api.group.service.dto.GroupMessageItemDto;
 
 public record GroupMessageItemRs(
-        @Schema(description = "메세지 타입 (TODO, ENTER)", requiredMode = Schema.RequiredMode.REQUIRED)
-        MessageType messageType,
         UUID messageId,
         @Schema(description = "보낸 사용자 아이디")
         UUID userId,

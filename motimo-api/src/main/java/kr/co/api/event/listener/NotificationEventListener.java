@@ -18,7 +18,7 @@ public class NotificationEventListener {
     private final NotificationSendService notificationService;
     private final NotificationCommandService notificationCommandService;
 
-    @TransactionalEventListener(fallbackExecution = true, phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleNotificationSent(NotificationSentEvent event) {
         Notification notification = Notification.createNotification()
                 .senderId(event.getSenderId())

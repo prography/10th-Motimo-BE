@@ -5,5 +5,5 @@ import kr.co.domain.notification.Notification;
 
 public interface NotificationRepository {
     UUID create(Notification notification);
-
+    boolean existsByTodayPoke(UUID senderId, UUID receiverId, UUID groupId);
 }

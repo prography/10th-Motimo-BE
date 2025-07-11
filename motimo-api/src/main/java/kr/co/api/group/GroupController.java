@@ -9,13 +9,14 @@ import kr.co.api.group.rqrs.GroupJoinRq;
 import kr.co.api.group.rqrs.GroupMemberRs;
 import kr.co.api.group.rqrs.GroupMessageIdRs;
 import kr.co.api.group.rqrs.JoinedGroupRs;
-import kr.co.api.group.service.GroupCommandService;
 import kr.co.api.group.rqrs.message.GroupChatRs;
 import kr.co.api.group.rqrs.message.NewMessageRs;
+import kr.co.api.group.service.GroupCommandService;
 import kr.co.api.group.service.GroupMessageQueryService;
 import kr.co.api.security.annotation.AuthUser;
 import kr.co.domain.common.pagination.PagingDirection;
 import kr.co.domain.group.reaction.ReactionType;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -91,5 +93,11 @@ public class GroupController implements GroupControllerSwagger {
     @DeleteMapping("/{groupId}/members/me")
     public void exitGroup(@AuthUser UUID userId, @PathVariable UUID groupId) {
         groupCommandService.leaveGroup(userId, groupId);
+    }
+
+    @PostMapping("/{groupId}/members/{targetUserId}/poke")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void sendPokeNotification(@AuthUser UUID userId, @PathVariable UUID groupId, @PathVariable UUID targetUserId) {
+        groupCommandService.createPokeNotification(userId, groupId, targetUserId);
     }
 }

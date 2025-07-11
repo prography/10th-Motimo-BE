@@ -2,7 +2,7 @@ package kr.co.api.goal.service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
+import java.util.Optional;
 import java.util.UUID;
 import kr.co.api.goal.dto.GoalDetailDto;
 import kr.co.api.goal.dto.GoalItemDto;
@@ -12,6 +12,8 @@ import kr.co.api.goal.dto.SubGoalDto;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
+import kr.co.domain.group.Group;
+import kr.co.domain.group.repository.GroupRepository;
 import kr.co.domain.subGoal.SubGoal;
 import kr.co.domain.todo.dto.TodoSummary;
 import lombok.RequiredArgsConstructor;
@@ -24,19 +26,25 @@ import org.springframework.transaction.annotation.Transactional;
 public class GoalQueryService {
 
     private final GoalRepository goalRepository;
+    private final GroupRepository groupRepository;
     private final TodoQueryService todoQueryService;
 
     public GoalDetailDto getGoalDetail(UUID goalId) {
         Goal goal = goalRepository.findById(goalId);
 
+        Optional<Group> group = groupRepository.findByGoalId(goalId);
+
         return new GoalDetailDto(
                 goal.getId(),
                 goal.getTitle(),
+                goal.getDueDate().isMonth(),
+                goal.getDueDate().getMonth(),
                 goal.getDueDateValue(),
                 goal.calculateProgress(),
                 goal.getCreatedAt(),
                 goal.completed,
-                new Random().nextBoolean() // TODO: 그룹 기능 구현 시 수정
+                group.isPresent(),
+                group.map(Group::getId).orElse(null)
         );
     }
 

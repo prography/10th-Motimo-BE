@@ -61,6 +61,13 @@ public class GroupRepositoryImpl implements GroupRepository {
         return GroupMapper.toDomain(groupEntity);
     }
 
+    public Optional<Group> findByGoalId(UUID goalId) {
+        Optional<GroupMemberEntity> groupMemberEntity = groupMemberJpaRepository.findByGoalId(
+                goalId);
+        return groupMemberEntity.map(memberEntity -> GroupMapper.toDomain(memberEntity
+                .getGroup()));
+    }
+
     public Optional<Group> findAvailableGroupBySimilarDueDate(UUID userId, LocalDate dueDate) {
         QGroupEntity group = QGroupEntity.groupEntity;
         QGroupMemberEntity member = QGroupMemberEntity.groupMemberEntity;

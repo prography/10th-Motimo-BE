@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "투두 API", description = "투두 관련 API 목록입니다")
 public interface TodoControllerSwagger {
 
-    @Operation(summary = "투두 결과(기록) 제출하기", description = "투두 수행 결과를 제출합니다. 파일을 첨부할 수 있습니다.")
+    @Operation(summary = "투두 결과(기록) 제출/수정하기", description = "투두 수행 결과를 제출/수정합니다. 파일을 첨부할 수 있습니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "TODO 결과 제출 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),

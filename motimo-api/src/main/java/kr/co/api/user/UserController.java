@@ -46,8 +46,7 @@ public class UserController implements UserControllerSwagger {
     }
 
     @PatchMapping("/interests")
-    public UserIdRs updateMyInterests(@AuthUser UUID userId,
-            @RequestBody @Valid UserInterestsRq request) {
+    public UserIdRs updateMyInterests(@AuthUser UUID userId, @RequestBody UserInterestsRq request) {
 
         UUID id = userCommandService.updateInterests(userId, request.interests());
         return new UserIdRs(id);

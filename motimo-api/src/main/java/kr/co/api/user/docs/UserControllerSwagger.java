@@ -55,7 +55,6 @@ public interface UserControllerSwagger {
             @ApiResponse(responseCode = "400", description = "잘못된 요청/파일 형식 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content)
     })
-//    @RequestBody(required = false)
     UserIdRs updateMyProfile(UUID userId,
             @RequestPart @Schema(implementation = UserUpdateRq.class) UserUpdateRq request,
             @Parameter(description = "프로필 이미지 파일", content = @Content(mediaType = "multipart/form-data"))

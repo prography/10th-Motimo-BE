@@ -1,6 +1,5 @@
 package kr.co.api.user;
 
-import jakarta.validation.Valid;
 import java.util.UUID;
 import kr.co.api.security.annotation.AuthUser;
 import kr.co.api.user.docs.UserControllerSwagger;
@@ -11,7 +10,6 @@ import kr.co.api.user.rqrs.UserUpdateRq;
 import kr.co.api.user.service.UserCommandService;
 import kr.co.api.user.service.UserQueryService;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,7 +53,7 @@ public class UserController implements UserControllerSwagger {
     @PutMapping(path = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public UserIdRs updateMyProfile(
             @AuthUser UUID userId,
-            @Valid @Validated @RequestPart UserUpdateRq request,
+            @RequestPart UserUpdateRq request,
             @RequestPart(name = "file", required = false) MultipartFile image) {
         UUID id = userCommandService.updateProfile(userId,
                 request.userName(), request.bio(), request.interests(), image);

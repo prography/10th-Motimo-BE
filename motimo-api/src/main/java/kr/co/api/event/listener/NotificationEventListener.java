@@ -7,8 +7,9 @@ import kr.co.domain.common.event.NotificationSentEvent;
 import kr.co.domain.notification.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
 @Component
@@ -17,7 +18,7 @@ public class NotificationEventListener {
     private final NotificationSendService notificationService;
     private final NotificationCommandService notificationCommandService;
 
-    @EventListener
+    @TransactionalEventListener(fallbackExecution = true, phase = TransactionPhase.AFTER_COMMIT)
     public void handleNotificationSent(NotificationSentEvent event) {
         Notification notification = Notification.createNotification()
                 .senderId(event.getSenderId())
@@ -32,7 +33,7 @@ public class NotificationEventListener {
 
         try {
             notificationCommandService.save(notification);
-            notificationService.send(dto);
+            notificationService.send(dto); // 알림 보내기 실패 시 어떻게 할지 고려 필요
         } catch (Exception e) {
             log.error("알림 보내기 실패 {}:", e.getMessage());
         }

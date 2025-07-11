@@ -32,7 +32,7 @@ CREATE TABLE todo
     sub_goal_id UUID NOT NULL,
     author_id   UUID NOT NULL,
     title       TEXT NOT NULL,
-    date        DATE,
+    "date"      DATE,
     completed   BOOLEAN   DEFAULT FALSE,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

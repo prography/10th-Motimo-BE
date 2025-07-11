@@ -24,6 +24,7 @@ import kr.co.api.config.SecurityConfig;
 import kr.co.api.config.WebConfig;
 import kr.co.api.security.CustomUserDetailsService;
 import kr.co.api.security.jwt.TokenProvider;
+import kr.co.api.security.oauth2.CustomOAuth2AuthorizationRequestRepository;
 import kr.co.api.security.oauth2.CustomOAuth2UserService;
 import kr.co.api.security.oauth2.OAuth2AuthenticationFailureHandler;
 import kr.co.api.security.oauth2.OAuth2AuthenticationSuccessHandler;
@@ -33,9 +34,11 @@ import kr.co.api.subgoal.rqrs.TodoCreateRq;
 import kr.co.api.subgoal.service.SubGoalCommandService;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
+import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoSummary;
+import kr.co.domain.todo.dto.TodoItem;
+import kr.co.domain.todo.dto.TodoResultItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +61,7 @@ class SubGoalControllerTest {
 
     @MockitoBean
     private TodoQueryService todoQueryService;
-    
+
     @MockitoBean
     private SubGoalCommandService subGoalCommandService;
 
@@ -82,6 +85,9 @@ class SubGoalControllerTest {
 
     @MockitoBean
     private AuthTokenArgumentResolver authTokenArgumentResolver;
+
+    @MockitoBean
+    private CustomOAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -123,7 +129,7 @@ class SubGoalControllerTest {
         // given
         UUID todoId1 = UUID.randomUUID();
         UUID todoId2 = UUID.randomUUID();
-        List<TodoSummary> todoSummaries = Arrays.asList(
+        List<TodoItem> todoSummaries = Arrays.asList(
                 createMockTodoSummary(todoId1, "투두1"),
                 createMockTodoSummary(todoId2, "투두2")
         );
@@ -151,8 +157,14 @@ class SubGoalControllerTest {
         verify(todoQueryService).getIncompleteOrTodayTodosBySubGoalId(subGoalId);
     }
 
-    private TodoSummary createMockTodoSummary(UUID id, String title) {
-        return new TodoSummary(id, title, LocalDate.now(), TodoStatus.INCOMPLETE,
-                LocalDateTime.now(), UUID.randomUUID());
+    private TodoItem createMockTodoSummary(UUID id, String title) {
+        return new TodoItem(id, title, LocalDate.now(), TodoStatus.INCOMPLETE,
+                LocalDateTime.now(),
+                new TodoResultItem(
+                        UUID.randomUUID(),
+                        Emotion.PROUD,
+                        "todo result",
+                        ""
+                ));
     }
 }

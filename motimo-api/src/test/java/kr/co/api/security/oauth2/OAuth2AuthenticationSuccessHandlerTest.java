@@ -1,6 +1,16 @@
 package kr.co.api.security.oauth2;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.UUID;
 import kr.co.api.auth.service.RefreshTokenCommandService;
 import kr.co.api.security.UserPrincipal;
 import kr.co.api.security.jwt.TokenProvider;
@@ -14,12 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
-
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OAuth2AuthenticationSuccessHandlerTest {
@@ -39,23 +43,20 @@ class OAuth2AuthenticationSuccessHandlerTest {
     @Mock
     private UserPrincipal userPrincipal;
 
+    @Mock
+    private CustomOAuth2AuthorizationRequestRepository authorizationRequestRepository;
+
     @InjectMocks
     private OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
 
     @Test
-    void OAuth2_인증_성공_시_토큰이_JSON으로_반환된다() throws Exception {
+    void redirectUri가_없을_때_기본_리다이렉트가_실행된다() throws Exception {
         // given
         UUID userId = UUID.randomUUID();
         UUID tokenId = UUID.randomUUID();
         String accessToken = "test-access-token";
         String refreshToken = "test-refresh-token";
         TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken, tokenId);
-        String expectedJsonResponse = """
-                {
-                    "accessToken": "%s",
-                    "refreshToken": "%s"
-                }
-                """.formatted(accessToken, refreshToken);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -64,7 +65,7 @@ class OAuth2AuthenticationSuccessHandlerTest {
         when(authentication.getPrincipal()).thenReturn(userPrincipal);
         when(userPrincipal.getId()).thenReturn(userId);
         when(tokenProvider.createToken(userId)).thenReturn(tokenResponse);
-        when(objectMapper.writeValueAsString(tokenResponse)).thenReturn(expectedJsonResponse);
+        when(authorizationRequestRepository.getAndRemoveRedirectUriParam(request)).thenReturn(null);
 
         // when
         oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response,
@@ -73,8 +74,41 @@ class OAuth2AuthenticationSuccessHandlerTest {
         // then
         verify(tokenProvider).createToken(userId);
         verify(refreshTokenCommandService).saveRefreshToken(userId, tokenId, refreshToken);
-        verify(objectMapper).writeValueAsString(tokenResponse);
-        assertThat(response.getContentAsString()).isEqualTo(expectedJsonResponse);
+        verify(authorizationRequestRepository).getAndRemoveRedirectUriParam(request);
+    }
+
+    @Test
+    void redirectUri가_있을_때_토큰과_함께_리다이렉트된다() throws Exception {
+        // given
+        UUID userId = UUID.randomUUID();
+        UUID tokenId = UUID.randomUUID();
+        String accessToken = "test-access-token";
+        String refreshToken = "test-refresh-token";
+        String redirectUri = "http://localhost:3000/callback";
+        TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken, tokenId);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        when(authentication.getPrincipal()).thenReturn(userPrincipal);
+        when(userPrincipal.getId()).thenReturn(userId);
+        when(tokenProvider.createToken(userId)).thenReturn(tokenResponse);
+        when(authorizationRequestRepository.getAndRemoveRedirectUriParam(request)).thenReturn(
+                redirectUri);
+
+        // when
+        oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response,
+                authentication);
+
+        // then
+        verify(tokenProvider).createToken(userId);
+        verify(refreshTokenCommandService).saveRefreshToken(userId, tokenId, refreshToken);
+        verify(authorizationRequestRepository).getAndRemoveRedirectUriParam(request);
+
+        String redirectedUrl = response.getRedirectedUrl();
+        assertThat(redirectedUrl).contains("access_token=" + accessToken);
+        assertThat(redirectedUrl).contains("refresh_token=" + refreshToken);
+        assertThat(redirectedUrl).startsWith(redirectUri);
     }
 
     @Test
@@ -151,12 +185,6 @@ class OAuth2AuthenticationSuccessHandlerTest {
         String accessToken = "test-access-token";
         String refreshToken = "test-refresh-token";
         TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken, tokenId);
-        String expectedJsonResponse = """
-                {
-                    "accessToken": "%s",
-                    "refreshToken": "%s"
-                }
-                """.formatted(accessToken, refreshToken);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -164,16 +192,17 @@ class OAuth2AuthenticationSuccessHandlerTest {
         when(authentication.getPrincipal()).thenReturn(userPrincipal);
         when(userPrincipal.getId()).thenReturn(userId);
         when(tokenProvider.createToken(userId)).thenReturn(tokenResponse);
-        when(objectMapper.writeValueAsString(tokenResponse)).thenReturn(expectedJsonResponse);
+        when(authorizationRequestRepository.getAndRemoveRedirectUriParam(request)).thenReturn(null);
 
         // when
         oauth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response,
                 authentication);
 
         // then
-        InOrder inOrder = inOrder(tokenProvider, refreshTokenCommandService, objectMapper);
+        InOrder inOrder = inOrder(tokenProvider, refreshTokenCommandService,
+                authorizationRequestRepository);
         inOrder.verify(tokenProvider).createToken(userId);
         inOrder.verify(refreshTokenCommandService).saveRefreshToken(userId, tokenId, refreshToken);
-        inOrder.verify(objectMapper).writeValueAsString(tokenResponse);
+        inOrder.verify(authorizationRequestRepository).getAndRemoveRedirectUriParam(request);
     }
 }

@@ -19,6 +19,7 @@ import kr.co.api.config.WebConfig;
 import kr.co.api.security.CustomUserDetailsService;
 import kr.co.api.security.jwt.TokenProvider;
 import kr.co.api.security.jwt.TokenResponse;
+import kr.co.api.security.oauth2.CustomOAuth2AuthorizationRequestRepository;
 import kr.co.api.security.oauth2.CustomOAuth2UserService;
 import kr.co.api.security.oauth2.OAuth2AuthenticationFailureHandler;
 import kr.co.api.security.oauth2.OAuth2AuthenticationSuccessHandler;
@@ -56,6 +57,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private CustomOAuth2UserService customOAuth2UserService;
+
+    @MockitoBean
+    private CustomOAuth2AuthorizationRequestRepository customOAuth2AuthorizationRequestRepository;
 
     @MockitoBean
     private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;

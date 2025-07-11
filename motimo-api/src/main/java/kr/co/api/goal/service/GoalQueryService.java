@@ -72,7 +72,11 @@ public class GoalQueryService {
     }
 
     public List<GoalNotInGroupDto> getGoalNotInGroup(UUID userId) {
-       List<Goal> goals = goalRepository.findUnassignedGroupGoalsByUserId(userId);
-       return goals.stream().map(GoalNotInGroupDto::from).toList();
+        List<Goal> goals = goalRepository.findUnassignedGroupGoalsByUserId(userId);
+        return goals.stream().map(GoalNotInGroupDto::from).toList();
+    }
+
+    public Goal getGoalBySubGoalId(UUID subGoalId) {
+        return goalRepository.findBySubGoalId(subGoalId);
     }
 }

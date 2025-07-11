@@ -1,6 +1,7 @@
-package kr.co.domain.group.message;
+package kr.co.domain.group.message.content;
 
 import java.util.UUID;
+import kr.co.domain.group.message.GroupMessageType;
 import kr.co.domain.todo.Emotion;
 
 public record TodoResultSubmittedContent(

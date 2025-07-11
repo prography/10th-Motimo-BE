@@ -53,6 +53,9 @@ public class UserEntity {
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
+    @Column(name = "bio")
+    private String bio;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_interest", joinColumns = @JoinColumn(name = "user_id"))
@@ -78,8 +81,10 @@ public class UserEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public void update(String nickname, String profileImageUrl, Set<InterestType> interests) {
+    public void update(String nickname, String bio, String profileImageUrl,
+            Set<InterestType> interests) {
         this.nickname = nickname;
+        this.bio = bio;
         this.profileImageUrl = profileImageUrl;
         this.interests.clear();
         this.interests.addAll(interests);

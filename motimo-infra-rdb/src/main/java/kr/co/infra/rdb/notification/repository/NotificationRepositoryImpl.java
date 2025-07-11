@@ -32,7 +32,6 @@ public class NotificationRepositoryImpl implements NotificationRepository {
         LocalDate today = LocalDate.now();
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.plusDays(1).atStartOfDay();
-        System.out.println(startOfDay + "  " + endOfDay);
 
         QNotificationEntity notification = QNotificationEntity.notificationEntity;
 

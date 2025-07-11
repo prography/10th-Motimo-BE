@@ -168,7 +168,7 @@ class UserCommandServiceTest {
                 .nickname("기존 이름")
                 .providerType(ProviderType.GOOGLE)
                 .role(Role.USER)
-                .profileImageUrl("image")
+                .profileImagePath("/image")
                 .build();
 
         when(userRepository.findById(userId)).thenReturn(existingUser);
@@ -237,7 +237,7 @@ class UserCommandServiceTest {
                 .nickname("기존 이름")
                 .providerType(ProviderType.GOOGLE)
                 .role(Role.USER)
-                .profileImageUrl(existingProfileUrl)
+                .profileImagePath(existingProfileUrl)
                 .build();
 
         when(userRepository.findById(userId)).thenReturn(existingUser);
@@ -273,7 +273,7 @@ class UserCommandServiceTest {
                 .nickname("기존 이름")
                 .providerType(ProviderType.GOOGLE)
                 .role(Role.USER)
-                .profileImageUrl(null)
+                .profileImagePath(null)
                 .build();
 
         when(userRepository.findById(userId)).thenReturn(existingUser);
@@ -309,7 +309,7 @@ class UserCommandServiceTest {
                 .nickname("기존 이름")
                 .providerType(ProviderType.GOOGLE)
                 .role(Role.USER)
-                .profileImageUrl("")
+                .profileImagePath("")
                 .build();
 
         when(userRepository.findById(userId)).thenReturn(existingUser);

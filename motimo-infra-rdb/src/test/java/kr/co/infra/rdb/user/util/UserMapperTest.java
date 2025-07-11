@@ -39,7 +39,7 @@ class UserMapperTest {
                 .id(uuid)
                 .email("test@gmail.com")
                 .nickname("tester")
-                .profileImageUrl("")
+                .profileImagePath("")
                 .build();
 
         UserEntity entity = UserMapper.toEntity(user);

@@ -201,7 +201,7 @@ class UserQueryServiceTest {
                 .nickname("테스트 사용자")
                 .providerType(ProviderType.GOOGLE)
                 .role(Role.USER)
-                .profileImageUrl(profileImagePath)
+                .profileImagePath(profileImagePath)
                 .build();
 
         when(userRepository.findById(userId)).thenReturn(user);
@@ -232,7 +232,7 @@ class UserQueryServiceTest {
                 .nickname("테스트 사용자")
                 .providerType(ProviderType.GOOGLE)
                 .role(Role.USER)
-                .profileImageUrl(null)
+                .profileImagePath(null)
                 .build();
 
         when(userRepository.findById(userId)).thenReturn(user);
@@ -262,7 +262,7 @@ class UserQueryServiceTest {
                 .nickname("테스트 사용자")
                 .providerType(ProviderType.GOOGLE)
                 .role(Role.USER)
-                .profileImageUrl("")
+                .profileImagePath("")
                 .build();
 
         when(userRepository.findById(userId)).thenReturn(user);

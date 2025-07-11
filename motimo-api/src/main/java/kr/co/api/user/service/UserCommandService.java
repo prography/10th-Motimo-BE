@@ -12,6 +12,7 @@ import kr.co.infra.storage.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -37,18 +38,34 @@ public class UserCommandService {
 
         User user = userRepository.findById(userId);
 
-        String profileUrl = user.getProfileImageUrl();
-        if (image != null && !image.isEmpty()) {
-            String newProfilePath = String.format("user/%s/%s", userId, UUID.randomUUID());
-            storageService.store(image, newProfilePath);
-            Events.publishEvent(new FileRollbackEvent(newProfilePath));
-            if (profileUrl != null && !profileUrl.isBlank()) {
-                Events.publishEvent(new FileDeletedEvent(profileUrl));
-            }
-            profileUrl = newProfilePath;
-        }
+        String newProfilePath = resolveNewProfileImagePath(user, image);
 
-        user.update(userName, bio, profileUrl, interests);
+        user.update(userName, bio, newProfilePath, interests);
         return userRepository.update(user).getId();
     }
+
+    private String resolveNewProfileImagePath(User user, MultipartFile image) {
+        if (image == null || image.isEmpty()) {
+            return user.getProfileImagePath();
+        }
+
+        return uploadNewProfileImage(user, image);
+    }
+
+    private String uploadNewProfileImage(User user, MultipartFile image) {
+        String newImagePath = generateProfileImagePath(user.getId());
+
+        storageService.store(image, newImagePath);
+        Events.publishEvent(new FileRollbackEvent(newImagePath));
+
+        if (StringUtils.hasText(user.getProfileImagePath())) {
+            Events.publishEvent(new FileDeletedEvent(user.getProfileImagePath()));
+        }
+        return newImagePath;
+    }
+
+    private String generateProfileImagePath(UUID userId) {
+        return "user/%s/%s".formatted(userId, UUID.randomUUID());
+    }
+
 }

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -160,6 +161,7 @@ class UserCommandServiceTest {
         UUID userId = UUID.randomUUID();
         String userName = "새로운 이름";
         String bio = "새로운 소개";
+        String currentImagePath = "user/%s/%s".formatted(userId, userId);
         Set<InterestType> interests = Set.of(InterestType.PROGRAMMING, InterestType.SPORTS);
 
         User existingUser = User.builder()
@@ -168,7 +170,7 @@ class UserCommandServiceTest {
                 .nickname("기존 이름")
                 .providerType(ProviderType.GOOGLE)
                 .role(Role.USER)
-                .profileImagePath("/image")
+                .profileImagePath(currentImagePath)
                 .build();
 
         when(userRepository.findById(userId)).thenReturn(existingUser);
@@ -179,6 +181,11 @@ class UserCommandServiceTest {
 
         // then
         assertThat(result).isEqualTo(userId);
+        assertThat(existingUser.getNickname()).isEqualTo(userName);
+        assertThat(existingUser.getBio()).isEqualTo(bio);
+        assertThat(existingUser.getInterests()).isEqualTo(interests);
+        assertThat(existingUser.getProfileImagePath()).isEqualTo(currentImagePath);
+
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, times(1)).update(existingUser);
         verify(storageService, never()).store(any(), any());
@@ -201,6 +208,7 @@ class UserCommandServiceTest {
                 .email("test@gmail.com")
                 .nickname("기존 이름")
                 .providerType(ProviderType.GOOGLE)
+                .profileImagePath("")
                 .role(Role.USER)
                 .build();
 
@@ -213,6 +221,10 @@ class UserCommandServiceTest {
 
         // then
         assertThat(result).isEqualTo(userId);
+        assertThat(existingUser.getNickname()).isEqualTo(userName);
+        assertThat(existingUser.getBio()).isEqualTo(bio);
+        assertThat(existingUser.getInterests()).isEqualTo(interests);
+        assertThat(existingUser.getProfileImagePath()).isEqualTo("");
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, times(1)).update(existingUser);
         verify(storageService, never()).store(any(), any());
@@ -227,7 +239,7 @@ class UserCommandServiceTest {
         String bio = "새로운 소개";
         Set<InterestType> interests = Set.of(InterestType.PROGRAMMING);
         MultipartFile newImage = mock(MultipartFile.class);
-        String existingProfileUrl = "image";
+        String existingProfileUrl = "user/%s/%s".formatted(userId, userId);
 
         when(newImage.isEmpty()).thenReturn(false);
 
@@ -242,12 +254,20 @@ class UserCommandServiceTest {
 
         when(userRepository.findById(userId)).thenReturn(existingUser);
         when(userRepository.update(any(User.class))).thenReturn(existingUser);
+        doAnswer(invocation -> {
+            // 실제 서비스에서 generateProfileImagePath()가 호출되어 새 경로가 생성됨을 시뮬레이션
+            return null;
+        }).when(storageService).store(eq(newImage), startsWith("user/" + userId + "/"));
 
         // when
         UUID result = userCommandService.updateProfile(userId, userName, bio, interests, newImage);
 
         // then
         assertThat(result).isEqualTo(userId);
+        assertThat(existingUser.getNickname()).isEqualTo(userName);
+        assertThat(existingUser.getBio()).isEqualTo(bio);
+        assertThat(existingUser.getInterests()).isEqualTo(interests);
+        assertThat(existingUser.getProfileImagePath()).startsWith("user/" + userId + "/");
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, times(1)).update(existingUser);
         verify(storageService, times(1)).store(eq(newImage), startsWith("user/" + userId + "/"));
@@ -284,6 +304,11 @@ class UserCommandServiceTest {
 
         // then
         assertThat(result).isEqualTo(userId);
+        assertThat(existingUser.getNickname()).isEqualTo(userName);
+        assertThat(existingUser.getBio()).isEqualTo(bio);
+        assertThat(existingUser.getInterests()).isEqualTo(interests);
+        assertThat(existingUser.getProfileImagePath()).startsWith("user/" + userId + "/");
+
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, times(1)).update(existingUser);
         verify(storageService, times(1)).store(eq(newImage), startsWith("user/" + userId + "/"));
@@ -320,6 +345,11 @@ class UserCommandServiceTest {
 
         // then
         assertThat(result).isEqualTo(userId);
+        assertThat(existingUser.getNickname()).isEqualTo(userName);
+        assertThat(existingUser.getBio()).isEqualTo(bio);
+        assertThat(existingUser.getInterests()).isEqualTo(interests);
+        assertThat(existingUser.getProfileImagePath()).startsWith("user/" + userId + "/");
+
         verify(userRepository, times(1)).findById(userId);
         verify(userRepository, times(1)).update(existingUser);
         verify(storageService, times(1)).store(eq(newImage), startsWith("user/" + userId + "/"));

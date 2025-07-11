@@ -20,7 +20,7 @@ public class User {
     private String email;
     private String nickname;
     @Builder.Default
-    private String profileImageUrl = "";
+    private String profileImagePath = "";
     @Builder.Default
     private String bio = "";
     @Builder.Default
@@ -47,7 +47,7 @@ public class User {
         this.interests = new HashSet<>(interests);
     }
 
-    private void updateProfile(String newNickname, String newBio, String newProfileImageUrl) {
+    private void updateProfile(String newNickname, String newBio, String newProfileImagePath) {
         if (StringUtils.hasText(newNickname) && !Objects.equals(this.nickname, newNickname)) {
             this.nickname = newNickname;
         }
@@ -56,8 +56,8 @@ public class User {
             this.bio = newBio;
         }
 
-        if (!Objects.equals(this.profileImageUrl, newProfileImageUrl)) {
-            this.profileImageUrl = newProfileImageUrl;
+        if (!Objects.equals(this.profileImagePath, newProfileImagePath)) {
+            this.profileImagePath = newProfileImagePath;
         }
     }
 

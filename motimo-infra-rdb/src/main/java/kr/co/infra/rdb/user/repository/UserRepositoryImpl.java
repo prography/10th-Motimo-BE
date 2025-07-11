@@ -53,7 +53,7 @@ public class UserRepositoryImpl implements UserRepository {
         UserEntity entity = userJpaRepository.findById(user.getId())
                 .orElseThrow(UserNotFoundException::new);
         entity.update(
-                user.getNickname(), user.getBio(), user.getProfileImageUrl(), user.getInterests());
+                user.getNickname(), user.getBio(), user.getProfileImagePath(), user.getInterests());
         return UserMapper.toDomain(entity);
     }
 

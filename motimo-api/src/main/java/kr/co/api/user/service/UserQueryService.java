@@ -33,7 +33,7 @@ public class UserQueryService {
 
     public UserProfileDto getProfile(UUID userId) {
         User user = userRepository.findById(userId);
-        String profileUrl = resolveProfileImageUrl(user.getProfileImageUrl());
+        String profileUrl = resolveProfileImageUrl(user.getProfileImagePath());
         return UserProfileDto.of(user, profileUrl);
     }
 

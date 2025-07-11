@@ -8,6 +8,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.util.StringUtils;
 
 @Getter
 @Builder
@@ -18,7 +19,10 @@ public class User {
     private UUID id = null;
     private String email;
     private String nickname;
-    private String profileImageUrl;
+    @Builder.Default
+    private String profileImagePath = "";
+    @Builder.Default
+    private String bio = "";
     @Builder.Default
     private Set<InterestType> interests = new HashSet<>();
     @Builder.Default
@@ -29,9 +33,9 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public void update(String nickname, String profileImageUrl,
+    public void update(String nickname, String bio, String profileImageUrl,
             Set<InterestType> interests) {
-        updateProfile(nickname, profileImageUrl);
+        updateProfile(nickname, bio, profileImageUrl);
         updateInterests(interests);
     }
 
@@ -43,12 +47,17 @@ public class User {
         this.interests = new HashSet<>(interests);
     }
 
-    private void updateProfile(String newNickname, String newImageUrl) {
-        if (!Objects.equals(this.nickname, newNickname)) {
+    private void updateProfile(String newNickname, String newBio, String newProfileImagePath) {
+        if (StringUtils.hasText(newNickname) && !Objects.equals(this.nickname, newNickname)) {
             this.nickname = newNickname;
         }
-        if (!Objects.equals(this.profileImageUrl, newImageUrl)) {
-            this.profileImageUrl = newImageUrl;
+
+        if (!Objects.equals(this.bio, newBio)) {
+            this.bio = newBio;
+        }
+
+        if (!Objects.equals(this.profileImagePath, newProfileImagePath)) {
+            this.profileImagePath = newProfileImagePath;
         }
     }
 

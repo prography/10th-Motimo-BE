@@ -19,7 +19,7 @@ public interface GroupRepository {
 
     Optional<Group> findAvailableGroupBySimilarDueDate(UUID userId, LocalDate dueDate);
 
-    List<Group> findAllByUserId(UUID userId);
+    List<Group> findAllGroupDetailByUserId(UUID userId);
 
     boolean existsByGoalId(UUID goalId);
 

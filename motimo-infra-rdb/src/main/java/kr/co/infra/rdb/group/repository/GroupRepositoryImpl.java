@@ -98,7 +98,7 @@ public class GroupRepositoryImpl implements GroupRepository {
     }
 
     @Override
-    public List<Group> findAllByUserId(UUID userId) {
+    public List<Group> findAllGroupDetailByUserId(UUID userId) {
         List<GroupMemberGoalGroupProjection> groupProjections = groupMemberJpaRepository.findGoalAndGroupInfoByUserId(
                 userId);
 

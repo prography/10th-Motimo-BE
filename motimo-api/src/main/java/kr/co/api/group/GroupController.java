@@ -13,6 +13,7 @@ import kr.co.api.group.rqrs.message.GroupChatRs;
 import kr.co.api.group.rqrs.message.NewMessageRs;
 import kr.co.api.group.service.GroupCommandService;
 import kr.co.api.group.service.GroupMessageQueryService;
+import kr.co.api.group.service.GroupQueryService;
 import kr.co.api.security.annotation.AuthUser;
 import kr.co.domain.common.pagination.PagingDirection;
 import kr.co.domain.group.reaction.ReactionType;
@@ -34,20 +35,21 @@ public class GroupController implements GroupControllerSwagger {
 
     private final GroupMessageQueryService groupMessageQueryService;
     private final GroupCommandService groupCommandService;
+    private final GroupQueryService groupQueryService;
 
     public GroupController(final GroupMessageQueryService groupMessageQueryService,
-            final GroupCommandService groupCommandService) {
+            final GroupCommandService groupCommandService,
+            final GroupQueryService groupQueryService) {
         this.groupMessageQueryService = groupMessageQueryService;
         this.groupCommandService = groupCommandService;
+        this.groupQueryService = groupQueryService;
     }
 
     @GetMapping("/me")
-    public List<JoinedGroupRs> getJoinedGroup(@AuthUser UUID userId) {
-
-        return List.of(
-                new JoinedGroupRs("백다방 백잔 먹기", LocalDateTime.now(), false),
-                new JoinedGroupRs("충전기 만들기", LocalDateTime.now(), true)
-        );
+    public List<JoinedGroupRs> getJoinedGroups(@AuthUser UUID userId) {
+        return groupQueryService.getJoinedGroupList(userId).stream().map(
+                JoinedGroupRs::from
+        ).toList();
     }
 
     @PostMapping("/random-join")
@@ -97,7 +99,8 @@ public class GroupController implements GroupControllerSwagger {
 
     @PostMapping("/{groupId}/members/{targetUserId}/poke")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void sendPokeNotification(@AuthUser UUID userId, @PathVariable UUID groupId, @PathVariable UUID targetUserId) {
+    public void sendPokeNotification(@AuthUser UUID userId, @PathVariable UUID groupId,
+            @PathVariable UUID targetUserId) {
         groupCommandService.createPokeNotification(userId, groupId, targetUserId);
     }
 }

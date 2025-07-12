@@ -66,8 +66,13 @@ public class GroupRepositoryImpl implements GroupRepository {
     public Optional<Group> findByGoalId(UUID goalId) {
         Optional<GroupMemberEntity> groupMemberEntity = groupMemberJpaRepository.findByGoalId(
                 goalId);
-        return groupMemberEntity.map(memberEntity -> GroupMapper.toDomain(memberEntity
-                .getGroup()));
+
+        return groupMemberEntity.map(memberEntity -> {
+            GroupEntity groupEntity = groupJpaRepository.findById(memberEntity.getGroupId())
+                    .orElseThrow(GroupNotFoundException::new);
+
+            return GroupMapper.toDomain(groupEntity);
+        });
     }
 
     public Optional<Group> findAvailableGroupBySimilarDueDate(UUID userId, LocalDate dueDate) {

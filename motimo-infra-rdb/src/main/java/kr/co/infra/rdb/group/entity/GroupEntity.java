@@ -28,7 +28,7 @@ public class GroupEntity extends BaseEntity {
     @GeneratedUuidV7Value
     private UUID id;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "groupId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupMemberEntity> groupMembers;
 
     private LocalDateTime finishedDate;

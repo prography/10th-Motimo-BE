@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface GroupControllerSwagger {
 
     @Operation(summary = "참여중인 그룹 목록 API", description = "참여중인 그룹을 조회합니다.")
-    List<JoinedGroupRs> getJoinedGroup(UUID userId);
+    List<JoinedGroupRs> getJoinedGroups(UUID userId);
 
     @Operation(summary = "랜덤 그룹 가입 API", description = "랜덤으로 그룹에 가입합니다.")
     GroupIdRs joinRandomGroup(UUID userId, @RequestBody GroupJoinRq rq);

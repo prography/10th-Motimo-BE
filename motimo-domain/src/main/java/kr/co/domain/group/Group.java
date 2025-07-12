@@ -22,6 +22,9 @@ public class Group {
     private UUID id = null;
 
     @Builder.Default()
+    private String name = null;
+
+    @Builder.Default()
     private List<GroupMember> members = new ArrayList<>();
 
     private LocalDateTime finishedDate;

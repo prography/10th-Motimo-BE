@@ -122,6 +122,14 @@ public class GroupMessageRepositoryImpl implements GroupMessageRepository {
         groupMessageJpaRepository.deleteAllByMessageReferenceReferenceId(referenceId);
     }
 
+    @Override
+    public Optional<GroupMessage> findLastGroupMessageByGroupId(UUID groupId) {
+        Optional<GroupMessageEntity> groupMessageEntity = groupMessageJpaRepository.findTopByGroupIdOrderBySendAtDesc(
+                groupId);
+
+        return groupMessageEntity.map(GroupMessageMapper::toDomain);
+    }
+
     private List<GroupMessage> processMessagesWithReactions(List<GroupMessageEntity> messages) {
         if (messages.isEmpty()) {
             return List.of();

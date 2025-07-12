@@ -1,5 +1,7 @@
 package kr.co.infra.rdb.group.util;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
 import kr.co.domain.group.Group;
 import kr.co.infra.rdb.group.entity.GroupEntity;
 import lombok.experimental.UtilityClass;
@@ -11,6 +13,14 @@ public class GroupMapper {
         return Group.builder()
                 .id(entity.getId())
                 .finishedDate(entity.getFinishedDate())
+                .build();
+    }
+
+    public static Group toDomainWithName(UUID groupId, String name, LocalDateTime finishedDate) {
+        return Group.builder()
+                .id(groupId)
+                .name(name)
+                .finishedDate(finishedDate)
                 .build();
     }
 

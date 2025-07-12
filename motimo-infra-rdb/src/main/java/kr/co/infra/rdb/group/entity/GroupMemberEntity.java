@@ -3,9 +3,7 @@ package kr.co.infra.rdb.group.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -34,8 +32,7 @@ public class GroupMemberEntity extends BaseEntity {
 
     private UUID goalId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private GroupEntity group;
+    private UUID groupId;
 
     @CreatedDate
     @Column(updatable = false)
@@ -47,7 +44,7 @@ public class GroupMemberEntity extends BaseEntity {
     public GroupMemberEntity(UUID userId, UUID goalId, GroupEntity group, LocalDateTime joinedDate) {
         this.userId = userId;
         this.goalId = goalId;
-        this.group = group;
+        this.groupId = group.getId();
         this.joinedDate = joinedDate;
     }
 }

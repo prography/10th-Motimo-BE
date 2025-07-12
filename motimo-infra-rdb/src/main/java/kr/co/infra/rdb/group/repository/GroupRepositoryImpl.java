@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.group.Group;
@@ -15,6 +16,7 @@ import kr.co.infra.rdb.group.entity.GroupEntity;
 import kr.co.infra.rdb.group.entity.GroupMemberEntity;
 import kr.co.infra.rdb.group.entity.QGroupEntity;
 import kr.co.infra.rdb.group.entity.QGroupMemberEntity;
+import kr.co.infra.rdb.group.repository.projection.GroupMemberGoalGroupProjection;
 import kr.co.infra.rdb.group.repository.query.GroupJpaSubQuery;
 import kr.co.infra.rdb.group.util.GroupMapper;
 import lombok.RequiredArgsConstructor;
@@ -88,6 +90,16 @@ public class GroupRepositoryImpl implements GroupRepository {
                 .fetchOne();
 
         return result == null ? Optional.empty() : Optional.of(GroupMapper.toDomain(result));
+    }
+
+    @Override
+    public List<Group> findAllByUserId(UUID userId) {
+        List<GroupMemberGoalGroupProjection> groupProjections = groupMemberJpaRepository.findGoalAndGroupInfoByUserId(
+                userId);
+
+        return groupProjections.stream()
+                .map(projection -> GroupMapper.toDomainWithName(projection.getGroupId(),
+                        projection.getGoalTitle(), projection.getGroupFinishedDate())).toList();
     }
 
     @Override

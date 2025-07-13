@@ -1,0 +1,33 @@
+package kr.co.infra.rdb.group.reaction.repository;
+
+import java.util.UUID;
+import kr.co.domain.group.reaction.Reaction;
+import kr.co.domain.group.reaction.repository.ReactionRepository;
+import kr.co.infra.rdb.group.reaction.ReactionEntity;
+import kr.co.infra.rdb.group.reaction.ReactionMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@RequiredArgsConstructor
+public class ReactionRepositoryImpl implements ReactionRepository {
+
+    private final ReactionJpaRepository reactionJpaRepository;
+
+    @Override
+    public Reaction create(Reaction reaction) {
+        ReactionEntity reactionEntity = reactionJpaRepository.save(
+                ReactionMapper.toEntity(reaction));
+        return ReactionMapper.toDomain(reactionEntity);
+    }
+
+    @Override
+    public void delete(UUID reactionId) {
+        reactionJpaRepository.deleteById(reactionId);
+    }
+
+    @Override
+    public void deleteByUserIdAndMessageId(UUID userId, UUID messageId) {
+        reactionJpaRepository.deleteByUserIdAndMessageId(userId, messageId);
+    }
+}

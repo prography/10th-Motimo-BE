@@ -33,6 +33,7 @@ public class GroupMessageQueryService {
     private final GroupMessageRepository groupMessageRepository;
     private final MessageContentLoader contentLoader;
     private final MessageContentStrategyFactory strategyFactory;
+
     private final CursorUtil cursorUtil;
 
     public GroupChatDto findMessagesByGroupIdWithCursor(UUID userId, UUID groupId,

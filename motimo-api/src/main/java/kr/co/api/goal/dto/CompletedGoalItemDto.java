@@ -7,6 +7,7 @@ import kr.co.domain.goal.Goal;
 public record CompletedGoalItemDto(
         UUID id,
         String title,
+        Integer month,
         LocalDate dueDate,
         long todoCount,
         long todoResultCount
@@ -16,6 +17,7 @@ public record CompletedGoalItemDto(
         return new CompletedGoalItemDto(
                 goal.getId(),
                 goal.getTitle(),
+                goal.getDueDate().getMonth(),
                 goal.getDueDateValue(),
                 todoCount,
                 todoResultCount

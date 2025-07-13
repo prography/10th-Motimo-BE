@@ -38,7 +38,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Goal Service Command 테스트")
 class GoalQueryServiceTest {
 
     @Mock
@@ -152,6 +151,9 @@ class GoalQueryServiceTest {
         void 유저_ID로_완료된_목표_리스트_조회() {
             // given
             List<Goal> completedGoals = createMockGoals(2);
+            completedGoals.forEach(goal -> {
+                when(goal.getDueDate()).thenReturn(DueDate.of(3));
+            });
             List<UUID> goalIds = completedGoals.stream().map(Goal::getId).toList();
             List<GoalTodoCount> goalTodoCounts = Arrays.asList(
                     new GoalTodoCount(goalIds.get(0), 5L, 3L),
@@ -194,6 +196,9 @@ class GoalQueryServiceTest {
         void 투두_카운트_정보가_없는_목표의_경우_기본값_0으로_설정() {
             // given
             List<Goal> completedGoals = createMockGoals(2);
+            completedGoals.forEach(goal -> {
+                when(goal.getDueDate()).thenReturn(DueDate.of(3));
+            });
             List<UUID> goalIds = completedGoals.stream().map(Goal::getId).toList();
             List<GoalTodoCount> goalTodoCounts = List.of(
                     new GoalTodoCount(goalIds.getFirst(), 5L, 3L)

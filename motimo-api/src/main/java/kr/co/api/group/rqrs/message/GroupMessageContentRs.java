@@ -16,6 +16,7 @@ import kr.co.domain.group.message.content.TodoResultSubmittedContent;
         }
 )
 public record GroupMessageContentRs(
+        @Schema(description = "메시지 내용", requiredMode = Schema.RequiredMode.REQUIRED)
         GroupMessageContent content
 ) {
 

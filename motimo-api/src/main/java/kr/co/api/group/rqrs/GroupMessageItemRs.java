@@ -14,7 +14,7 @@ public record GroupMessageItemRs(
         @Schema(description = "보낸 사용자 닉네임", requiredMode = Schema.RequiredMode.REQUIRED)
         String userName,
         @Schema(description = "메세지 내용", requiredMode = Schema.RequiredMode.REQUIRED)
-        GroupMessageContentRs message, // TODO 도메인 그대로 응답주고 있음
+        GroupMessageContentRs message,
         @Schema(description = "리액션 갯수", requiredMode = Schema.RequiredMode.REQUIRED)
         int reactionCount,
         @Schema(description = "로그인한 사용자 리액션 여부", requiredMode = Schema.RequiredMode.REQUIRED)

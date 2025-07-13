@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.group.Group;
@@ -15,6 +16,7 @@ import kr.co.infra.rdb.group.entity.GroupEntity;
 import kr.co.infra.rdb.group.entity.GroupMemberEntity;
 import kr.co.infra.rdb.group.entity.QGroupEntity;
 import kr.co.infra.rdb.group.entity.QGroupMemberEntity;
+import kr.co.infra.rdb.group.repository.projection.GroupMemberGoalGroupProjection;
 import kr.co.infra.rdb.group.repository.query.GroupJpaSubQuery;
 import kr.co.infra.rdb.group.util.GroupMapper;
 import lombok.RequiredArgsConstructor;
@@ -61,11 +63,22 @@ public class GroupRepositoryImpl implements GroupRepository {
         return GroupMapper.toDomain(groupEntity);
     }
 
+    public Group findDetailByGroupIdAndMemberId(UUID groupId, UUID memberId) {
+        GroupMemberGoalGroupProjection projection = groupMemberJpaRepository.findGoalAndGroupByUserIdAndGroupId(memberId, groupId);
+
+        return GroupMapper.toDomainWithName(projection.getGroupId(), projection.getGoalTitle(), projection.getGroupFinishedDate());
+    }
+
     public Optional<Group> findByGoalId(UUID goalId) {
         Optional<GroupMemberEntity> groupMemberEntity = groupMemberJpaRepository.findByGoalId(
                 goalId);
-        return groupMemberEntity.map(memberEntity -> GroupMapper.toDomain(memberEntity
-                .getGroup()));
+
+        return groupMemberEntity.map(memberEntity -> {
+            GroupEntity groupEntity = groupJpaRepository.findById(memberEntity.getGroupId())
+                    .orElseThrow(GroupNotFoundException::new);
+
+            return GroupMapper.toDomain(groupEntity);
+        });
     }
 
     public Optional<Group> findAvailableGroupBySimilarDueDate(UUID userId, LocalDate dueDate) {
@@ -88,6 +101,16 @@ public class GroupRepositoryImpl implements GroupRepository {
                 .fetchOne();
 
         return result == null ? Optional.empty() : Optional.of(GroupMapper.toDomain(result));
+    }
+
+    @Override
+    public List<Group> findAllGroupDetailByUserId(UUID userId) {
+        List<GroupMemberGoalGroupProjection> groupProjections = groupMemberJpaRepository.findAllGoalAndGroupByUserId(
+                userId);
+
+        return groupProjections.stream()
+                .map(projection -> GroupMapper.toDomainWithName(projection.getGroupId(),
+                        projection.getGoalTitle(), projection.getGroupFinishedDate())).toList();
     }
 
     @Override

@@ -1,9 +1,9 @@
 package kr.co.api.group;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import kr.co.api.group.docs.GroupControllerSwagger;
+import kr.co.api.group.rqrs.GroupDetailRs;
 import kr.co.api.group.rqrs.GroupIdRs;
 import kr.co.api.group.rqrs.GroupJoinRq;
 import kr.co.api.group.rqrs.GroupMemberRs;
@@ -13,6 +13,7 @@ import kr.co.api.group.rqrs.message.GroupChatRs;
 import kr.co.api.group.rqrs.message.NewMessageRs;
 import kr.co.api.group.service.GroupCommandService;
 import kr.co.api.group.service.GroupMessageQueryService;
+import kr.co.api.group.service.GroupQueryService;
 import kr.co.api.security.annotation.AuthUser;
 import kr.co.domain.common.pagination.PagingDirection;
 import kr.co.domain.group.reaction.ReactionType;
@@ -34,20 +35,26 @@ public class GroupController implements GroupControllerSwagger {
 
     private final GroupMessageQueryService groupMessageQueryService;
     private final GroupCommandService groupCommandService;
+    private final GroupQueryService groupQueryService;
 
     public GroupController(final GroupMessageQueryService groupMessageQueryService,
-            final GroupCommandService groupCommandService) {
+            final GroupCommandService groupCommandService,
+            final GroupQueryService groupQueryService) {
         this.groupMessageQueryService = groupMessageQueryService;
         this.groupCommandService = groupCommandService;
+        this.groupQueryService = groupQueryService;
     }
 
     @GetMapping("/me")
-    public List<JoinedGroupRs> getJoinedGroup(@AuthUser UUID userId) {
+    public List<JoinedGroupRs> getJoinedGroups(@AuthUser UUID userId) {
+        return groupQueryService.getJoinedGroupList(userId).stream().map(
+                JoinedGroupRs::from
+        ).toList();
+    }
 
-        return List.of(
-                new JoinedGroupRs("백다방 백잔 먹기", LocalDateTime.now(), false),
-                new JoinedGroupRs("충전기 만들기", LocalDateTime.now(), true)
-        );
+    @GetMapping("/{groupId}")
+    public GroupDetailRs getGroupDetail(@AuthUser UUID userId, @PathVariable UUID groupId) {
+        return GroupDetailRs.from(groupQueryService.getGroupDetail(userId, groupId));
     }
 
     @PostMapping("/random-join")
@@ -83,11 +90,8 @@ public class GroupController implements GroupControllerSwagger {
 
     @GetMapping("/{groupId}/members")
     public List<GroupMemberRs> getGroupMembers(@AuthUser UUID userId, @PathVariable UUID groupId) {
-        return List.of(
-                new GroupMemberRs(UUID.randomUUID(), "닉네임1", LocalDateTime.now(), true),
-                new GroupMemberRs(UUID.randomUUID(), "닉네임1", LocalDateTime.now(), false),
-                new GroupMemberRs(userId, "본인입니다", LocalDateTime.now(), false)
-        );
+        return groupQueryService.getGroupMemberList(userId, groupId).stream()
+                .map(GroupMemberRs::from).toList();
     }
 
     @DeleteMapping("/{groupId}/members/me")
@@ -97,7 +101,8 @@ public class GroupController implements GroupControllerSwagger {
 
     @PostMapping("/{groupId}/members/{targetUserId}/poke")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void sendPokeNotification(@AuthUser UUID userId, @PathVariable UUID groupId, @PathVariable UUID targetUserId) {
+    public void sendPokeNotification(@AuthUser UUID userId, @PathVariable UUID groupId,
+            @PathVariable UUID targetUserId) {
         groupCommandService.createPokeNotification(userId, groupId, targetUserId);
     }
 }

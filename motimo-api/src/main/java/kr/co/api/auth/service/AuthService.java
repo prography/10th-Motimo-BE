@@ -1,14 +1,15 @@
 package kr.co.api.auth.service;
 
+import java.util.UUID;
 import kr.co.api.security.jwt.TokenProvider;
 import kr.co.api.security.jwt.TokenResponse;
 import kr.co.domain.auth.exception.InvalidTokenException;
 import kr.co.domain.auth.exception.TokenMismatchException;
+import kr.co.domain.common.event.Events;
+import kr.co.domain.common.event.UserLoginEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -37,6 +38,10 @@ public class AuthService {
         refreshTokenCommandService.saveRefreshToken(userId, newToken.tokenId(),
                 newToken.refreshToken());
         refreshTokenCommandService.deleteByTokenId(tokenId);
+
+        // 유저 최근 접속일 업데이트
+        Events.publishEvent(new UserLoginEvent(userId));
+
         return newToken;
     }
 

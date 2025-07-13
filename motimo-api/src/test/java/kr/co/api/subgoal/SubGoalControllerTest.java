@@ -1,6 +1,5 @@
 package kr.co.api.subgoal;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -12,13 +11,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import kr.co.api.config.SecurityConfig;
 import kr.co.api.config.WebConfig;
@@ -34,6 +31,7 @@ import kr.co.api.subgoal.rqrs.TodoCreateRq;
 import kr.co.api.subgoal.service.SubGoalCommandService;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
+import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoStatus;
@@ -129,32 +127,36 @@ class SubGoalControllerTest {
         // given
         UUID todoId1 = UUID.randomUUID();
         UUID todoId2 = UUID.randomUUID();
-        List<TodoItemDto> todoSummaries = Arrays.asList(
+        int offset = 0;
+        int size = 10;
+
+        List<TodoItemDto> todoItemDtos = Arrays.asList(
                 createMockTodoItem(todoId1, "투두1"),
                 createMockTodoItem(todoId2, "투두2")
         );
 
-        when(todoQueryService.getIncompleteOrTodayTodosBySubGoalId(subGoalId)).thenReturn(
-                todoSummaries);
+        CustomSlice<TodoItemDto> mockSlice = new CustomSlice<>(todoItemDtos, true, offset, size);
 
-        // when & then
+        when(todoQueryService.getIncompleteOrTodayTodosBySubGoalIdWithSlice(subGoalId, offset,
+                size))
+                .thenReturn(mockSlice);
+
         mockMvc.perform(get("/v1/sub-goals/{subGoalId}/todos/incomplete-or-date", subGoalId)
+                        .param("offset", String.valueOf(offset))
+                        .param("size", String.valueOf(size))
                         .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(result -> {
-                    String responseBody = result.getResponse().getContentAsString();
-                    TypeReference<List<Map<String, Object>>> typeRef = new TypeReference<List<Map<String, Object>>>() {
-                    };
-                    List<Map<String, Object>> actualResponse = objectMapper.readValue(responseBody,
-                            typeRef);
-
-                    assertThat(actualResponse.size()).isEqualTo(todoSummaries.size());
-                })
-                .andExpect(jsonPath("$[0].id").value(todoId1.toString()))
-                .andExpect(jsonPath("$[0].title").value("투두1"))
-                .andExpect(jsonPath("$[1].id").value(todoId2.toString()))
-                .andExpect(jsonPath("$[1].title").value("투두2"));
-        verify(todoQueryService).getIncompleteOrTodayTodosBySubGoalId(subGoalId);
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id").value(todoId1.toString()))
+                .andExpect(jsonPath("$.content[0].title").value("투두1"))
+                .andExpect(jsonPath("$.content[1].id").value(todoId2.toString()))
+                .andExpect(jsonPath("$.content[1].title").value("투두2"))
+                .andExpect(jsonPath("$.hasNext").value(true))
+                .andExpect(jsonPath("$.offset").value(offset))
+                .andExpect(jsonPath("$.size").value(size));
+        verify(todoQueryService)
+                .getIncompleteOrTodayTodosBySubGoalIdWithSlice(subGoalId, offset, size);
     }
 
     private TodoItemDto createMockTodoItem(UUID id, String title) {

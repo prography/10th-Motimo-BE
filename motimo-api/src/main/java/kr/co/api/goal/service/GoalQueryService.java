@@ -11,7 +11,7 @@ import kr.co.api.goal.dto.CompletedGoalItemDto;
 import kr.co.api.goal.dto.GoalDetailDto;
 import kr.co.api.goal.dto.GoalItemDto;
 import kr.co.api.goal.dto.GoalNotInGroupDto;
-import kr.co.api.goal.dto.GoalWithSubGoalTodoDto;
+import kr.co.api.goal.dto.GoalWithSubGoalDto;
 import kr.co.api.goal.dto.SubGoalDto;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.goal.Goal;
@@ -20,7 +20,6 @@ import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.group.Group;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.domain.subGoal.SubGoal;
-import kr.co.domain.todo.dto.TodoItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,11 +56,12 @@ public class GoalQueryService {
         return goals.stream().map(GoalItemDto::from).toList();
     }
 
-    public GoalWithSubGoalTodoDto getGoalWithIncompleteSubGoalTodayTodos(UUID goalId) {
+    public GoalWithSubGoalDto getGoalWithSubGoal(UUID goalId) {
         Goal goal = goalRepository.findById(goalId);
-        List<SubGoalDto> subGoals = getTodoByIncompleteSubGoalList(goal.getSubGoals());
-        return GoalWithSubGoalTodoDto.of(goal, subGoals);
+        List<SubGoalDto> subGoals = getSubGoals(goal);
+        return GoalWithSubGoalDto.of(goal, subGoals);
     }
+
 
     public List<GoalNotInGroupDto> getGoalNotInGroup(UUID userId) {
         List<Goal> goals = goalRepository.findUnassignedGroupGoalsByUserId(userId);
@@ -86,35 +86,14 @@ public class GoalQueryService {
                 .toList();
     }
 
-    public GoalWithSubGoalTodoDto getGoalWithSubGoalAndTodos(UUID goalId) {
-        Goal goal = goalRepository.findById(goalId);
-        List<SubGoalDto> subGoals = getSubGoalListWithTodo(goal.getSubGoals());
-        return GoalWithSubGoalTodoDto.of(goal, subGoals);
-    }
-
     public Goal getGoalBySubGoalId(UUID subGoalId) {
         return goalRepository.findBySubGoalId(subGoalId);
     }
 
-    private List<SubGoalDto> getSubGoalListWithTodo(List<SubGoal> subGoals) {
-        return subGoals.stream()
+    private List<SubGoalDto> getSubGoals(Goal goal) {
+        return goal.getSubGoals().stream()
                 .sorted(Comparator.comparing(SubGoal::getOrder))
-                .map(subGoal -> {
-                    List<TodoItemDto> todos = todoQueryService.getTodosBySubGoalId(subGoal.getId());
-                    return new SubGoalDto(subGoal.getId(), subGoal.getTitle(), todos);
-                })
-                .toList();
-    }
-
-    private List<SubGoalDto> getTodoByIncompleteSubGoalList(List<SubGoal> subGoals) {
-        return subGoals.stream()
-                .sorted(Comparator.comparing(SubGoal::getOrder))
-                .map(subGoal -> {
-                    List<TodoItemDto> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
-                            subGoal.getId());
-
-                    return new SubGoalDto(subGoal.getId(), subGoal.getTitle(), todos);
-                })
+                .map(subGoal -> new SubGoalDto(subGoal.getId(), subGoal.getTitle()))
                 .toList();
     }
 

@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoStatus;
@@ -47,11 +48,12 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public List<TodoItemDto> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date) {
+    public CustomSlice<TodoItemDto> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId,
+            LocalDate date, int offset, int size) {
         QTodoEntity todoEntity = QTodoEntity.todoEntity;
         QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
 
-        return todoItemJPAQuery(todoEntity, todoResultEntity)
+        List<TodoItemDto> results = todoItemJPAQuery(todoEntity, todoResultEntity)
                 .where(
                         todoEntity.subGoalId.eq(subGoalId)
                                 .and(anyOf(
@@ -59,7 +61,16 @@ public class TodoRepositoryImpl implements TodoRepository {
                                         todoEntity.date.eq(date)
                                 ))
                 )
+                .offset(offset)
+                .limit(size + 1)
                 .fetch();
+
+        boolean hasNext = results.size() > size;
+        if (hasNext) {
+            results = results.subList(0, size);
+        }
+
+        return new CustomSlice<>(results, hasNext, offset, size);
     }
 
     @Override
@@ -129,6 +140,26 @@ public class TodoRepositoryImpl implements TodoRepository {
                 .stream()
                 .map(TodoMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public CustomSlice<TodoItemDto> findAllBySubGoalIdWithSlice(UUID subGoalId, int offset,
+            int size) {
+        QTodoEntity todoEntity = QTodoEntity.todoEntity;
+        QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
+
+        List<TodoItemDto> results = todoItemJPAQuery(todoEntity, todoResultEntity)
+                .where(todoEntity.subGoalId.eq(subGoalId))
+                .offset(offset)
+                .limit(size + 1)
+                .fetch();
+
+        boolean hasNext = results.size() > size;
+        if (hasNext) {
+            results = results.subList(0, size);
+        }
+
+        return new CustomSlice<>(results, hasNext, offset, size);
     }
 
     private JPAQuery<TodoItemDto> todoItemJPAQuery(QTodoEntity todoEntity,

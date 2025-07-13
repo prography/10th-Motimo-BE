@@ -1,7 +1,6 @@
 package kr.co.api.goal;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -13,17 +12,21 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import kr.co.api.goal.dto.CompletedGoalItemDto;
-import kr.co.api.goal.dto.GoalWithSubGoalTodoDto;
+import kr.co.api.goal.dto.GoalDetailDto;
+import kr.co.api.goal.dto.GoalItemDto;
+import kr.co.api.goal.dto.GoalWithSubGoalDto;
 import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.goal.DueDate;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.goal.repository.GoalRepository;
+import kr.co.domain.group.Group;
+import kr.co.domain.group.repository.GroupRepository;
 import kr.co.domain.subGoal.SubGoal;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoStatus;
@@ -44,6 +47,8 @@ class GoalQueryServiceTest {
     private GoalRepository goalRepository;
     @Mock
     private TodoQueryService todoQueryService;
+    @Mock
+    private GroupRepository groupRepository;
 
     @InjectMocks
     private GoalQueryService goalQueryService;
@@ -57,88 +62,91 @@ class GoalQueryServiceTest {
     }
 
     @Nested
-    @DisplayName("목표 세부목표, 투두 목록 조회 테스트")
-    class GoalReadListTest {
+    @DisplayName("목표 상세 정보 조회 테스트")
+    class GetGoalDetailTest {
+
+        private UUID goalId = UUID.randomUUID();
+        private UUID userId = UUID.randomUUID();
 
         @Test
-        void 목표_세부목표_투두_목록_조회() {
-            final UUID userId = UUID.randomUUID();
-            final UUID goalId = UUID.randomUUID();
-            final List<SubGoal> subGoals = List.of(
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title").order(1)
-                            .completed(false).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title2").order(1)
-                            .completed(false).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title3").order(2)
-                            .completed(false).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title4").order(3)
-                            .completed(false).build(),
-                    SubGoal.builder().id(UUID.randomUUID()).title("sub goal title5").order(1)
-                            .completed(false).build()
-            );
-
+        void 목표_상세_정보_조회_그룹_있는_경우() {
             // given
-            List<TodoItemDto> mockTodos = createMockTodoItems(3);
-            Goal mockGoal = createMockGoal(userId, goalId, subGoals);
-            givenGoalWithSubGoalsAndTodos(goalId, mockGoal, mockTodos);
+            Goal goal = createMockGoal(userId, goalId, List.of());
+            Group group = mock(Group.class);
+            when(group.getId()).thenReturn(UUID.randomUUID());
+
+            when(goalRepository.findById(goalId)).thenReturn(goal);
+            when(groupRepository.findByGoalId(goalId)).thenReturn(Optional.of(group));
 
             // when
-            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(
-                    goalId);
+            GoalDetailDto result = goalQueryService.getGoalDetail(goalId);
 
             // then
-            assertThat(dto).isNotNull();
-            assertThat(dto.subGoals()).isNotEmpty();
-            subGoalsSortTest(dto, subGoals);
-            dto.subGoals().forEach(subGoalDto ->
-                    assertThat(subGoalDto.todos()).hasSize(3)
-            );
-            assertThat(mockGoal.getUserId()).isEqualTo(userId);
-        }
+            assertThat(result).isNotNull();
+            assertThat(result.id()).isEqualTo(goalId);
+            assertThat(result.title()).isEqualTo("goalTitle");
+            assertThat(result.isJoinedGroup()).isTrue();
+            assertThat(result.groupId()).isEqualTo(group.getId());
 
-        private void subGoalsSortTest(GoalWithSubGoalTodoDto dto, List<SubGoal> subGoals) {
-            List<Integer> importanceList = dto.subGoals().stream()
-                    .map(subGoal -> subGoals.stream()
-                            .filter(sg -> sg.getId().equals(subGoal.id()))
-                            .findFirst()
-                            .orElseThrow()
-                            .getOrder())
-                    .toList();
-            List<Integer> sortedImportanceList = new ArrayList<>(importanceList);
-            sortedImportanceList.sort(Comparator.naturalOrder());
-            assertThat(importanceList).isEqualTo(sortedImportanceList);
+            verify(goalRepository).findById(goalId);
+            verify(groupRepository).findByGoalId(goalId);
         }
 
         @Test
-        void 세부목표가_없을_경우_목표_세부목표_투두_목록_조회() {
-            final UUID userId = UUID.randomUUID();
-            final UUID goalId = UUID.randomUUID();
-
+        void 목표_상세_정보_조회_그룹_없는_경우() {
             // given
-            List<TodoItemDto> mockTodos = createMockTodoItems(3);
-            Goal mockGoal = createMockGoal(userId, goalId, List.of());
-            givenGoalWithSubGoalsAndTodos(goalId, mockGoal, mockTodos);
+            Goal goal = createMockGoal(userId, goalId, List.of());
+
+            when(goalRepository.findById(goalId)).thenReturn(goal);
+            when(groupRepository.findByGoalId(goalId)).thenReturn(Optional.empty());
 
             // when
-            GoalWithSubGoalTodoDto dto = goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(
-                    goalId);
+            GoalDetailDto result = goalQueryService.getGoalDetail(goalId);
 
             // then
-            assertThat(dto).isNotNull();
-            assertThat(dto.subGoals()).isEmpty();
+            assertThat(result).isNotNull();
+            assertThat(result.id()).isEqualTo(goalId);
+            assertThat(result.title()).isEqualTo("goalTitle");
+            assertThat(result.isJoinedGroup()).isFalse();
+            assertThat(result.groupId()).isNull();
+
+            verify(goalRepository).findById(goalId);
+            verify(groupRepository).findByGoalId(goalId);
+        }
+    }
+
+    @Nested
+    @DisplayName("목표 목록 조회 테스트")
+    class GetGoalListTest {
+
+        private UUID userId = UUID.randomUUID();
+
+        @Test
+        void 유저_ID로_목표_목록_조회() {
+            // given
+            List<Goal> goals = createMockGoals(3);
+            when(goalRepository.findAllByUserId(userId)).thenReturn(goals);
+
+            // when
+            List<GoalItemDto> result = goalQueryService.getGoalList(userId);
+
+            // then
+            assertThat(result).hasSize(3);
+            verify(goalRepository).findAllByUserId(userId);
         }
 
-        private void givenGoalWithSubGoalsAndTodos(UUID goalId, Goal mockGoal,
-                List<TodoItemDto> mockTodos) {
-            when(goalRepository.findById(goalId)).thenReturn(mockGoal);
+        @Test
+        void 목표가_없는_경우_빈_리스트_반환() {
+            // given
+            when(goalRepository.findAllByUserId(userId)).thenReturn(Collections.emptyList());
 
-            mockGoal.getSubGoals().forEach(subGoal ->
-                    when(todoQueryService.getIncompleteOrTodayTodosBySubGoalId(subGoal.getId()))
-                            .thenReturn(mockTodos)
-            );
+            // when
+            List<GoalItemDto> result = goalQueryService.getGoalList(userId);
+
+            // then
+            assertThat(result).isEmpty();
+            verify(goalRepository).findAllByUserId(userId);
         }
-
-
     }
 
     @Nested
@@ -227,36 +235,21 @@ class GoalQueryServiceTest {
         private UUID goalId = UUID.randomUUID();
 
         @Test
-        void 목표_ID로_목표와_세부목표_투두_조회() {
+        void 목표_ID로_목표정보와_세부목표_조회() {
             // given
             Goal goal = createMockGoal(goalId);
             List<SubGoal> subGoals = createMockSubGoals();
 
-            List<TodoItemDto> todos1 = createMockTodoItems(2);
-            List<TodoItemDto> todos2 = createMockTodoItems(3);
-            List<TodoItemDto> todos3 = createMockTodoItems(0);
-
             when(goalRepository.findById(goalId)).thenReturn(goal);
             when(goal.getSubGoals()).thenReturn(subGoals);
-            when(todoQueryService.getTodosBySubGoalId(subGoals.get(0).getId())).thenReturn(todos1);
-            when(todoQueryService.getTodosBySubGoalId(subGoals.get(1).getId())).thenReturn(todos2);
-            when(todoQueryService.getTodosBySubGoalId(subGoals.get(2).getId())).thenReturn(todos3);
-
             // when
-            GoalWithSubGoalTodoDto result = goalQueryService.getGoalWithSubGoalAndTodos(goalId);
+            GoalWithSubGoalDto result = goalQueryService.getGoalWithSubGoal(goalId);
 
             // then
             assertThat(result).isNotNull();
             assertThat(result.subGoals()).hasSize(3);
 
-            assertThat(result.subGoals().get(0).todos()).hasSize(3);
-            assertThat(result.subGoals().get(1).todos()).hasSize(0);
-            assertThat(result.subGoals().get(2).todos()).hasSize(2);
-
             verify(goalRepository).findById(goalId);
-            verify(todoQueryService).getTodosBySubGoalId(subGoals.get(0).getId());
-            verify(todoQueryService).getTodosBySubGoalId(subGoals.get(1).getId());
-            verify(todoQueryService).getTodosBySubGoalId(subGoals.get(2).getId());
         }
 
         @Test
@@ -269,10 +262,9 @@ class GoalQueryServiceTest {
 
             when(goalRepository.findById(goalId)).thenReturn(goal);
             when(goal.getSubGoals()).thenReturn(subGoals);
-            when(todoQueryService.getTodosBySubGoalId(any())).thenReturn(todos);
 
             // when
-            GoalWithSubGoalTodoDto result = goalQueryService.getGoalWithSubGoalAndTodos(goalId);
+            GoalWithSubGoalDto result = goalQueryService.getGoalWithSubGoal(goalId);
 
             // then
             assertThat(result.subGoals()).hasSize(3);
@@ -291,11 +283,10 @@ class GoalQueryServiceTest {
             when(goalRepository.findById(goalId)).thenReturn(goal);
 
             // when
-            GoalWithSubGoalTodoDto result = goalQueryService.getGoalWithSubGoalAndTodos(goalId);
+            GoalWithSubGoalDto result = goalQueryService.getGoalWithSubGoal(goalId);
 
             // then
             assertThat(result.subGoals()).isEmpty();
-            verify(todoQueryService, never()).getTodosBySubGoalId(any());
         }
     }
 

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.dto.TodoItemDto;
@@ -14,11 +15,14 @@ public interface TodoRepository {
 
     Todo findById(UUID id);
 
-    List<TodoItemDto> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date);
+    CustomSlice<TodoItemDto> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date,
+            int offset, int size);
 
     List<TodoItemDto> findAllByUserId(UUID userId);
 
     List<TodoItemDto> findAllBySubGoalId(UUID subGoalId);
+
+    CustomSlice<TodoItemDto> findAllBySubGoalIdWithSlice(UUID subGoalId, int offset, int size);
 
     List<GoalTodoCount> countTodosByGoalIds(List<UUID> goalId);
 

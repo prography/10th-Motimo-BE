@@ -9,7 +9,7 @@ import kr.co.api.goal.rqrs.GoalDetailRs;
 import kr.co.api.goal.rqrs.GoalItemRs;
 import kr.co.api.goal.rqrs.GoalListRs;
 import kr.co.api.goal.rqrs.GoalNotInGroupRs;
-import kr.co.api.goal.rqrs.GoalWithSubGoalTodoRs;
+import kr.co.api.goal.rqrs.GoalWithSubGoalRs;
 import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.security.annotation.AuthUser;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,15 +44,8 @@ public class GoalReadController implements GoalReadControllerSwagger {
     }
 
     @GetMapping("/{goalId}/sub-goals")
-    public GoalWithSubGoalTodoRs getGoalWithSubGoalAndTodo(@PathVariable UUID goalId) {
-        return GoalWithSubGoalTodoRs.from(
-                goalQueryService.getGoalWithIncompleteSubGoalTodayTodos(goalId));
-    }
-
-    @GetMapping("/{goalId}/sub-goals/all")
-    public GoalWithSubGoalTodoRs getGoalWithAllSubGoalAndTodos(@PathVariable UUID goalId) {
-        return GoalWithSubGoalTodoRs.from(
-                goalQueryService.getGoalWithSubGoalAndTodos(goalId));
+    public GoalWithSubGoalRs getGoalWithSubGoal(@PathVariable UUID goalId) {
+        return GoalWithSubGoalRs.from(goalQueryService.getGoalWithSubGoal(goalId));
     }
 
     @GetMapping("/not-joined-group")

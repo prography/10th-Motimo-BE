@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.TodoStatus;
@@ -28,20 +29,32 @@ public class TodoQueryService {
     private final TodoResultRepository todoResultRepository;
     private final StorageService storageService;
 
-    public List<TodoItemDto> getIncompleteOrTodayTodosBySubGoalId(UUID subGoalId) {
+    public CustomSlice<TodoItemDto> getIncompleteOrTodayTodosBySubGoalIdWithSlice(UUID subGoalId,
+            int offset, int size) {
         LocalDate today = LocalDate.now();
 
-        return todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId, today).stream()
-                .sorted(todoPriorityComparator())
+        CustomSlice<TodoItemDto> todos = todoRepository.findIncompleteOrDateTodosBySubGoalId(
+                subGoalId, today, offset, size);
+        List<TodoItemDto> result = todos.content().stream()
                 .map(this::enrichTodoItemWithUrl)
+                .sorted(todoPriorityComparator())
                 .toList();
+
+        return new CustomSlice<>(result, todos.hasNext(), todos.offset(), todos.size());
     }
 
-    public List<TodoItemDto> getTodosBySubGoalId(UUID subGoalId) {
-        return todoRepository.findAllBySubGoalId(subGoalId).stream()
-                .sorted(todoPriorityComparator())
+    public CustomSlice<TodoItemDto> getTodosBySubGoalIdWithSlice(UUID subGoalId, int offset,
+            int size) {
+
+        CustomSlice<TodoItemDto> todos = todoRepository.findAllBySubGoalIdWithSlice(subGoalId,
+                offset, size);
+
+        List<TodoItemDto> result = todos.content().stream()
                 .map(this::enrichTodoItemWithUrl)
+                .sorted(todoPriorityComparator())
                 .toList();
+
+        return new CustomSlice<>(result, todos.hasNext(), todos.offset(), todos.size());
     }
 
     public List<TodoItemDto> getTodosByUserId(UUID userId) {

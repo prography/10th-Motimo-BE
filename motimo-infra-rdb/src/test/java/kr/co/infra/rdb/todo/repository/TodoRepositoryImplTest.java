@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.goal.DueDate;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Emotion;
@@ -161,13 +162,13 @@ class TodoRepositoryImplTest {
     @Test
     void 완료되지않은_상태거나_오늘의_투두들만_조회되고_정렬된다() {
         // when
-        List<TodoItemDto> todos = todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId,
-                today);
+        CustomSlice<TodoItemDto> todos = todoRepository.findIncompleteOrDateTodosBySubGoalId(
+                subGoalId,
+                today, 0, 10);
 
         // then
-
-        assertThat(todos).hasSize(6); // 완료되지 않은 것 4 + 오늘인 것만 2
-        assertThat(todos)
+        assertThat(todos.content()).hasSize(6); // 완료되지 않은 것 4 + 오늘인 것만 2
+        assertThat(todos.content())
                 .extracting(TodoItemDto::title)
                 .containsExactly("어제 미완료 투두", "오늘 미완료 투두", "오늘 완료 투두 결과없음", "오늘 완료 투두 결과있음",
                         "내일 미완료 투두", "미완료 투두 날짜없음");

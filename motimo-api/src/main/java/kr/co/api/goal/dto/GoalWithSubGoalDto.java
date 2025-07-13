@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.UUID;
 import kr.co.domain.goal.Goal;
 
-public record GoalWithSubGoalTodoDto(
+public record GoalWithSubGoalDto(
         UUID id,
         String title,
         LocalDate dueDate,
         List<SubGoalDto> subGoals
 ) {
 
-    public static GoalWithSubGoalTodoDto of(Goal goal, List<SubGoalDto> subGoals) {
-        return new GoalWithSubGoalTodoDto(
+    public static GoalWithSubGoalDto of(Goal goal, List<SubGoalDto> subGoals) {
+        return new GoalWithSubGoalDto(
                 goal.getId(),
                 goal.getTitle(),
                 goal.getDueDateValue(),

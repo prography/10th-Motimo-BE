@@ -12,7 +12,7 @@ import kr.co.api.goal.rqrs.CompletedGoalListRs;
 import kr.co.api.goal.rqrs.GoalDetailRs;
 import kr.co.api.goal.rqrs.GoalListRs;
 import kr.co.api.goal.rqrs.GoalNotInGroupRs;
-import kr.co.api.goal.rqrs.GoalWithSubGoalTodoRs;
+import kr.co.api.goal.rqrs.GoalWithSubGoalRs;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "목표 API", description = "목표 관련 API 목록입니다")
@@ -31,15 +31,12 @@ public interface GoalReadControllerSwagger {
     })
     CompletedGoalListRs getCompletedGoals(UUID userId);
 
-    @Operation(summary = "목표 투두 목록 API", description = "메인페이지에 보여질 목표에 해당하는 세부 목표와 투두 목록을 조회합니다.")
-    GoalWithSubGoalTodoRs getGoalWithSubGoalAndTodo(@PathVariable UUID goalId);
-
-    @Operation(summary = "목표의 모든 세부목표, 투두 목록 API", description = "목표에 해당하는 모든 세부 목표와 투두 목록을 조회합니다.")
+    @Operation(summary = "목표와 세부목표 목록 API", description = "목표와 세부 목표 리스트를 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "목표아이디에 해당하는 모든 세부 목표와 투두 목록을 반환", content = @Content(schema = @Schema(implementation = GoalWithSubGoalTodoRs.class))),
+            @ApiResponse(responseCode = "200", description = "목표아이디에 해당하는 모든 세부 목표목록을 반환", content = @Content(schema = @Schema(implementation = GoalWithSubGoalRs.class))),
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content),
     })
-    GoalWithSubGoalTodoRs getGoalWithAllSubGoalAndTodos(@PathVariable UUID goalId);
+    GoalWithSubGoalRs getGoalWithSubGoal(@PathVariable UUID goalId);
 
     @Operation(summary = "그룹에 참여하지 않은 목표 목록 API", description = "그룹에 참여하지 않은 목표를 조회합니다.")
     List<GoalNotInGroupRs> getGoalNotJoinGroup(UUID userId);

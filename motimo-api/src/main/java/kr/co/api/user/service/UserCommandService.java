@@ -7,10 +7,10 @@ import kr.co.domain.user.model.User;
 import kr.co.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class UserCommandService {
 
@@ -20,10 +20,16 @@ public class UserCommandService {
         return userRepository.create(user);
     }
 
+    @Transactional
     public UUID updateInterests(UUID userId, Set<InterestType> interests) {
         User user = userRepository.findById(userId);
         user.updateInterests(interests);
         return userRepository.update(user).getId();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updateUserLoginAt(UUID userId) {
+        userRepository.updateLastLoginAt(userId);
     }
 
 }

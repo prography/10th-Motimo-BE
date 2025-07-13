@@ -21,4 +21,6 @@ public interface UserRepository {
     boolean existsByEmailAndProviderType(String email, ProviderType providerType);
 
     List<User> findAllByIdsIn(Set<UUID> userIds);
+
+    void updateLastLoginAt(UUID userId);
 }

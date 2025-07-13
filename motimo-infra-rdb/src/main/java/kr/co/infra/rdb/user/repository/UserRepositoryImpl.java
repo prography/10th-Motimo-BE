@@ -1,5 +1,6 @@
 package kr.co.infra.rdb.user.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -67,5 +68,13 @@ public class UserRepositoryImpl implements UserRepository {
                 .stream()
                 .map(UserMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public void updateLastLoginAt(UUID userId) {
+        UserEntity entity = userJpaRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        entity.updateLastLoginAt(LocalDateTime.now());
     }
 }

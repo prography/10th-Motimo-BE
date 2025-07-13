@@ -26,6 +26,7 @@ public interface GroupMemberJpaRepository extends JpaRepository<GroupMemberEntit
                   u.email AS email,
                   u.profile_image_url AS profileImageUrl,
                   gm.joined_date AS joinedDate,
+                  u.last_login_at AS lastLoginDate,
                   gm.is_notification_active AS isNotificationActive
                 FROM group_members gm
                 JOIN users u ON gm.user_id = u.id

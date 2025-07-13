@@ -28,6 +28,6 @@ public class GroupMemberMapper {
                 .profileImageUrl(projection.getProfileImageUrl())
                 .joinedDate(projection.getJoinedDate())
                 .lastOnlineDate(LocalDateTime.now())
-                .isNotificationActive(projection.isNotificationActive()).build();
+                .isNotificationActive(projection.getIsNotificationActive()).build();
     }
 }

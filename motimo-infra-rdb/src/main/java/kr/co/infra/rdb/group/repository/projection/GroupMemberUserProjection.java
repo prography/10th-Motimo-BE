@@ -10,5 +10,5 @@ public interface GroupMemberUserProjection {
     String getEmail();
     String getProfileImageUrl();
     LocalDateTime getJoinedDate();
-    boolean isNotificationActive();
+    boolean getIsNotificationActive();
 }

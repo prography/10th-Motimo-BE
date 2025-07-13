@@ -37,8 +37,8 @@ import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoItem;
-import kr.co.domain.todo.dto.TodoResultItem;
+import kr.co.domain.todo.dto.TodoItemDto;
+import kr.co.domain.todo.dto.TodoResultItemDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,9 +129,9 @@ class SubGoalControllerTest {
         // given
         UUID todoId1 = UUID.randomUUID();
         UUID todoId2 = UUID.randomUUID();
-        List<TodoItem> todoSummaries = Arrays.asList(
-                createMockTodoSummary(todoId1, "투두1"),
-                createMockTodoSummary(todoId2, "투두2")
+        List<TodoItemDto> todoSummaries = Arrays.asList(
+                createMockTodoItem(todoId1, "투두1"),
+                createMockTodoItem(todoId2, "투두2")
         );
 
         when(todoQueryService.getIncompleteOrTodayTodosBySubGoalId(subGoalId)).thenReturn(
@@ -157,10 +157,10 @@ class SubGoalControllerTest {
         verify(todoQueryService).getIncompleteOrTodayTodosBySubGoalId(subGoalId);
     }
 
-    private TodoItem createMockTodoSummary(UUID id, String title) {
-        return new TodoItem(id, title, LocalDate.now(), TodoStatus.INCOMPLETE,
+    private TodoItemDto createMockTodoItem(UUID id, String title) {
+        return new TodoItemDto(id, title, LocalDate.now(), TodoStatus.INCOMPLETE,
                 LocalDateTime.now(),
-                new TodoResultItem(
+                new TodoResultItemDto(
                         UUID.randomUUID(),
                         Emotion.PROUD,
                         "todo result",

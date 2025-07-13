@@ -20,7 +20,7 @@ import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.group.Group;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.domain.subGoal.SubGoal;
-import kr.co.domain.todo.dto.TodoItem;
+import kr.co.domain.todo.dto.TodoItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,7 +101,7 @@ public class GoalQueryService {
         return subGoals.stream()
                 .sorted(Comparator.comparing(SubGoal::getOrder))
                 .map(subGoal -> {
-                    List<TodoItem> todos = todoQueryService.getTodosBySubGoalId(subGoal.getId());
+                    List<TodoItemDto> todos = todoQueryService.getTodosBySubGoalId(subGoal.getId());
                     return new SubGoalDto(subGoal.getId(), subGoal.getTitle(), todos);
                 })
                 .toList();
@@ -111,7 +111,7 @@ public class GoalQueryService {
         return subGoals.stream()
                 .sorted(Comparator.comparing(SubGoal::getOrder))
                 .map(subGoal -> {
-                    List<TodoItem> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
+                    List<TodoItemDto> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
                             subGoal.getId());
 
                     return new SubGoalDto(subGoal.getId(), subGoal.getTitle(), todos);

@@ -35,7 +35,7 @@ import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.common.exception.AccessDeniedException;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoResult;
-import kr.co.domain.todo.dto.TodoResultItem;
+import kr.co.domain.todo.dto.TodoResultItemDto;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.exception.TodoResultNotSubmittedException;
@@ -166,7 +166,7 @@ class TodoControllerTest {
     void 투두_결과_조회_정상() throws Exception {
         // given
         UUID todoResultId = UUID.randomUUID();
-        TodoResultItem response = new TodoResultItem(
+        TodoResultItemDto response = new TodoResultItemDto(
                 todoResultId, Emotion.PROUD, "오늘도 투두 완료!", "http://file.url");
         when(todoQueryService.getTodoResultByTodoId(todoId)).thenReturn(Optional.of(response));
 

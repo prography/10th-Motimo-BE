@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Todo;
-import kr.co.domain.todo.dto.TodoItem;
+import kr.co.domain.todo.dto.TodoItemDto;
 
 public interface TodoRepository {
 
@@ -14,12 +14,12 @@ public interface TodoRepository {
 
     Todo findById(UUID id);
 
-    List<TodoItem> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date);
+    List<TodoItemDto> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date);
 
-    List<TodoItem> findAllByUserId(UUID userId);
+    List<TodoItemDto> findAllByUserId(UUID userId);
 
-    List<TodoItem> findAllBySubGoalId(UUID subGoalId);
-    
+    List<TodoItemDto> findAllBySubGoalId(UUID subGoalId);
+
     List<GoalTodoCount> countTodosByGoalIds(List<UUID> goalId);
 
     boolean existsById(UUID id);

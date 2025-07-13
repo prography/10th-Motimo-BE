@@ -27,8 +27,8 @@ import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.subGoal.SubGoal;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoItem;
-import kr.co.domain.todo.dto.TodoResultItem;
+import kr.co.domain.todo.dto.TodoItemDto;
+import kr.co.domain.todo.dto.TodoResultItemDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -57,25 +57,6 @@ class GoalQueryServiceTest {
                 .subGoals(subGoals).build();
     }
 
-    private List<TodoItem> createMockTodos(int count) {
-        List<TodoItem> summaries = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            summaries.add(new TodoItem(
-                    UUID.randomUUID(),
-                    "테스트 투두",
-                    LocalDate.now(),
-                    TodoStatus.INCOMPLETE,
-                    LocalDateTime.now(),
-                    new TodoResultItem(
-                            UUID.randomUUID(),
-                            Emotion.PROUD,
-                            "todo result",
-                            ""
-                    )));
-        }
-        return summaries;
-    }
-
     @Nested
     @DisplayName("목표 세부목표, 투두 목록 조회 테스트")
     class GoalReadListTest {
@@ -98,7 +79,7 @@ class GoalQueryServiceTest {
             );
 
             // given
-            List<TodoItem> mockTodos = createMockTodos(3);
+            List<TodoItemDto> mockTodos = createMockTodoItems(3);
             Goal mockGoal = createMockGoal(userId, goalId, subGoals);
             givenGoalWithSubGoalsAndTodos(goalId, mockGoal, mockTodos);
 
@@ -135,7 +116,7 @@ class GoalQueryServiceTest {
             final UUID goalId = UUID.randomUUID();
 
             // given
-            List<TodoItem> mockTodos = createMockTodos(3);
+            List<TodoItemDto> mockTodos = createMockTodoItems(3);
             Goal mockGoal = createMockGoal(userId, goalId, List.of());
             givenGoalWithSubGoalsAndTodos(goalId, mockGoal, mockTodos);
 
@@ -149,7 +130,7 @@ class GoalQueryServiceTest {
         }
 
         private void givenGoalWithSubGoalsAndTodos(UUID goalId, Goal mockGoal,
-                List<TodoItem> mockTodos) {
+                List<TodoItemDto> mockTodos) {
             when(goalRepository.findById(goalId)).thenReturn(mockGoal);
 
             mockGoal.getSubGoals().forEach(subGoal ->
@@ -246,9 +227,9 @@ class GoalQueryServiceTest {
             Goal goal = createMockGoal(goalId);
             List<SubGoal> subGoals = createMockSubGoals();
 
-            List<TodoItem> todos1 = createMockTodoItems(2);
-            List<TodoItem> todos2 = createMockTodoItems(3);
-            List<TodoItem> todos3 = createMockTodoItems(0);
+            List<TodoItemDto> todos1 = createMockTodoItems(2);
+            List<TodoItemDto> todos2 = createMockTodoItems(3);
+            List<TodoItemDto> todos3 = createMockTodoItems(0);
 
             when(goalRepository.findById(goalId)).thenReturn(goal);
             when(goal.getSubGoals()).thenReturn(subGoals);
@@ -279,7 +260,7 @@ class GoalQueryServiceTest {
             Goal goal = createMockGoal(goalId);
             List<SubGoal> subGoals = createMockSubGoals();
 
-            List<TodoItem> todos = createMockTodoItems(1);
+            List<TodoItemDto> todos = createMockTodoItems(1);
 
             when(goalRepository.findById(goalId)).thenReturn(goal);
             when(goal.getSubGoals()).thenReturn(subGoals);
@@ -329,26 +310,6 @@ class GoalQueryServiceTest {
         return goal;
     }
 
-//    private List<SubGoal> createMockSubGoals() {
-//        List<SubGoal> subGoals = new ArrayList<>();
-//
-//        SubGoal subGoal1 = mock(SubGoal.class);
-//        when(subGoal1.getId()).thenReturn(UUID.randomUUID());
-//        when(subGoal1.getTitle()).thenReturn("세부목표 1");
-//        when(subGoal1.getOrder()).thenReturn(1);
-//
-//        SubGoal subGoal2 = mock(SubGoal.class);
-//        when(subGoal2.getId()).thenReturn(UUID.randomUUID());
-//        when(subGoal2.getTitle()).thenReturn("세부목표 2");
-//        when(subGoal2.getOrder()).thenReturn(2);
-//
-//        subGoals.add(subGoal1);
-//        subGoals.add(subGoal2);
-//
-//        return subGoals;
-//    }
-
-    //    private List<SubGoal> createMockSubGoalsWithOrder() {
     private List<SubGoal> createMockSubGoals() {
         List<SubGoal> subGoals = new ArrayList<>();
 
@@ -374,17 +335,16 @@ class GoalQueryServiceTest {
         return subGoals;
     }
 
-    private List<TodoItem> createMockTodoItems(int count) {
-        List<TodoItem> todos = new ArrayList<>();
+    private List<TodoItemDto> createMockTodoItems(int count) {
+        List<TodoItemDto> todos = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            TodoItem todo = new TodoItem(
+            TodoItemDto todo = new TodoItemDto(
                     UUID.randomUUID(),
                     "테스트 투두 " + (i + 1),
                     LocalDate.now(),
                     TodoStatus.INCOMPLETE,
                     LocalDateTime.now(),
-                    null
-            );
+                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "todo result", ""));
             todos.add(todo);
         }
         return todos;

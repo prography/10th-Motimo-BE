@@ -3,7 +3,7 @@ package kr.co.api.todo.rqrs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.UUID;
 import kr.co.domain.todo.Emotion;
-import kr.co.domain.todo.dto.TodoResultItem;
+import kr.co.domain.todo.dto.TodoResultItemDto;
 
 public record TodoResultRs(
         @Schema(description = "투두 결과 Id", example = "0197157f-aea4-77bb-8581-3213eb5bd2ae")
@@ -19,7 +19,7 @@ public record TodoResultRs(
         String fileUrl
 ) {
 
-    public static TodoResultRs from(TodoResultItem result) {
+    public static TodoResultRs from(TodoResultItemDto result) {
         if (result == null) {
             return null;
         }

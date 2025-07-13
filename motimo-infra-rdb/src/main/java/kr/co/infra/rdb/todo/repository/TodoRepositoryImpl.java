@@ -13,8 +13,8 @@ import java.util.UUID;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoItem;
-import kr.co.domain.todo.dto.TodoResultItem;
+import kr.co.domain.todo.dto.TodoItemDto;
+import kr.co.domain.todo.dto.TodoResultItemDto;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.infra.rdb.goal.entity.QGoalEntity;
@@ -47,7 +47,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public List<TodoItem> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date) {
+    public List<TodoItemDto> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date) {
         QTodoEntity todoEntity = QTodoEntity.todoEntity;
         QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
 
@@ -63,7 +63,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public List<TodoItem> findAllByUserId(UUID userId) {
+    public List<TodoItemDto> findAllByUserId(UUID userId) {
         QTodoEntity todoEntity = QTodoEntity.todoEntity;
         QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
 
@@ -73,7 +73,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public List<TodoItem> findAllBySubGoalId(UUID subGoalId) {
+    public List<TodoItemDto> findAllBySubGoalId(UUID subGoalId) {
         QTodoEntity todoEntity = QTodoEntity.todoEntity;
         QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
 
@@ -131,18 +131,18 @@ public class TodoRepositoryImpl implements TodoRepository {
                 .toList();
     }
 
-    private JPAQuery<TodoItem> todoItemJPAQuery(QTodoEntity todoEntity,
+    private JPAQuery<TodoItemDto> todoItemJPAQuery(QTodoEntity todoEntity,
             QTodoResultEntity todoResultEntity) {
 
-        ConstructorExpression<TodoResultItem> resultItem =
-                Projections.constructor(TodoResultItem.class,
+        ConstructorExpression<TodoResultItemDto> resultItem =
+                Projections.constructor(TodoResultItemDto.class,
                         todoResultEntity.id,
                         todoResultEntity.emotion,
                         todoResultEntity.content,
                         todoResultEntity.filePath);
 
-        ConstructorExpression<TodoItem> todoItem =
-                Projections.constructor(TodoItem.class,
+        ConstructorExpression<TodoItemDto> todoItem =
+                Projections.constructor(TodoItemDto.class,
                         todoEntity.id,
                         todoEntity.title,
                         todoEntity.date,

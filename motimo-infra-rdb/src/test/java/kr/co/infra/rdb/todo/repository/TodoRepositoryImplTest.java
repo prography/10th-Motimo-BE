@@ -16,7 +16,7 @@ import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoItem;
+import kr.co.domain.todo.dto.TodoItemDto;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.infra.rdb.config.QueryDslConfig;
@@ -161,14 +161,14 @@ class TodoRepositoryImplTest {
     @Test
     void 완료되지않은_상태거나_오늘의_투두들만_조회되고_정렬된다() {
         // when
-        List<TodoItem> todos = todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId,
+        List<TodoItemDto> todos = todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId,
                 today);
 
         // then
 
         assertThat(todos).hasSize(6); // 완료되지 않은 것 4 + 오늘인 것만 2
         assertThat(todos)
-                .extracting(TodoItem::title)
+                .extracting(TodoItemDto::title)
                 .containsExactly("어제 미완료 투두", "오늘 미완료 투두", "오늘 완료 투두 결과없음", "오늘 완료 투두 결과있음",
                         "내일 미완료 투두", "미완료 투두 날짜없음");
     }
@@ -227,24 +227,24 @@ class TodoRepositoryImplTest {
     @Test
     void 유저_ID로_모든_투두_조회() {
         // when
-        List<TodoItem> todos = todoRepository.findAllByUserId(userId);
+        List<TodoItemDto> todos = todoRepository.findAllByUserId(userId);
 
         // then
         assertThat(todos).hasSize(9); // setupTestData()에서 생성한 해당 유저의 투두 개수
         assertThat(todos)
-                .extracting(TodoItem::title)
+                .extracting(TodoItemDto::title)
                 .contains("오늘 미완료 투두", "오늘 완료 투두 결과있음", "다른 세부목표 오늘 미완료투두");
     }
 
     @Test
     void 세부목표_ID로_모든_투두_조회() {
         // when
-        List<TodoItem> todos = todoRepository.findAllBySubGoalId(subGoalId);
+        List<TodoItemDto> todos = todoRepository.findAllBySubGoalId(subGoalId);
 
         // then
         assertThat(todos).hasSize(7); // setupTestData()에서 생성한 해당 세부목표의 투두 개수
         assertThat(todos)
-                .extracting(TodoItem::title)
+                .extracting(TodoItemDto::title)
                 .contains("오늘 미완료 투두", "오늘 완료 투두 결과있음", "과거 완료 투두");
     }
 
@@ -374,13 +374,13 @@ class TodoRepositoryImplTest {
     @Test
     void 투두_조회시_정렬_확인() {
         // when
-        List<TodoItem> todos = todoRepository.findAllBySubGoalId(subGoalId);
+        List<TodoItemDto> todos = todoRepository.findAllBySubGoalId(subGoalId);
 
         // then
         assertThat(todos.getFirst().title()).isEqualTo("어제 미완료 투두");
         assertThat(todos.getFirst().date()).isEqualTo(yesterday);
 
-        List<TodoItem> todayTodos = todos.stream()
+        List<TodoItemDto> todayTodos = todos.stream()
                 .filter(todo -> today.equals(todo.date()))
                 .collect(Collectors.toList());
 
@@ -391,10 +391,10 @@ class TodoRepositoryImplTest {
     @Test
     void 투두_결과_정보_포함_조회() {
         // when
-        List<TodoItem> todos = todoRepository.findAllBySubGoalId(subGoalId);
+        List<TodoItemDto> todos = todoRepository.findAllBySubGoalId(subGoalId);
 
         // then
-        TodoItem todoWithResult = todos.stream()
+        TodoItemDto todoWithResult = todos.stream()
                 .filter(todo -> "오늘 완료 투두 결과있음".equals(todo.title()))
                 .findFirst()
                 .orElseThrow();

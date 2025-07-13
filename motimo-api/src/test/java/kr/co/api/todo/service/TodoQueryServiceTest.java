@@ -19,8 +19,8 @@ import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoItem;
-import kr.co.domain.todo.dto.TodoResultItem;
+import kr.co.domain.todo.dto.TodoItemDto;
+import kr.co.domain.todo.dto.TodoResultItemDto;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
@@ -70,14 +70,14 @@ class TodoQueryServiceTest {
         void 세부목표_ID로_미완료_또는_오늘의_투두_리스트_조회() {
             // given
             LocalDate today = LocalDate.now();
-            List<TodoItem> mockTodoItems = createMockTodoItems(3);
+            List<TodoItemDto> mockTodoItems = createMockTodoItems(3);
 
             when(todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId, today))
                     .thenReturn(mockTodoItems);
             when(storageService.getFileUrl(anyString())).thenReturn("https://example.com/file.jpg");
 
             // when
-            List<TodoItem> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
+            List<TodoItemDto> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
                     subGoalId);
 
             // then
@@ -90,7 +90,7 @@ class TodoQueryServiceTest {
         void 투두가_우선순위에_따라_정렬되어_반환된다() {
             // given
             LocalDate today = LocalDate.now();
-            List<TodoItem> mockTodos = Arrays.asList(
+            List<TodoItemDto> mockTodos = Arrays.asList(
                     createTodoItem(TodoStatus.COMPLETE, today.minusDays(1), createTodoResultItem()),
                     // 완료 + 결과 있음
                     createTodoItem(TodoStatus.INCOMPLETE, today, null), // 미완료
@@ -101,7 +101,8 @@ class TodoQueryServiceTest {
                     .thenReturn(mockTodos);
 
             // when
-            List<TodoItem> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(subGoalId);
+            List<TodoItemDto> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
+                    subGoalId);
 
             // then
             assertThat(todos).hasSize(3);
@@ -123,13 +124,13 @@ class TodoQueryServiceTest {
         @Test
         void 세부목표_ID로_모든_투두_리스트_조회() {
             // given
-            List<TodoItem> mockTodoItems = createMockTodoItems(5);
+            List<TodoItemDto> mockTodoItems = createMockTodoItems(5);
 
             when(todoRepository.findAllBySubGoalId(subGoalId)).thenReturn(mockTodoItems);
             when(storageService.getFileUrl(anyString())).thenReturn("https://example.com/file.jpg");
 
             // when
-            List<TodoItem> todos = todoQueryService.getTodosBySubGoalId(subGoalId);
+            List<TodoItemDto> todos = todoQueryService.getTodosBySubGoalId(subGoalId);
 
             // then
             assertThat(todos).isNotNull();
@@ -141,11 +142,11 @@ class TodoQueryServiceTest {
         void 투두가_존재하지_않는_세부목표_ID로_조회시_빈_리스트_반환() {
             // given
             UUID nonExistsSubGoalId = UUID.randomUUID();
-            List<TodoItem> emptyList = Collections.emptyList();
+            List<TodoItemDto> emptyList = Collections.emptyList();
             when(todoRepository.findAllBySubGoalId(nonExistsSubGoalId)).thenReturn(emptyList);
 
             // when
-            List<TodoItem> todos = todoQueryService.getTodosBySubGoalId(nonExistsSubGoalId);
+            List<TodoItemDto> todos = todoQueryService.getTodosBySubGoalId(nonExistsSubGoalId);
 
             // then
             assertThat(todos).isEmpty();
@@ -160,15 +161,13 @@ class TodoQueryServiceTest {
         @Test
         void 유저_ID로_투두_리스트_조회() {
             // given
-            int page = 0;
-            int size = 10;
-            List<TodoItem> mockTodoItems = createMockTodoItems(3);
+            List<TodoItemDto> mockTodoItems = createMockTodoItems(3);
 
             when(todoRepository.findAllByUserId(userId)).thenReturn(mockTodoItems);
             when(storageService.getFileUrl(anyString())).thenReturn("https://example.com/file.jpg");
 
             // when
-            List<TodoItem> todos = todoQueryService.getTodosByUserId(userId);
+            List<TodoItemDto> todos = todoQueryService.getTodosByUserId(userId);
 
             // then
             assertThat(todos).isNotNull();
@@ -182,11 +181,11 @@ class TodoQueryServiceTest {
             int page = 0;
             int size = 10;
             UUID nonExistsUserId = UUID.randomUUID();
-            List<TodoItem> emptyList = Collections.emptyList();
+            List<TodoItemDto> emptyList = Collections.emptyList();
             when(todoRepository.findAllByUserId(nonExistsUserId)).thenReturn(emptyList);
 
             // when
-            List<TodoItem> todos = todoQueryService.getTodosByUserId(nonExistsUserId);
+            List<TodoItemDto> todos = todoQueryService.getTodosByUserId(nonExistsUserId);
 
             // then
             assertThat(todos).isEmpty();
@@ -196,12 +195,12 @@ class TodoQueryServiceTest {
         @Test
         void 투두_결과의_파일_URL이_없는_투두_결과가_있는_경우() {
             // given
-            TodoItem todoWithNullFileUrl = createTodoItem(TodoStatus.COMPLETE, LocalDate.now(),
-                    new TodoResultItem(UUID.randomUUID(), Emotion.PROUD, "content", null));
+            TodoItemDto todoWithNullFileUrl = createTodoItem(TodoStatus.COMPLETE, LocalDate.now(),
+                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "content", null));
             when(todoRepository.findAllByUserId(userId)).thenReturn(List.of(todoWithNullFileUrl));
 
             // when
-            List<TodoItem> todos = todoQueryService.getTodosByUserId(userId);
+            List<TodoItemDto> todos = todoQueryService.getTodosByUserId(userId);
 
             // then
             assertThat(todos).hasSize(1);
@@ -229,7 +228,7 @@ class TodoQueryServiceTest {
             when(todoRepository.existsById(todoId)).thenReturn(true);
 
             // when
-            Optional<TodoResultItem> result = todoQueryService.getTodoResultByTodoId(todoId);
+            Optional<TodoResultItemDto> result = todoQueryService.getTodoResultByTodoId(todoId);
 
             // then
             assertThat(result).isNotNull();
@@ -247,7 +246,7 @@ class TodoQueryServiceTest {
             when(todoRepository.existsById(todoId)).thenReturn(true);
 
             // when
-            Optional<TodoResultItem> result = todoQueryService.getTodoResultByTodoId(todoId);
+            Optional<TodoResultItemDto> result = todoQueryService.getTodoResultByTodoId(todoId);
 
             // then
             assertThat(result).isEmpty();
@@ -314,22 +313,23 @@ class TodoQueryServiceTest {
         }
     }
 
-    private List<TodoItem> createMockTodoItems(int count) {
-        List<TodoItem> items = new ArrayList<>();
+    private List<TodoItemDto> createMockTodoItems(int count) {
+        List<TodoItemDto> items = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            items.add(new TodoItem(
+            items.add(new TodoItemDto(
                     UUID.randomUUID(),
                     "테스트 투두",
                     LocalDate.now(),
                     TodoStatus.INCOMPLETE,
                     LocalDateTime.now(),
-                    new TodoResultItem(UUID.randomUUID(), Emotion.PROUD, "todo result", "")));
+                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "todo result", "")));
         }
         return items;
     }
 
-    private TodoItem createTodoItem(TodoStatus status, LocalDate date, TodoResultItem resultItem) {
-        return new TodoItem(
+    private TodoItemDto createTodoItem(TodoStatus status, LocalDate date,
+            TodoResultItemDto resultItem) {
+        return new TodoItemDto(
                 UUID.randomUUID(),
                 "테스트 투두",
                 date,
@@ -339,8 +339,8 @@ class TodoQueryServiceTest {
         );
     }
 
-    private TodoResultItem createTodoResultItem() {
-        return new TodoResultItem(
+    private TodoResultItemDto createTodoResultItem() {
+        return new TodoResultItemDto(
                 UUID.randomUUID(),
                 Emotion.PROUD,
                 "todo result",

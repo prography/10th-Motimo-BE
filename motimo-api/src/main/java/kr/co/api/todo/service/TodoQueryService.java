@@ -8,8 +8,8 @@ import java.util.UUID;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoItem;
-import kr.co.domain.todo.dto.TodoResultItem;
+import kr.co.domain.todo.dto.TodoItemDto;
+import kr.co.domain.todo.dto.TodoResultItemDto;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.domain.todo.repository.TodoResultRepository;
@@ -27,7 +27,7 @@ public class TodoQueryService {
     private final TodoResultRepository todoResultRepository;
     private final StorageService storageService;
 
-    public List<TodoItem> getIncompleteOrTodayTodosBySubGoalId(UUID subGoalId) {
+    public List<TodoItemDto> getIncompleteOrTodayTodosBySubGoalId(UUID subGoalId) {
         LocalDate today = LocalDate.now();
 
         return todoRepository.findIncompleteOrDateTodosBySubGoalId(subGoalId, today).stream()
@@ -36,21 +36,21 @@ public class TodoQueryService {
                 .toList();
     }
 
-    public List<TodoItem> getTodosBySubGoalId(UUID subGoalId) {
+    public List<TodoItemDto> getTodosBySubGoalId(UUID subGoalId) {
         return todoRepository.findAllBySubGoalId(subGoalId).stream()
                 .sorted(todoPriorityComparator())
                 .map(this::enrichTodoItemWithUrl)
                 .toList();
     }
 
-    public List<TodoItem> getTodosByUserId(UUID userId) {
+    public List<TodoItemDto> getTodosByUserId(UUID userId) {
         return todoRepository.findAllByUserId(userId).stream()
                 .sorted(todoPriorityComparator())
                 .map(this::enrichTodoItemWithUrl)
                 .toList();
     }
 
-    public Optional<TodoResultItem> getTodoResultByTodoId(UUID todoId) {
+    public Optional<TodoResultItemDto> getTodoResultByTodoId(UUID todoId) {
         validateTodoExists(todoId);
         return todoResultRepository.findByTodoId(todoId).map(this::toTodoResultItemWithFileUrl);
     }
@@ -65,8 +65,8 @@ public class TodoQueryService {
         }
     }
 
-    private TodoItem enrichTodoItemWithUrl(TodoItem todoItem) {
-        TodoResultItem todoResultItem = todoItem.todoResultItem();
+    private TodoItemDto enrichTodoItemWithUrl(TodoItemDto todoItem) {
+        TodoResultItemDto todoResultItem = todoItem.todoResultItem();
 
         if (todoResultItem == null || todoResultItem.id() == null) {
             return todoItem.withTodoResultItem(null);
@@ -79,22 +79,22 @@ public class TodoQueryService {
         return todoItem.withTodoResultItem(todoResultItem.withFileUrl(url));
     }
 
-    private TodoResultItem toTodoResultItemWithFileUrl(TodoResult result) {
+    private TodoResultItemDto toTodoResultItemWithFileUrl(TodoResult result) {
         if (result.getFilePath() == null) {
-            return TodoResultItem.of(result, null);
+            return TodoResultItemDto.of(result, null);
         }
         String fileUrl = storageService.getFileUrl(result.getFilePath());
-        return TodoResultItem.of(result, fileUrl);
+        return TodoResultItemDto.of(result, fileUrl);
     }
 
-    private Comparator<TodoItem> todoPriorityComparator() {
+    private Comparator<TodoItemDto> todoPriorityComparator() {
         return Comparator
                 .comparingInt(this::rankTodoByCompletionAndSubmission)
-                .thenComparing(TodoItem::date, Comparator.nullsLast(LocalDate::compareTo))
-                .thenComparing(TodoItem::createdAt);
+                .thenComparing(TodoItemDto::date, Comparator.nullsLast(LocalDate::compareTo))
+                .thenComparing(TodoItemDto::createdAt);
     }
 
-    private int rankTodoByCompletionAndSubmission(TodoItem todo) {
+    private int rankTodoByCompletionAndSubmission(TodoItemDto todo) {
         if (todo.status() == TodoStatus.INCOMPLETE) {
             return 0;
         }

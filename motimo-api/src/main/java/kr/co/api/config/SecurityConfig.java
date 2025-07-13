@@ -76,6 +76,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/auth/reissue").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/todos/{todoId}/result").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v1/goals/{goals}").permitAll()
 
                         .anyRequest().authenticated()
                 )

@@ -14,7 +14,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class UserEventListener {
     private final UserCommandService userCommandService;
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
     public void handleUserLogin(UserLoginEvent event) {
         try {
             userCommandService.updateUserLoginAt(event.getUserId());

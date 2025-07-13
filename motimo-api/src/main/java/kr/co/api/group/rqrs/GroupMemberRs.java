@@ -12,7 +12,7 @@ public record GroupMemberRs(
         String nickname,
         @Schema(description = "마지막 접속일", requiredMode = Schema.RequiredMode.REQUIRED)
         LocalDateTime lastOnlineDate,
-        @Schema(description = "찌르기 활성화 여부, 본인이면 null", requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(description = "찌르기 활성화 여부, 본인이면 null")
         Boolean isActivePoke
 ) {
 

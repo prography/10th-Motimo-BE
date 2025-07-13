@@ -63,6 +63,12 @@ public class GroupRepositoryImpl implements GroupRepository {
         return GroupMapper.toDomain(groupEntity);
     }
 
+    public Group findDetailByGroupIdAndMemberId(UUID groupId, UUID memberId) {
+        GroupMemberGoalGroupProjection projection = groupMemberJpaRepository.findGoalAndGroupByUserIdAndGroupId(memberId, groupId);
+
+        return GroupMapper.toDomainWithName(projection.getGroupId(), projection.getGoalTitle(), projection.getGroupFinishedDate());
+    }
+
     public Optional<Group> findByGoalId(UUID goalId) {
         Optional<GroupMemberEntity> groupMemberEntity = groupMemberJpaRepository.findByGoalId(
                 goalId);
@@ -99,7 +105,7 @@ public class GroupRepositoryImpl implements GroupRepository {
 
     @Override
     public List<Group> findAllGroupDetailByUserId(UUID userId) {
-        List<GroupMemberGoalGroupProjection> groupProjections = groupMemberJpaRepository.findGoalAndGroupInfoByUserId(
+        List<GroupMemberGoalGroupProjection> groupProjections = groupMemberJpaRepository.findAllGoalAndGroupByUserId(
                 userId);
 
         return groupProjections.stream()

@@ -3,6 +3,7 @@ package kr.co.api.group;
 import java.util.List;
 import java.util.UUID;
 import kr.co.api.group.docs.GroupControllerSwagger;
+import kr.co.api.group.rqrs.GroupDetailRs;
 import kr.co.api.group.rqrs.GroupIdRs;
 import kr.co.api.group.rqrs.GroupJoinRq;
 import kr.co.api.group.rqrs.GroupMemberRs;
@@ -49,6 +50,11 @@ public class GroupController implements GroupControllerSwagger {
         return groupQueryService.getJoinedGroupList(userId).stream().map(
                 JoinedGroupRs::from
         ).toList();
+    }
+
+    @GetMapping("/{groupId}")
+    public GroupDetailRs getGroupDetail(@AuthUser UUID userId, @PathVariable UUID groupId) {
+        return GroupDetailRs.from(groupQueryService.getGroupDetail(userId, groupId));
     }
 
     @PostMapping("/random-join")

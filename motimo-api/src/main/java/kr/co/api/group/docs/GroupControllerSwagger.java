@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
+import kr.co.api.group.rqrs.GroupDetailRs;
 import kr.co.api.group.rqrs.GroupIdRs;
 import kr.co.api.group.rqrs.GroupJoinRq;
 import kr.co.api.group.rqrs.GroupMemberRs;
@@ -26,6 +27,9 @@ public interface GroupControllerSwagger {
 
     @Operation(summary = "참여중인 그룹 목록 API", description = "참여중인 그룹을 조회합니다.")
     List<JoinedGroupRs> getJoinedGroups(UUID userId);
+
+    @Operation(summary = "그룹 상세 조회 API", description = "그룹 아이디와 제목을 조회합니다.")
+    GroupDetailRs getGroupDetail(UUID userId, @PathVariable UUID groupId);
 
     @Operation(summary = "랜덤 그룹 가입 API", description = "랜덤으로 그룹에 가입합니다.")
     GroupIdRs joinRandomGroup(UUID userId, @RequestBody GroupJoinRq rq);

@@ -3,6 +3,7 @@ package kr.co.api.group.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import kr.co.api.group.service.dto.GroupDto;
 import kr.co.api.group.service.dto.GroupMemberDto;
 import kr.co.api.group.service.dto.JoinedGroupDto;
 import kr.co.domain.group.Group;
@@ -39,6 +40,11 @@ public class GroupQueryService {
                     true
             );
         }).toList();
+    }
+
+    public GroupDto getGroupDetail(UUID userId, UUID groupId) {
+        Group group = groupRepository.findDetailByGroupIdAndMemberId(userId, groupId);
+        return new GroupDto(group.getId(), group.getName());
     }
 
     public List<GroupMemberDto> getGroupMemberList(UUID userId, UUID groupId) {

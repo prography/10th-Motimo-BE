@@ -15,6 +15,8 @@ public interface GroupRepository {
 
     Group join(GroupJoinDto dto);
 
+    Group findDetailByGroupIdAndMemberId(UUID groupId, UUID memberId);
+
     Optional<Group> findByGoalId(UUID goalId);
 
     Optional<Group> findAvailableGroupBySimilarDueDate(UUID userId, LocalDate dueDate);

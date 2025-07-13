@@ -21,6 +21,7 @@ import kr.co.infra.rdb.group.entity.GroupMemberEntity;
 import kr.co.infra.rdb.group.repository.GroupRepositoryImpl;
 import kr.co.infra.rdb.group.repository.query.GroupJpaSubQuery;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,7 +144,8 @@ class GroupRepositoryTest {
         assertThat(result).isEmpty();
     }
 
-//    @Test
+    @Disabled
+    @Test
     @DisplayName("평균 완료날짜와 30일 초과 차이나는 그룹은 제외 - 날짜 관련 코드가 postgres 전용이므로 테스트코드 동작하지 않음")
     void 평균_완료_날짜와_30일_초과_차이나는_그룹_제외() {
         // Given

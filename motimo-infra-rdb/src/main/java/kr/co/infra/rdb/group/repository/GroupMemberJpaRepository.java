@@ -24,7 +24,7 @@ public interface GroupMemberJpaRepository extends JpaRepository<GroupMemberEntit
                     gm.goal_id AS goalId,
                     g.title AS goalTitle,
                     gm.group_id AS groupId,
-                    gr.created_at AS groupCreatedAt
+                    gr.finished_date AS groupFinishedDate
                 FROM group_members gm
                 JOIN goals g ON gm.goal_id = g.id
                 JOIN goal_groups gr ON gm.group_id = gr.id

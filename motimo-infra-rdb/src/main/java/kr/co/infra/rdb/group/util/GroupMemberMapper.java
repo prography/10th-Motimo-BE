@@ -7,13 +7,14 @@ import kr.co.infra.rdb.group.repository.projection.GroupMemberUserProjection;
 import kr.co.infra.rdb.user.entity.UserEntity;
 
 public class GroupMemberMapper {
+
     public static GroupMember toDomain(GroupMemberEntity entity, UserEntity user) {
         return GroupMember.builder()
                 .memberId(entity.getUserId())
                 .goalId(entity.getGoalId())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
-                .profileImageUrl(user.getProfileImageUrl())
+                .profileImageUrl(user.getProfileImagePath())
                 .joinedDate(entity.getJoinedDate())
                 .lastOnlineDate(LocalDateTime.now())
                 .isNotificationActive(entity.isNotificationActive()).build();

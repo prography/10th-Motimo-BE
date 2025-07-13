@@ -12,6 +12,8 @@ public interface GoalRepository {
 
     Goal findById(UUID id);
 
+    Goal findBySubGoalId(UUID subGoalId);
+
     Goal findByIdWithoutSubGoals(UUID id);
 
     List<Goal> findAllByUserId(UUID userId);

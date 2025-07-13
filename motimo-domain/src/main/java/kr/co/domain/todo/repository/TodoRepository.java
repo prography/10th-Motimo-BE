@@ -2,6 +2,7 @@ package kr.co.domain.todo.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Todo;
@@ -26,4 +27,6 @@ public interface TodoRepository {
     Todo update(Todo todo);
 
     void deleteById(UUID id);
+
+    List<Todo> findAllByIdsIn(Set<UUID> todoIds);
 }

@@ -5,9 +5,13 @@ import java.util.UUID;
 import kr.co.domain.common.event.Events;
 import kr.co.domain.common.event.FileDeletedEvent;
 import kr.co.domain.common.event.FileRollbackEvent;
+import kr.co.domain.common.event.group.message.GroupMessageDeletedEvent;
+import kr.co.domain.common.event.group.message.TodoCompletedEvent;
+import kr.co.domain.common.event.group.message.TodoResultSubmittedEvent;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.exception.TodoNotCompleteException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.domain.todo.repository.TodoResultRepository;
 import kr.co.infra.storage.service.StorageService;
@@ -39,16 +43,25 @@ public class TodoCommandService {
             MultipartFile file) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateOwner(userId);
+        if (!todo.isComplete()) {
+            throw new TodoNotCompleteException();
+        }
 
         return todoResultRepository.findByTodoId(todoId)
                 .map(todoResult -> updateTodoResult(todoResult, userId, emotion, content, file))
-                .orElseGet(() -> createTodoResult(userId, todoId, emotion, content, file));
+                .orElseGet(() -> createTodoResult(userId, todo, emotion, content, file));
     }
 
     public UUID toggleTodoCompletion(UUID userId, UUID todoId) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateOwner(userId);
         todo.toggleCompletion();
+
+        if (todo.isComplete()) {
+            Events.publishEvent(
+                    new TodoCompletedEvent(userId, todo.getSubGoalId(), todo.getId(),
+                            todo.getTitle()));
+        }
         return todoRepository.update(todo).getId();
     }
 
@@ -62,6 +75,7 @@ public class TodoCommandService {
     public void deleteById(UUID userId, UUID todoId) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateOwner(userId);
+        Events.publishEvent(new GroupMessageDeletedEvent(todoId));
         todoResultRepository.findByTodoId(todoId)
                 .ifPresent(todoResult -> {
                     todoResult.validateOwner(userId);
@@ -76,26 +90,26 @@ public class TodoCommandService {
         deleteTodoResult(todoResult);
     }
 
-    private UUID createTodoResult(UUID userId, UUID todoId, Emotion emotion, String content,
+    private UUID createTodoResult(UUID userId, Todo todo, Emotion emotion, String content,
             MultipartFile file) {
         String filePath = "";
         if (file != null && !file.isEmpty()) {
-            filePath = String.format("todo/%s/%s", todoId, UUID.randomUUID());
+            filePath = String.format("todo/%s/%s", todo.getId(), UUID.randomUUID());
             storageService.store(file, filePath);
             Events.publishEvent(new FileRollbackEvent(filePath));
         }
 
         TodoResult result = TodoResult.createTodoResult()
-                .todoId(todoId)
+                .todoId(todo.getId())
                 .userId(userId)
                 .emotion(emotion)
                 .content(content)
                 .filePath(filePath)
                 .build();
 
-        // 투두 결과 제출시 이벤트 발생
-
-        return todoResultRepository.create(result).getId();
+        TodoResult todoResult = todoResultRepository.create(result);
+        Events.publishEvent(TodoResultSubmittedEvent.of(userId, todo, todoResult));
+        return todoResult.getId();
     }
 
     private UUID updateTodoResult(TodoResult todoResult, UUID userId, Emotion emotion,
@@ -122,6 +136,7 @@ public class TodoCommandService {
         if (todoResult.getFilePath() != null && !todoResult.getFilePath().isBlank()) {
             Events.publishEvent(new FileDeletedEvent(todoResult.getFilePath()));
         }
+        Events.publishEvent(new GroupMessageDeletedEvent(todoResult.getId()));
         todoResultRepository.deleteById(todoResult.getId());
     }
 }

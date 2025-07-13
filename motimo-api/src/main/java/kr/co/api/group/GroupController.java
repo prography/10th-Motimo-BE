@@ -8,15 +8,15 @@ import kr.co.api.group.rqrs.GroupIdRs;
 import kr.co.api.group.rqrs.GroupJoinRq;
 import kr.co.api.group.rqrs.GroupMemberRs;
 import kr.co.api.group.rqrs.GroupMessageIdRs;
-import kr.co.api.group.rqrs.GroupMessageItemRs;
 import kr.co.api.group.rqrs.JoinedGroupRs;
-import kr.co.api.group.rqrs.message.TodoMessageContentRs;
+import kr.co.api.group.rqrs.message.GroupChatRs;
+import kr.co.api.group.rqrs.message.NewMessageRs;
 import kr.co.api.group.service.GroupCommandService;
+import kr.co.api.group.service.GroupMessageQueryService;
 import kr.co.api.security.annotation.AuthUser;
-import kr.co.domain.common.pagination.CustomSlice;
-import kr.co.domain.group.MessageType;
+import kr.co.domain.common.pagination.PagingDirection;
 import kr.co.domain.group.reaction.ReactionType;
-import kr.co.domain.todo.Emotion;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -31,9 +32,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/groups")
 public class GroupController implements GroupControllerSwagger {
 
+    private final GroupMessageQueryService groupMessageQueryService;
     private final GroupCommandService groupCommandService;
 
-    public GroupController(final GroupCommandService groupCommandService) {
+    public GroupController(final GroupMessageQueryService groupMessageQueryService,
+            final GroupCommandService groupCommandService) {
+        this.groupMessageQueryService = groupMessageQueryService;
         this.groupCommandService = groupCommandService;
     }
 
@@ -51,48 +55,24 @@ public class GroupController implements GroupControllerSwagger {
         return new GroupIdRs(groupCommandService.joinGroup(userId, rq.goalId()));
     }
 
+    @GetMapping("/{groupId}/new-chats")
+    public NewMessageRs getNewGroupMessages(@AuthUser UUID userId, @PathVariable UUID groupId,
+            @RequestParam(required = false) String latestCursor) {
+        return NewMessageRs.from(
+                groupMessageQueryService.findNewChats(userId, groupId, latestCursor));
+    }
+
     @GetMapping("/{groupId}/chats")
-    public CustomSlice<GroupMessageItemRs> getGroupChat(@PathVariable UUID groupId,
-            @RequestParam int page, @RequestParam int size) {
-        List<GroupMessageItemRs> groupChatItems = List.of(
-                new GroupMessageItemRs(
-                        MessageType.ENTER,
-                        UUID.randomUUID(),
-                        "김하얀",
-                        null,
-                        4,
-                        false
-                ),
-                new GroupMessageItemRs(
-                        MessageType.TODO,
-                        UUID.randomUUID(),
-                        "김안검",
-                        new TodoMessageContentRs(
-                                UUID.randomUUID(),
-                                "완료한 투두 제목입니다",
-                                Emotion.PROUD,
-                                "완료한 투두 내용입니다",
-                                "file url입니다."
-                        ),
-                        4,
-                        true
-                ),
-                new GroupMessageItemRs(
-                        MessageType.TODO,
-                        UUID.randomUUID(),
-                        "김안검",
-                        new TodoMessageContentRs(
-                                UUID.randomUUID(),
-                                "완료한 투두 제목입니다",
-                                Emotion.GROWN,
-                                null,
-                                null
-                        ),
-                        0,
-                        false
-                )
-        );
-        return new CustomSlice<>(groupChatItems, true);
+    public GroupChatRs getGroupChat(
+            @AuthUser UUID userId,
+            @PathVariable UUID groupId,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(required = false) String cursor,
+            @RequestParam(defaultValue = "BEFORE") PagingDirection direction) {
+
+        return GroupChatRs.from(
+                groupMessageQueryService.findMessagesByGroupIdWithCursor(
+                        userId, groupId, cursor, limit, direction));
     }
 
     @PostMapping("/message/{messageId}/reaction")
@@ -111,7 +91,13 @@ public class GroupController implements GroupControllerSwagger {
     }
 
     @DeleteMapping("/{groupId}/members/me")
-    public void exitGroup(@PathVariable UUID groupId) {
+    public void exitGroup(@AuthUser UUID userId, @PathVariable UUID groupId) {
+        groupCommandService.leaveGroup(userId, groupId);
+    }
 
+    @PostMapping("/{groupId}/members/{targetUserId}/poke")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void sendPokeNotification(@AuthUser UUID userId, @PathVariable UUID groupId, @PathVariable UUID targetUserId) {
+        groupCommandService.createPokeNotification(userId, groupId, targetUserId);
     }
 }

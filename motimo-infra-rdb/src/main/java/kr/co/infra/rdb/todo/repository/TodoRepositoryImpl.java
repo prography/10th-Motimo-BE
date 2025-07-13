@@ -8,6 +8,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Todo;
@@ -60,7 +61,6 @@ public class TodoRepositoryImpl implements TodoRepository {
                 )
                 .fetch();
     }
-
 
     @Override
     public List<TodoItem> findAllByUserId(UUID userId) {
@@ -121,6 +121,14 @@ public class TodoRepositoryImpl implements TodoRepository {
                 .where(goalEntity.id.in(goalIds))
                 .groupBy(goalEntity.id)
                 .fetch();
+    }
+
+    @Override
+    public List<Todo> findAllByIdsIn(Set<UUID> todoIds) {
+        return todoJpaRepository.findAllByIdIn(todoIds)
+                .stream()
+                .map(TodoMapper::toDomain)
+                .toList();
     }
 
     private JPAQuery<TodoItem> todoItemJPAQuery(QTodoEntity todoEntity,

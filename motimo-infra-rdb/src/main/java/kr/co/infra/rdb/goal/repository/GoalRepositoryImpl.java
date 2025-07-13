@@ -54,6 +54,13 @@ public class GoalRepositoryImpl implements GoalRepository {
         return GoalMapper.toDomainWithoutSubGoal(goalEntity);
     }
 
+    @Override
+    public Goal findBySubGoalId(UUID subGoalId) {
+        GoalEntity goalEntity = goalJpaRepository.findBySubGoalsId(subGoalId)
+                .orElseThrow(GoalNotFoundException::new);
+        return GoalMapper.toDomain(goalEntity);
+    }
+
     public List<Goal> findAllByUserId(UUID userId) {
         List<GoalEntity> goalEntities = goalJpaRepository.findAllByUserIdOrderByCreatedAtDesc(
                 userId);
@@ -61,7 +68,7 @@ public class GoalRepositoryImpl implements GoalRepository {
     }
 
     public List<Goal> findUnassignedGroupGoalsByUserId(UUID userId) {
-        return goalJpaRepository.findAllByGroupNullAndUserId(userId).stream().map(
+        return goalJpaRepository.findAllByGroupIdNullAndUserId(userId).stream().map(
                 GoalMapper::toDomainWithoutSubGoal
         ).toList();
     }

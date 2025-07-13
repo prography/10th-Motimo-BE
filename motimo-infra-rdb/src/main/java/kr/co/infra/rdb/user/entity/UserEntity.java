@@ -70,6 +70,9 @@ public class UserEntity {
     @Column(name = "provider_id")
     private String providerId;
 
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -83,6 +86,10 @@ public class UserEntity {
         this.profileImageUrl = profileImageUrl;
         this.interests.clear();
         this.interests.addAll(interests);
+    }
+
+    public void updateLastLoginAt(LocalDateTime lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
     }
 
 }

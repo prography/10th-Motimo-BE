@@ -68,4 +68,12 @@ public class UserRepositoryImpl implements UserRepository {
                 .map(UserMapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public void updateLastLoginAt(UUID userId) {
+        UserEntity entity = userJpaRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        entity.updateLastLoginAt(entity.getLastLoginAt());
+    }
 }

@@ -26,4 +26,8 @@ public class UserCommandService {
         return userRepository.update(user).getId();
     }
 
+    public void updateUserLoginAt(UUID userId) {
+        userRepository.updateLastLoginAt(userId);
+    }
+
 }

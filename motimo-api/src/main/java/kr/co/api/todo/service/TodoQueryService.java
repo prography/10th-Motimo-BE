@@ -17,6 +17,7 @@ import kr.co.infra.storage.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @Transactional(readOnly = true)
@@ -72,7 +73,7 @@ public class TodoQueryService {
             return todoItem.withTodoResultItem(null);
         }
 
-        if (todoResultItem.fileUrl() == null) {
+        if (!StringUtils.hasText(todoResultItem.fileUrl())) {
             return todoItem;
         }
         String url = storageService.getFileUrl(todoResultItem.fileUrl());

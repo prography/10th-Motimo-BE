@@ -8,7 +8,8 @@ public enum Emotion {
     PROUD("뿌듯"),
     REGRETFUL("아쉬움"),
     IMMERSED("몰입"),
-    GROWN("성장");
+    SELF_REFLECTION("성찰"),
+    ROUTINE("루틴");
 
     private final String value;
 

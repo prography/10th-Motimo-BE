@@ -1,6 +1,7 @@
 package kr.co.domain.group.repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.group.Group;
@@ -14,9 +15,13 @@ public interface GroupRepository {
 
     Group join(GroupJoinDto dto);
 
+    Group findDetailByGroupIdAndMemberId(UUID groupId, UUID memberId);
+
     Optional<Group> findByGoalId(UUID goalId);
 
     Optional<Group> findAvailableGroupBySimilarDueDate(UUID userId, LocalDate dueDate);
+
+    List<Group> findAllGroupDetailByUserId(UUID userId);
 
     boolean existsByGoalId(UUID goalId);
 

@@ -27,14 +27,14 @@ public class GroupJpaSubQuery {
         return jpaQueryFactory
                 .select(member.count())
                 .from(member)
-                .where(member.group.id.eq(group.id));
+                .where(member.groupId.eq(group.id));
     }
 
     public BooleanExpression userNotInGroup(UUID userId, QGroupEntity group,
             QGroupMemberEntity member) {
         return group.id.notIn(
                 JPAExpressions
-                        .select(member.group.id)
+                        .select(member.groupId)
                         .from(member)
                         .where(member.userId.eq(userId))
         );
@@ -57,7 +57,7 @@ public class GroupJpaSubQuery {
                 .select(extractDayOfYear(goal.dueDate.dueDate).avg())
                 .from(member)
                 .join(goal).on(member.goalId.eq(goal.id))
-                .where(member.group.id.eq(group.id));
+                .where(member.groupId.eq(group.id));
 
         return Expressions.numberTemplate(Double.class, "({0})", subquery);
     }

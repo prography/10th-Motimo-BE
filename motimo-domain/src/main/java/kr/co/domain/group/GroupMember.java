@@ -12,10 +12,11 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GroupMember {
     private UUID memberId;
-    private String name;
+    private String nickname;
     private String email;
     private String profileImageUrl;
     private UUID goalId;
     private LocalDateTime joinedDate;
+    private LocalDateTime lastOnlineDate;
     private boolean isNotificationActive;
 }

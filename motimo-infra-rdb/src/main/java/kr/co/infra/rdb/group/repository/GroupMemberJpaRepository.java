@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import kr.co.infra.rdb.group.entity.GroupMemberEntity;
 import kr.co.infra.rdb.group.repository.projection.GroupMemberGoalGroupProjection;
+import kr.co.infra.rdb.group.repository.projection.GroupMemberUserProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +18,20 @@ public interface GroupMemberJpaRepository extends JpaRepository<GroupMemberEntit
 
     Optional<GroupMemberEntity> findByGoalId(UUID goalId);
 
-    List<GroupMemberEntity> findByUserId(UUID userId);
+    @Query(value = """
+                SELECT 
+                  gm.user_id AS memberId,
+                  gm.goal_id AS goalId,
+                  u.nickname AS nickname,
+                  u.email AS email,
+                  u.profile_image_url AS profileImageUrl,
+                  gm.joined_date AS joinedDate,
+                  gm.is_notification_active AS isNotificationActive
+                FROM group_members gm
+                JOIN users u ON gm.user_id = u.id
+                WHERE gm.group_id = :groupId AND gm.is_deleted = false
+            """, nativeQuery = true)
+    List<GroupMemberUserProjection> findByGroupId(@Param("groupId") UUID groupId);
 
     @Query(value = """
                 SELECT 

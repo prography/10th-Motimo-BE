@@ -22,4 +22,5 @@ public interface GroupMessageRepository {
     void deleteAllByReferenceId(UUID referenceId);
 
     Optional<GroupMessage> findLastGroupMessageByGroupId(UUID groupId);
+
 }

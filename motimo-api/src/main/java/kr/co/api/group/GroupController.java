@@ -1,6 +1,5 @@
 package kr.co.api.group;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import kr.co.api.group.docs.GroupControllerSwagger;
@@ -85,11 +84,8 @@ public class GroupController implements GroupControllerSwagger {
 
     @GetMapping("/{groupId}/members")
     public List<GroupMemberRs> getGroupMembers(@AuthUser UUID userId, @PathVariable UUID groupId) {
-        return List.of(
-                new GroupMemberRs(UUID.randomUUID(), "닉네임1", LocalDateTime.now(), true),
-                new GroupMemberRs(UUID.randomUUID(), "닉네임1", LocalDateTime.now(), false),
-                new GroupMemberRs(userId, "본인입니다", LocalDateTime.now(), false)
-        );
+        return groupQueryService.getGroupMemberList(userId, groupId).stream()
+                .map(GroupMemberRs::from).toList();
     }
 
     @DeleteMapping("/{groupId}/members/me")

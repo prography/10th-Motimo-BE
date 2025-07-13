@@ -1,7 +1,9 @@
 package kr.co.infra.rdb.group.util;
 
+import java.time.LocalDateTime;
 import kr.co.domain.group.GroupMember;
 import kr.co.infra.rdb.group.entity.GroupMemberEntity;
+import kr.co.infra.rdb.group.repository.projection.GroupMemberUserProjection;
 import kr.co.infra.rdb.user.entity.UserEntity;
 
 public class GroupMemberMapper {
@@ -9,10 +11,23 @@ public class GroupMemberMapper {
         return GroupMember.builder()
                 .memberId(entity.getUserId())
                 .goalId(entity.getGoalId())
-                .name(user.getNickname())
+                .nickname(user.getNickname())
                 .email(user.getEmail())
                 .profileImageUrl(user.getProfileImageUrl())
                 .joinedDate(entity.getJoinedDate())
+                .lastOnlineDate(LocalDateTime.now())
                 .isNotificationActive(entity.isNotificationActive()).build();
+    }
+
+    public static GroupMember toDomain(GroupMemberUserProjection projection) {
+        return GroupMember.builder()
+                .memberId(projection.getMemberId())
+                .goalId(projection.getGoalId())
+                .nickname(projection.getNickname())
+                .email(projection.getEmail())
+                .profileImageUrl(projection.getProfileImageUrl())
+                .joinedDate(projection.getJoinedDate())
+                .lastOnlineDate(LocalDateTime.now())
+                .isNotificationActive(projection.isNotificationActive()).build();
     }
 }

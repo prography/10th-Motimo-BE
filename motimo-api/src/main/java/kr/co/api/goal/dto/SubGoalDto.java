@@ -7,6 +7,7 @@ import kr.co.domain.todo.dto.TodoSummary;
 public record SubGoalDto(
         UUID id,
         String title,
+        boolean isCompleted,
         List<TodoSummary> todos
 ) {
 

@@ -66,7 +66,7 @@ public class GoalQueryService {
                     List<TodoSummary> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
                             subGoal.getId());
 
-                    return new SubGoalDto(subGoal.getId(), subGoal.getTitle(), todos);
+                    return new SubGoalDto(subGoal.getId(), subGoal.getTitle(), subGoal.isCompleted(), todos);
                 })
                 .toList();
     }

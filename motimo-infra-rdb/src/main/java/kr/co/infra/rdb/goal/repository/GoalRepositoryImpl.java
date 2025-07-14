@@ -73,4 +73,13 @@ public class GoalRepositoryImpl implements GoalRepository {
         ).toList();
     }
 
+    @Override
+    public void connectGroupByGoalId(UUID goalId, UUID groupId) {
+        GoalEntity goalEntity = goalJpaRepository.findById(goalId).orElseThrow(
+                GoalNotFoundException::new);
+
+        goalEntity.connectGroup(groupId);
+
+    }
+
 }

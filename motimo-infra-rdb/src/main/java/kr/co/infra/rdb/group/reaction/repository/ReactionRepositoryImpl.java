@@ -29,11 +29,6 @@ public class ReactionRepositoryImpl implements ReactionRepository {
     }
 
     @Override
-    public void delete(UUID reactionId) {
-        reactionJpaRepository.deleteById(reactionId);
-    }
-
-    @Override
     public void deleteByUserIdAndMessageId(UUID userId, UUID messageId) {
         reactionJpaRepository.deleteByUserIdAndMessageId(userId, messageId);
     }

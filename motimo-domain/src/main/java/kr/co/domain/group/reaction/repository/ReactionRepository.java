@@ -9,7 +9,5 @@ public interface ReactionRepository {
 
     Reaction upsert(Reaction reaction);
 
-    void delete(UUID reactionId);
-
     void deleteByUserIdAndMessageId(UUID userId, UUID messageId);
 }

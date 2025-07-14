@@ -94,7 +94,7 @@ public class GroupController implements GroupControllerSwagger {
 
     @DeleteMapping("/message/{messageId}/reaction")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void createGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId) {
+    public void deleteGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId) {
         reactionCommandService.deleteReaction(userId, messageId);
     }
 

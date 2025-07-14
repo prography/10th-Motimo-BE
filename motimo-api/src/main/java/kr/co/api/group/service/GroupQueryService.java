@@ -30,7 +30,6 @@ public class GroupQueryService {
     public List<JoinedGroupDto> getJoinedGroupList(UUID userId) {
         List<Group> groups = groupRepository.findAllGroupDetailByUserId(userId);
 
-        System.out.println("here");
         return groups.stream().map(group -> {
             Optional<GroupMessage> groupLastMessage = groupMessageRepository.findLastGroupMessageByGroupId(
                     group.getId());

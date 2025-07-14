@@ -13,6 +13,7 @@ public record SubGoalRs(
         @Schema(description = "세부 목표 이름", example = "책 한 권 끝내기", requiredMode = Schema.RequiredMode.REQUIRED)
         String title,
 
+        @Schema(description = "세부 목표 완료 여부", example = "false", requiredMode = Schema.RequiredMode.REQUIRED)
         boolean isCompleted,
 
         @Schema(description = "세부 목표에 해당하는 투두 목록")

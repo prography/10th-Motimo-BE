@@ -15,7 +15,7 @@ public interface GroupRepository {
 
     Group join(GroupJoinDto dto);
 
-    Group findDetailByGroupIdAndMemberId(UUID groupId, UUID memberId);
+    Group findDetailByMemberIdAndGroupId(UUID memberId, UUID groupId);
 
     Optional<Group> findByGoalId(UUID goalId);
 

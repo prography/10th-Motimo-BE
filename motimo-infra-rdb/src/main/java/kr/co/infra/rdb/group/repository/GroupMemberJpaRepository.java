@@ -57,5 +57,5 @@ public interface GroupMemberJpaRepository extends JpaRepository<GroupMemberEntit
                 JOIN goal_groups gr ON gm.group_id = gr.id
                 WHERE gm.user_id = :userId AND gr.id = :groupId AND gm.is_deleted = false 
             """, nativeQuery = true)
-    GroupMemberGoalGroupProjection findGoalAndGroupByUserIdAndGroupId(@Param("userId") UUID userId, @Param("groupId") UUID groupId);
+    Optional<GroupMemberGoalGroupProjection> findGoalAndGroupByUserIdAndGroupId(@Param("userId") UUID userId, @Param("groupId") UUID groupId);
 }

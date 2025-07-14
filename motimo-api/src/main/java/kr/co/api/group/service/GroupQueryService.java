@@ -43,7 +43,7 @@ public class GroupQueryService {
     }
 
     public GroupDto getGroupDetail(UUID userId, UUID groupId) {
-        Group group = groupRepository.findDetailByGroupIdAndMemberId(userId, groupId);
+        Group group = groupRepository.findDetailByMemberIdAndGroupId(userId, groupId);
         return new GroupDto(group.getId(), group.getName());
     }
 

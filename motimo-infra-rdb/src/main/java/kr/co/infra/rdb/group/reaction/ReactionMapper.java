@@ -8,7 +8,7 @@ public class ReactionMapper {
 
     public static Reaction toDomain(ReactionEntity entity) {
         return Reaction.builder()
-                .id(entity.getId())
+//                .id(entity.getId())
                 .userId(entity.getUserId())
                 .messageId(entity.getMessageId())
                 .reactionType(entity.getReactionType())
@@ -18,7 +18,6 @@ public class ReactionMapper {
 
     public static ReactionEntity toEntity(Reaction reaction) {
         return new ReactionEntity(
-                reaction.getId(),
                 reaction.getUserId(),
                 reaction.getMessageId(),
                 reaction.getReactionType()

@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Reaction {
-    @Builder.Default
-    private UUID id = null;
     private UUID userId;
     private UUID messageId;
     private ReactionType reactionType;

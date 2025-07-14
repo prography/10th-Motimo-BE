@@ -15,15 +15,15 @@ public class ReactionCommandService {
 
     private final ReactionRepository reactionRepository;
 
-    public UUID createReaction(UUID userId, UUID messageId, ReactionType type) {
+    public UUID upsertReaction(UUID userId, UUID messageId, ReactionType type) {
         // TODO 그룹 메시지 발행
 
-        Reaction reaction = reactionRepository.create(Reaction.createReaction()
-                .userId(userId)
-                .messageId(messageId)
-                .reactionType(type).build());
+        Reaction upsertedReaction = reactionRepository.upsert(Reaction.builder()
+                        .userId(userId)
+                        .messageId(messageId)
+                        .reactionType(type).build());
 
-        return reaction.getId();
+        return upsertedReaction.getMessageId();
     }
 
     public void deleteReaction(UUID userId, UUID messageId) {

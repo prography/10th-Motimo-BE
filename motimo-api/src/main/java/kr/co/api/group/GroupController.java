@@ -87,9 +87,9 @@ public class GroupController implements GroupControllerSwagger {
     }
 
     @PostMapping("/message/{messageId}/reaction")
-    public GroupMessageIdRs createGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId,
+    public GroupMessageIdRs upsertGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId,
             @RequestParam ReactionType type) {
-        return new GroupMessageIdRs(reactionCommandService.createReaction(userId, messageId, type));
+        return new GroupMessageIdRs(reactionCommandService.upsertReaction(userId, messageId, type));
     }
 
     @DeleteMapping("/message/{messageId}/reaction")

@@ -35,6 +35,7 @@ import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.common.exception.AccessDeniedException;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.dto.TodoResultItemDto;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.exception.TodoResultNotSubmittedException;
@@ -75,9 +76,6 @@ class TodoControllerTest {
     private CustomOAuth2UserService customOAuth2UserService;
 
     @MockitoBean
-    private CustomOAuth2AuthorizationRequestRepository customOAuth2AuthorizationRequestRepository;
-
-    @MockitoBean
     private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     @MockitoBean
@@ -85,6 +83,9 @@ class TodoControllerTest {
 
     @MockitoBean
     private AuthTokenArgumentResolver authTokenArgumentResolver;
+
+    @MockitoBean
+    private CustomOAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -165,8 +166,8 @@ class TodoControllerTest {
     void 투두_결과_조회_정상() throws Exception {
         // given
         UUID todoResultId = UUID.randomUUID();
-        TodoResultRs response = new TodoResultRs(todoResultId, todoId, Emotion.PROUD, "오늘도 투두 완료!",
-                "http://file.url");
+        TodoResultItemDto response = new TodoResultItemDto(
+                todoResultId, Emotion.PROUD, "오늘도 투두 완료!", "http://file.url");
         when(todoQueryService.getTodoResultByTodoId(todoId)).thenReturn(Optional.of(response));
 
         // when & then
@@ -177,8 +178,7 @@ class TodoControllerTest {
                     TodoResultRs actualResponse = objectMapper.readValue(responseBody,
                             TodoResultRs.class);
 
-                    assertThat(actualResponse.todoResultId()).isEqualTo(response.todoResultId());
-                    assertThat(actualResponse.todoId()).isEqualTo(response.todoId());
+                    assertThat(actualResponse.todoResultId()).isEqualTo(response.id());
                     assertThat(actualResponse.content()).isEqualTo(response.content());
                     assertThat(actualResponse.emotion()).isEqualTo(response.emotion());
                     assertThat(actualResponse.fileUrl()).isEqualTo(response.fileUrl());

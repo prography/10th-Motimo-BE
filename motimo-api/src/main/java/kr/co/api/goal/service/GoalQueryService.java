@@ -2,20 +2,24 @@ package kr.co.api.goal.service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import kr.co.api.goal.dto.CompletedGoalItemDto;
 import kr.co.api.goal.dto.GoalDetailDto;
 import kr.co.api.goal.dto.GoalItemDto;
 import kr.co.api.goal.dto.GoalNotInGroupDto;
-import kr.co.api.goal.dto.GoalWithSubGoalTodoDto;
+import kr.co.api.goal.dto.GoalWithSubGoalDto;
 import kr.co.api.goal.dto.SubGoalDto;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.goal.Goal;
+import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.group.Group;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.domain.subGoal.SubGoal;
-import kr.co.domain.todo.dto.TodoSummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +41,6 @@ public class GoalQueryService {
         return new GoalDetailDto(
                 goal.getId(),
                 goal.getTitle(),
-                goal.getDueDate().isMonth(),
                 goal.getDueDate().getMonth(),
                 goal.getDueDateValue(),
                 goal.calculateProgress(),
@@ -53,30 +56,56 @@ public class GoalQueryService {
         return goals.stream().map(GoalItemDto::from).toList();
     }
 
-    public GoalWithSubGoalTodoDto getGoalWithIncompleteSubGoalTodayTodos(UUID goalId) {
+    public GoalWithSubGoalDto getGoalWithSubGoal(UUID goalId) {
         Goal goal = goalRepository.findById(goalId);
-        List<SubGoalDto> subGoals = getTodoByIncompleteSubGoalList(goal.getSubGoals());
-        return GoalWithSubGoalTodoDto.of(goal, subGoals);
+        List<SubGoalDto> subGoals = getSubGoals(goal);
+        return GoalWithSubGoalDto.of(goal, subGoals);
     }
 
-    private List<SubGoalDto> getTodoByIncompleteSubGoalList(List<SubGoal> subGoals) {
-        return subGoals.stream()
-                .sorted(Comparator.comparing(SubGoal::getOrder))
-                .map(subGoal -> {
-                    List<TodoSummary> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
-                            subGoal.getId());
-
-                    return new SubGoalDto(subGoal.getId(), subGoal.getTitle(), todos);
-                })
-                .toList();
-    }
 
     public List<GoalNotInGroupDto> getGoalNotInGroup(UUID userId) {
         List<Goal> goals = goalRepository.findUnassignedGroupGoalsByUserId(userId);
         return goals.stream().map(GoalNotInGroupDto::from).toList();
     }
 
+    public List<CompletedGoalItemDto> getCompletedGoalsByUserId(UUID userId) {
+        List<Goal> completedGoals = goalRepository.findCompletedGoalsByUserId(userId);
+
+        if (completedGoals.isEmpty()) {
+            return List.of();
+        }
+
+        Map<UUID, GoalTodoCount> countMap = createGoalTodoCountMap(completedGoals);
+
+        return completedGoals.stream()
+                .map(goal -> {
+                    GoalTodoCount tc = countMap.getOrDefault(
+                            goal.getId(), new GoalTodoCount(goal.getId(), 0, 0));
+                    return CompletedGoalItemDto.of(goal, tc.todoCount(), tc.todoResultCount());
+                })
+                .toList();
+    }
+
     public Goal getGoalBySubGoalId(UUID subGoalId) {
         return goalRepository.findBySubGoalId(subGoalId);
     }
+
+    private List<SubGoalDto> getSubGoals(Goal goal) {
+        return goal.getSubGoals().stream()
+                .sorted(Comparator.comparing(SubGoal::getOrder))
+                .map(subGoal -> new SubGoalDto(subGoal.getId(), subGoal.getTitle()))
+                .toList();
+    }
+
+    private List<UUID> extractGoalIds(List<Goal> goals) {
+        return goals.stream().map(Goal::getId).toList();
+    }
+
+    private Map<UUID, GoalTodoCount> createGoalTodoCountMap(List<Goal> goals) {
+        List<UUID> goalIds = extractGoalIds(goals);
+        return todoQueryService.getTodoCountsByGoalIds(goalIds)
+                .stream()
+                .collect(Collectors.toMap(GoalTodoCount::goalId, Function.identity()));
+    }
+
 }

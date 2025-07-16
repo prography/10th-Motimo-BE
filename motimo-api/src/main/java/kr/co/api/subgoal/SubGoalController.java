@@ -1,7 +1,6 @@
 package kr.co.api.subgoal;
 
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 import kr.co.api.goal.rqrs.SubGoalUpdateRq;
 import kr.co.api.security.annotation.AuthUser;
@@ -13,6 +12,7 @@ import kr.co.api.todo.rqrs.TodoIdRs;
 import kr.co.api.todo.rqrs.TodoRs;
 import kr.co.api.todo.service.TodoCommandService;
 import kr.co.api.todo.service.TodoQueryService;
+import kr.co.domain.common.pagination.CustomSlice;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,8 +46,10 @@ public class SubGoalController implements SubGoalControllerSwagger {
     }
 
     @PatchMapping("/{subGoalId}")
-    public SubGoalIdRs updateSubGoal(@AuthUser UUID userId, @PathVariable UUID subGoalId, @RequestBody SubGoalUpdateRq rq) {
-        return new SubGoalIdRs(subGoalCommandService.updateSubGoal(userId, subGoalId, rq.title(), rq.order()));
+    public SubGoalIdRs updateSubGoal(@AuthUser UUID userId, @PathVariable UUID subGoalId,
+            @RequestBody SubGoalUpdateRq rq) {
+        return new SubGoalIdRs(
+                subGoalCommandService.updateSubGoal(userId, subGoalId, rq.title(), rq.order()));
     }
 
     @PostMapping("/{subGoalId}/todo")
@@ -58,12 +61,20 @@ public class SubGoalController implements SubGoalControllerSwagger {
         return new TodoIdRs(id);
     }
 
+    @GetMapping("/{subGoalId}/todos")
+    public CustomSlice<TodoRs> getTodosBySubGoalIdWithSlice(@PathVariable UUID subGoalId,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int size) {
+        return todoQueryService.getTodosBySubGoalIdWithSlice(subGoalId, offset, size)
+                .map(TodoRs::from);
+    }
+
     @GetMapping("/{subGoalId}/todos/incomplete-or-date")
-    public List<TodoRs> getIncompleteOrTodayTodos(@PathVariable UUID subGoalId) {
-        return todoQueryService.getIncompleteOrTodayTodosBySubGoalId(subGoalId)
-                .stream()
-                .map(TodoRs::from)
-                .toList();
+    public CustomSlice<TodoRs> getIncompleteOrTodayTodosWithSlice(@PathVariable UUID subGoalId,
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "10") int size) {
+        return todoQueryService.getIncompleteOrTodayTodosBySubGoalIdWithSlice(subGoalId, offset,
+                size).map(TodoRs::from);
     }
 
 }

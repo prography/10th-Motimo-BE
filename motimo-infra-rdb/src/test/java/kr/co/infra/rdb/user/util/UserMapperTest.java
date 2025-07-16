@@ -13,8 +13,7 @@ import org.junit.jupiter.api.Test;
 class UserMapperTest {
 
     @Test
-    @DisplayName("UserEntity를 User로 매핑")
-    void toDomain_ValidEntity_ReturnsUser() {
+    void user_entity를_user로_매핑() {
         UUID uuid = UUID.randomUUID();
         UserEntity entity = UserEntity.builder()
                 .id(uuid)
@@ -32,8 +31,7 @@ class UserMapperTest {
     }
 
     @Test
-    @DisplayName("User를 UserEntity로 매핑")
-    void toEntity_ValidUser_ReturnsEntity() {
+    void user를_entity로_매핑() {
         UUID uuid = UUID.randomUUID();
         User user = User.builder()
                 .id(uuid)

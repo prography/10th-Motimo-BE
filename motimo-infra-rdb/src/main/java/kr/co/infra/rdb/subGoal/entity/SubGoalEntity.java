@@ -42,7 +42,7 @@ public class SubGoalEntity extends BaseEntity {
 
     private LocalDateTime completedChangedAt;
 
-    protected SubGoalEntity(GoalEntity goal, UUID id, String title, int order) {
+    public SubGoalEntity(GoalEntity goal, UUID id, String title, int order) {
         this.goal = goal;
         this.id = id;
         this.userId = goal.getUserId();
@@ -55,7 +55,7 @@ public class SubGoalEntity extends BaseEntity {
         this.title = title;
         this.importance = order;
         this.completed = completed;
-        if(completed) {
+        if (completed) {
             this.completedChangedAt = LocalDateTime.now();
         }
     }

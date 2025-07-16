@@ -26,7 +26,6 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class GroupRepositoryImpl implements GroupRepository {
 
-
     private final GroupJpaRepository groupJpaRepository;
     private final GroupMemberJpaRepository groupMemberJpaRepository;
 

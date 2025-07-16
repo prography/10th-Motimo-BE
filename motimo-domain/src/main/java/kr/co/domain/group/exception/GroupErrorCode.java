@@ -11,6 +11,7 @@ public enum GroupErrorCode implements ErrorCode {
     ALREADY_JOINED_GROUP("이미 그룹에 참여중입니다.", 409),
     MESSAGE_LOAD_FAIL("메시지를 로드하는데 실패했습니다.", 500),
     UNSUPPORTED_MESSAGE_TYPE("지원하지 않는 메시지 타입입니다.", 400),
+    GROUP_MESSAGE_NOT_FOUND("존재하지 않는 메시지입니다.", 404),
 
     USER_NOT_IN_GROUP("해당 그룹에 존재하지 않는 사용자입니다.", 404),
 

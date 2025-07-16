@@ -23,4 +23,5 @@ public interface GroupMessageRepository {
 
     Optional<GroupMessage> findLastGroupMessageByGroupId(UUID groupId);
 
+    GroupMessage findById(UUID id);
 }

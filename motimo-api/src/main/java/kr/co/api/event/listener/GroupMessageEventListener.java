@@ -7,6 +7,7 @@ import kr.co.api.group.service.GroupMessageCommandService;
 import kr.co.domain.common.event.group.message.GroupJoinedEvent;
 import kr.co.domain.common.event.group.message.GroupLeftEvent;
 import kr.co.domain.common.event.group.message.GroupMessageDeletedEvent;
+import kr.co.domain.common.event.group.message.GroupMessageReactionCreatedEvent;
 import kr.co.domain.common.event.group.message.TodoCompletedEvent;
 import kr.co.domain.common.event.group.message.TodoResultSubmittedEvent;
 import kr.co.domain.common.outbox.OutboxEvent;
@@ -74,6 +75,26 @@ public class GroupMessageEventListener {
                 .build();
 
         groupMessageCommandService.createGroupMessage(groupMessage);
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleGroupMessageReactionCreatedEvent(GroupMessageReactionCreatedEvent event) {
+        GroupMessage groupMessage = groupMessageCommandService.getMessageById(event.getMessageId());
+
+
+        // message reference 타입에 리액션을 추가하면 됨. 근데 그러면... 리액션을 삭제할 수가 없어져버림...?!
+        // 메시지 불러올때는 삭제된 애도 불러오게 되어버림... 근데 투두도 마찬가지넹
+        GroupMessage newGroupMessage = GroupMessage.createGroupMessage()
+                .groupId(groupMessage.getGroupId())
+                .userId(event.getUserId())
+                .messageType(GroupMessageType.MESSAGE_REACTION)
+                .messageReference(
+                        groupMessage.getMessageReference()
+                )
+                .build();
+
+        groupMessageCommandService.createGroupMessage(newGroupMessage);
     }
 
     @Async

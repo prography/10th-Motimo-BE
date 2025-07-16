@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import kr.co.domain.common.pagination.CursorResult;
 import kr.co.domain.common.pagination.CustomCursor;
 import kr.co.domain.common.pagination.PagingDirection;
+import kr.co.domain.group.exception.GroupMessageNotFoundException;
 import kr.co.domain.group.message.GroupMessage;
 import kr.co.domain.group.message.NewGroupMessages;
 import kr.co.domain.group.message.repository.GroupMessageRepository;
@@ -128,6 +129,12 @@ public class GroupMessageRepositoryImpl implements GroupMessageRepository {
                 groupId);
 
         return groupMessageEntity.map(GroupMessageMapper::toDomain);
+    }
+
+    @Override
+    public GroupMessage findById(UUID id) {
+        return GroupMessageMapper.toDomain(groupMessageJpaRepository.findById(id).orElseThrow(
+                GroupMessageNotFoundException::new));
     }
 
     private List<GroupMessage> processMessagesWithReactions(List<GroupMessageEntity> messages) {

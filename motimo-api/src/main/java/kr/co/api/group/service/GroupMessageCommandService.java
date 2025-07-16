@@ -24,4 +24,8 @@ public class GroupMessageCommandService {
     public void deleteAllByReferenceId(UUID referenceId) {
         groupMessageRepository.deleteAllByReferenceId(referenceId);
     }
+
+    public GroupMessage getMessageById(UUID messageId) {
+        return groupMessageRepository.findById(messageId);
+    }
 }

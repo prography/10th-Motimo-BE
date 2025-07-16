@@ -26,7 +26,6 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class GroupRepositoryImpl implements GroupRepository {
 
-
     private final GroupJpaRepository groupJpaRepository;
     private final GroupMemberJpaRepository groupMemberJpaRepository;
 
@@ -63,8 +62,8 @@ public class GroupRepositoryImpl implements GroupRepository {
         return GroupMapper.toDomain(groupEntity);
     }
 
-    public Group findDetailByGroupIdAndMemberId(UUID groupId, UUID memberId) {
-        GroupMemberGoalGroupProjection projection = groupMemberJpaRepository.findGoalAndGroupByUserIdAndGroupId(memberId, groupId);
+    public Group findDetailByMemberIdAndGroupId(UUID memberId, UUID groupId) {
+        GroupMemberGoalGroupProjection projection = groupMemberJpaRepository.findGoalAndGroupByUserIdAndGroupId(memberId, groupId).orElseThrow(GroupNotFoundException::new);
 
         return GroupMapper.toDomainWithName(projection.getGroupId(), projection.getGoalTitle(), projection.getGroupFinishedDate());
     }

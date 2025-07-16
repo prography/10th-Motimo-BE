@@ -2,19 +2,24 @@ package kr.co.infra.rdb.todo.repository;
 
 import static com.querydsl.core.types.ExpressionUtils.anyOf;
 
+import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import kr.co.domain.common.pagination.CustomSlice;
+import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoSummary;
+import kr.co.domain.todo.dto.TodoItemDto;
+import kr.co.domain.todo.dto.TodoResultItemDto;
 import kr.co.domain.todo.exception.TodoNotFoundException;
 import kr.co.domain.todo.repository.TodoRepository;
+import kr.co.infra.rdb.goal.entity.QGoalEntity;
+import kr.co.infra.rdb.subGoal.entity.QSubGoalEntity;
 import kr.co.infra.rdb.todo.entity.QTodoEntity;
 import kr.co.infra.rdb.todo.entity.QTodoResultEntity;
 import kr.co.infra.rdb.todo.entity.TodoEntity;
@@ -43,22 +48,12 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public List<TodoSummary> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId, LocalDate date) {
+    public CustomSlice<TodoItemDto> findIncompleteOrDateTodosBySubGoalId(UUID subGoalId,
+            LocalDate date, int offset, int size) {
         QTodoEntity todoEntity = QTodoEntity.todoEntity;
         QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
-        NumberExpression<Integer> priorityOrder = getPriorityOrder(todoEntity, todoResultEntity);
 
-        return jpaQueryFactory
-                .select(Projections.constructor(TodoSummary.class,
-                        todoEntity.id,
-                        todoEntity.title,
-                        todoEntity.date,
-                        todoEntity.status,
-                        todoEntity.createdAt,
-                        todoResultEntity.id
-                ))
-                .from(todoEntity)
-                .leftJoin(todoResultEntity).on(todoResultEntity.todoId.eq(todoEntity.id))
+        List<TodoItemDto> results = todoItemJPAQuery(todoEntity, todoResultEntity)
                 .where(
                         todoEntity.subGoalId.eq(subGoalId)
                                 .and(anyOf(
@@ -66,38 +61,37 @@ public class TodoRepositoryImpl implements TodoRepository {
                                         todoEntity.date.eq(date)
                                 ))
                 )
-                .orderBy(
-                        priorityOrder.asc(),
-                        todoEntity.date.asc().nullsLast(),
-                        todoEntity.createdAt.asc()
-                )
+                .offset(offset)
+                .limit(size + 1)
+                .fetch();
+
+        boolean hasNext = results.size() > size;
+        if (hasNext) {
+            results = results.subList(0, size);
+        }
+
+        return new CustomSlice<>(results, hasNext, offset, size);
+    }
+
+    @Override
+    public List<TodoItemDto> findAllByUserId(UUID userId) {
+        QTodoEntity todoEntity = QTodoEntity.todoEntity;
+        QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
+
+        return todoItemJPAQuery(todoEntity, todoResultEntity)
+                .where(todoEntity.userId.eq(userId))
                 .fetch();
     }
 
     @Override
-    public List<TodoSummary> findAllByUserId(UUID userId) {
+    public List<TodoItemDto> findAllBySubGoalId(UUID subGoalId) {
         QTodoEntity todoEntity = QTodoEntity.todoEntity;
         QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
 
-        NumberExpression<Integer> priorityOrder = getPriorityOrder(todoEntity, todoResultEntity);
-
-        return jpaQueryFactory
-                .select(Projections.constructor(TodoSummary.class,
-                        todoEntity.id,
-                        todoEntity.title,
-                        todoEntity.date,
-                        todoEntity.status,
-                        todoEntity.createdAt,
-                        todoResultEntity.id
-                ))
-                .from(todoEntity)
-                .leftJoin(todoResultEntity).on(todoResultEntity.todoId.eq(todoEntity.id))
-                .where(todoEntity.userId.eq(userId))
-                .orderBy(
-                        priorityOrder.asc(),
-                        todoEntity.date.asc().nullsLast()
-                )
+        return todoItemJPAQuery(todoEntity, todoResultEntity)
+                .where(todoEntity.subGoalId.eq(subGoalId))
                 .fetch();
+
     }
 
     @Override
@@ -119,6 +113,28 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
+    public List<GoalTodoCount> countTodosByGoalIds(List<UUID> goalIds) {
+
+        QGoalEntity goalEntity = QGoalEntity.goalEntity;
+        QSubGoalEntity subGoalEntity = QSubGoalEntity.subGoalEntity;
+        QTodoEntity todoEntity = QTodoEntity.todoEntity;
+        QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
+
+        return jpaQueryFactory
+                .select(Projections.constructor(GoalTodoCount.class,
+                        goalEntity.id,
+                        todoEntity.id.countDistinct(),
+                        todoResultEntity.id.countDistinct()))
+                .from(goalEntity)
+                .join(subGoalEntity).on(subGoalEntity.goal.eq(goalEntity))
+                .join(todoEntity).on(todoEntity.subGoalId.eq(subGoalEntity.id))
+                .leftJoin(todoResultEntity).on(todoResultEntity.todoId.eq(todoEntity.id))
+                .where(goalEntity.id.in(goalIds))
+                .groupBy(goalEntity.id)
+                .fetch();
+    }
+
+    @Override
     public List<Todo> findAllByIdsIn(Set<UUID> todoIds) {
         return todoJpaRepository.findAllByIdIn(todoIds)
                 .stream()
@@ -126,12 +142,52 @@ public class TodoRepositoryImpl implements TodoRepository {
                 .toList();
     }
 
-    private NumberExpression<Integer> getPriorityOrder(QTodoEntity todoEntity,
+    @Override
+    public CustomSlice<TodoItemDto> findAllBySubGoalIdWithSlice(UUID subGoalId, int offset,
+            int size) {
+        QTodoEntity todoEntity = QTodoEntity.todoEntity;
+        QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
+
+        List<TodoItemDto> results = todoItemJPAQuery(todoEntity, todoResultEntity)
+                .where(todoEntity.subGoalId.eq(subGoalId))
+                .offset(offset)
+                .limit(size + 1)
+                .fetch();
+
+        boolean hasNext = results.size() > size;
+        if (hasNext) {
+            results = results.subList(0, size);
+        }
+
+        return new CustomSlice<>(results, hasNext, offset, size);
+    }
+
+    private JPAQuery<TodoItemDto> todoItemJPAQuery(QTodoEntity todoEntity,
             QTodoResultEntity todoResultEntity) {
-        return new CaseBuilder()
-                .when(todoEntity.status.eq(TodoStatus.INCOMPLETE)).then(0)
-                .when(todoEntity.status.eq(TodoStatus.COMPLETE).and(todoResultEntity.id.isNull()))
-                .then(1)
-                .otherwise(2);
+
+        ConstructorExpression<TodoResultItemDto> resultItem =
+                Projections.constructor(TodoResultItemDto.class,
+                        todoResultEntity.id,
+                        todoResultEntity.emotion,
+                        todoResultEntity.content,
+                        todoResultEntity.filePath);
+
+        ConstructorExpression<TodoItemDto> todoItem =
+                Projections.constructor(TodoItemDto.class,
+                        todoEntity.id,
+                        todoEntity.title,
+                        todoEntity.date,
+                        todoEntity.status,
+                        todoEntity.createdAt,
+                        resultItem);
+
+        return jpaQueryFactory
+                .select(todoItem)
+                .from(todoEntity)
+                .leftJoin(todoResultEntity).on(todoResultEntity.todoId.eq(todoEntity.id))
+                .orderBy(
+                        todoEntity.date.asc().nullsLast(),
+                        todoEntity.createdAt.asc()
+                );
     }
 }

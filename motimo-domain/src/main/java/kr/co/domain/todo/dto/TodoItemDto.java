@@ -5,13 +5,16 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import kr.co.domain.todo.TodoStatus;
 
-public record TodoSummary(
+public record TodoItemDto(
         UUID id,
         String title,
         LocalDate date,
         TodoStatus status,
         LocalDateTime createdAt,
-        UUID todoResultId // nullable
+        TodoResultItemDto todoResultItem
 ) {
 
+    public TodoItemDto withTodoResultItem(TodoResultItemDto todoResultItem) {
+        return new TodoItemDto(id, title, date, status, createdAt, todoResultItem);
+    }
 }

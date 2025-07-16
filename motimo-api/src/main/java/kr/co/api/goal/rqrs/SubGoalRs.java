@@ -14,18 +14,14 @@ public record SubGoalRs(
         String title,
 
         @Schema(description = "세부 목표 완료 여부", example = "false", requiredMode = Schema.RequiredMode.REQUIRED)
-        boolean isCompleted,
-
-        @Schema(description = "세부 목표에 해당하는 투두 목록")
-        List<TodoRs> todos
+        boolean isCompleted
 ) {
 
-        public static SubGoalRs from(SubGoalDto dto) {
-                return new SubGoalRs(
-                        dto.id(),
-                        dto.title(),
-                        dto.isCompleted(),
-                        dto.todos().stream().map(TodoRs::from).toList()
-                );
-        }
+    public static SubGoalRs from(SubGoalDto dto) {
+        return new SubGoalRs(
+                dto.id(),
+                dto.title(),
+                dto.isCompleted()
+        );
+    }
 }

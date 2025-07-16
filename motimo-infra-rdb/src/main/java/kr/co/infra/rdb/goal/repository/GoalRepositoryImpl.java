@@ -74,6 +74,12 @@ public class GoalRepositoryImpl implements GoalRepository {
     }
 
     @Override
+    public List<Goal> findCompletedGoalsByUserId(UUID userId) {
+        return goalJpaRepository.findAllByUserIdAndCompleted(userId, true)
+                .stream().map(GoalMapper::toDomain).toList();
+    }
+
+    @Override
     public void connectGroupByGoalId(UUID goalId, UUID groupId) {
         GoalEntity goalEntity = goalJpaRepository.findById(goalId).orElseThrow(
                 GoalNotFoundException::new);

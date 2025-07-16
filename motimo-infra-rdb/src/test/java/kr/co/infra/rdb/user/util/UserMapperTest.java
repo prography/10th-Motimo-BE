@@ -1,25 +1,25 @@
 package kr.co.infra.rdb.user.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.HashSet;
+import java.util.UUID;
 import kr.co.domain.user.model.User;
 import kr.co.infra.rdb.user.entity.UserEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DisplayName("UserMapper 테스트")
 class UserMapperTest {
 
     @Test
-    @DisplayName("UserEntity를 User로 매핑")
-    void toDomain_ValidEntity_ReturnsUser() {
+    void user_entity를_user로_매핑() {
         UUID uuid = UUID.randomUUID();
         UserEntity entity = UserEntity.builder()
                 .id(uuid)
                 .email("test@gmail.com")
                 .nickname("tester")
+                .interests(new HashSet<>())
                 .build();
 
         User user = UserMapper.toDomain(entity);
@@ -31,14 +31,13 @@ class UserMapperTest {
     }
 
     @Test
-    @DisplayName("User를 UserEntity로 매핑")
-    void toEntity_ValidUser_ReturnsEntity() {
+    void user를_entity로_매핑() {
         UUID uuid = UUID.randomUUID();
         User user = User.builder()
                 .id(uuid)
                 .email("test@gmail.com")
                 .nickname("tester")
-                .profileImageUrl("")
+                .profileImagePath("")
                 .build();
 
         UserEntity entity = UserMapper.toEntity(user);

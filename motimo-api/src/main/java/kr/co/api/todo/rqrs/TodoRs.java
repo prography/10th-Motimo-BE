@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import kr.co.domain.todo.TodoStatus;
-import kr.co.domain.todo.dto.TodoSummary;
+import kr.co.domain.todo.dto.TodoItemDto;
 
 public record TodoRs(
         @Schema(description = "투두 Id", example = "0197157f-aea4-77bb-8581-3213eb5bd2ae", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -20,15 +20,15 @@ public record TodoRs(
         @Schema(description = "투두 상태", example = "COMPLETE")
         TodoStatus status,
 
-        @Schema(description = "투두 기록 아이디", example = "0203157f-aea4-77bb-8581-3213eb6bd2ae", nullable = true)
-        UUID todoResultId,
+        @Schema(description = "투두 기록 정보")
+        TodoResultRs todoResult,
 
         @Schema(description = "투두 생성 날짜", type = "date")
         LocalDateTime createdAt
 ) {
 
-    public static TodoRs from(TodoSummary todoSummary) {
-        return new TodoRs(todoSummary.id(), todoSummary.title(), todoSummary.date(),
-                todoSummary.status(), todoSummary.todoResultId(), todoSummary.createdAt());
+    public static TodoRs from(TodoItemDto todoItem) {
+        return new TodoRs(todoItem.id(), todoItem.title(), todoItem.date(), todoItem.status(),
+                TodoResultRs.from(todoItem.todoResultItem()), todoItem.createdAt());
     }
 }

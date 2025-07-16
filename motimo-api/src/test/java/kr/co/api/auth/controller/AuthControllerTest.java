@@ -59,9 +59,6 @@ class AuthControllerTest {
     private CustomOAuth2UserService customOAuth2UserService;
 
     @MockitoBean
-    private CustomOAuth2AuthorizationRequestRepository customOAuth2AuthorizationRequestRepository;
-
-    @MockitoBean
     private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     @MockitoBean
@@ -72,6 +69,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private AuthTokenArgumentResolver authTokenArgumentResolver;
+    
+    @MockitoBean
+    private CustomOAuth2AuthorizationRequestRepository authorizationRequestRepository;
 
     @Autowired
     private ObjectMapper objectMapper;

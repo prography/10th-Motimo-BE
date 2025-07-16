@@ -29,6 +29,15 @@ public class TodoQueryService {
     private final TodoResultRepository todoResultRepository;
     private final StorageService storageService;
 
+    public List<TodoItemDto> getIncompleteOrTodayTodosBySubGoalId(UUID subGoalId) {
+        LocalDate today = LocalDate.now();
+        return todoRepository.findAllIncompleteOrDateTodoBySubGoalId(subGoalId, today)
+                .stream()
+                .map(this::enrichTodoItemWithUrl)
+                .sorted(todoPriorityComparator())
+                .toList();
+    }
+
     public CustomSlice<TodoItemDto> getIncompleteOrTodayTodosBySubGoalIdWithSlice(UUID subGoalId,
             int offset, int size) {
         LocalDate today = LocalDate.now();

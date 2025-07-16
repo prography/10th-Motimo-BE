@@ -95,6 +95,24 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
+    public List<TodoItemDto> findAllIncompleteOrDateTodoBySubGoalId(UUID subGoalId,
+            LocalDate today) {
+        QTodoEntity todoEntity = QTodoEntity.todoEntity;
+        QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
+
+        return todoItemJPAQuery(todoEntity, todoResultEntity)
+                .where(
+                        todoEntity.subGoalId.eq(subGoalId)
+                                .and(anyOf(
+                                        todoEntity.status.ne(TodoStatus.COMPLETE),
+                                        todoEntity.date.eq(today)
+                                ))
+                )
+                .fetch();
+    }
+
+
+    @Override
     public boolean existsById(UUID id) {
         return todoJpaRepository.existsById(id);
     }

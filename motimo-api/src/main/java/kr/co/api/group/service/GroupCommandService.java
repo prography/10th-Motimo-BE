@@ -41,20 +41,15 @@ public class GroupCommandService {
                 .orElseGet(() -> createAndJoinNewGroup(userId, goalId));
     }
 
-    public void leaveGroup(UUID userId, UUID groupId) {
-        Group group = groupRepository.findById(groupId);
-//        group.removeMember(userId);
-
-        Events.publishEvent(new GroupLeftEvent(groupId, userId));
-        groupMemberRepository.deleteByGroupIdAndMemberId(groupId, userId);
-    }
-
     private UUID joinUserToGroup(UUID groupId, UUID userId, UUID goalId) {
         GroupJoinDto joinDto = GroupJoinDto.builder()
                 .groupId(groupId)
                 .userId(userId)
                 .goalId(goalId)
                 .build();
+
+        goalRepository.connectGroupByGoalId(goalId, groupId);
+
         Events.publishEvent(new GroupJoinedEvent(groupId, userId));
         return groupRepository.join(joinDto).getId();
     }
@@ -63,6 +58,14 @@ public class GroupCommandService {
         Group newGroup = groupRepository.create(Group.createGroup().build());
         joinUserToGroup(newGroup.getId(), userId, goalId);
         return newGroup.getId();
+    }
+
+    public void leaveGroup(UUID userId, UUID groupId) {
+        Group group = groupRepository.findById(groupId);
+//        group.removeMember(userId);
+
+        Events.publishEvent(new GroupLeftEvent(groupId, userId));
+        groupMemberRepository.deleteByGroupIdAndMemberId(groupId, userId);
     }
 
     public void createPokeNotification(UUID userId, UUID groupId, UUID receiverId) {

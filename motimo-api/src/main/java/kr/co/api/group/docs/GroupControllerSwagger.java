@@ -48,8 +48,8 @@ public interface GroupControllerSwagger {
             @Parameter(description = "커서 값", required = false) String cursor,
             @Parameter(description = "페이징 방향", schema = @Schema(implementation = PagingDirection.class)) PagingDirection direction);
 
-    @Operation(summary = "그룹 리액션 API", description = "그룹 리액션을 생성합니다.")
-    GroupMessageIdRs createGroupReaction(UUID userId, @PathVariable UUID messageId,
+    @Operation(summary = "그룹 리액션 API", description = "그룹 리액션을 생성/수정합니다.")
+    GroupMessageIdRs upsertGroupReaction(UUID userId, @PathVariable UUID messageId,
             @RequestParam ReactionType reactionType);
 
     @Operation(summary = "그룹 멤버 조회 API", description = "그룹 멤버 목록을 조회합니다.")

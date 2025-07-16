@@ -21,5 +21,7 @@ public interface GoalRepository {
     List<Goal> findUnassignedGroupGoalsByUserId(UUID userId);
 
     List<Goal> findCompletedGoalsByUserId(UUID userId);
+
+    void connectGroupByGoalId(UUID goalId, UUID groupId);
 }
 

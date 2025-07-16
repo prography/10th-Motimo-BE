@@ -14,6 +14,7 @@ import kr.co.api.group.rqrs.message.NewMessageRs;
 import kr.co.api.group.service.GroupCommandService;
 import kr.co.api.group.service.GroupMessageQueryService;
 import kr.co.api.group.service.GroupQueryService;
+import kr.co.api.group.service.ReactionCommandService;
 import kr.co.api.security.annotation.AuthUser;
 import kr.co.domain.common.pagination.PagingDirection;
 import kr.co.domain.group.reaction.ReactionType;
@@ -36,13 +37,16 @@ public class GroupController implements GroupControllerSwagger {
     private final GroupMessageQueryService groupMessageQueryService;
     private final GroupCommandService groupCommandService;
     private final GroupQueryService groupQueryService;
+    private final ReactionCommandService reactionCommandService;
 
     public GroupController(final GroupMessageQueryService groupMessageQueryService,
             final GroupCommandService groupCommandService,
-            final GroupQueryService groupQueryService) {
+            final GroupQueryService groupQueryService,
+            final ReactionCommandService reactionCommandService) {
         this.groupMessageQueryService = groupMessageQueryService;
         this.groupCommandService = groupCommandService;
         this.groupQueryService = groupQueryService;
+        this.reactionCommandService = reactionCommandService;
     }
 
     @GetMapping("/me")
@@ -83,9 +87,15 @@ public class GroupController implements GroupControllerSwagger {
     }
 
     @PostMapping("/message/{messageId}/reaction")
-    public GroupMessageIdRs createGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId,
+    public GroupMessageIdRs upsertGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId,
             @RequestParam ReactionType type) {
-        return new GroupMessageIdRs(UUID.randomUUID());
+        return new GroupMessageIdRs(reactionCommandService.upsertReaction(userId, messageId, type));
+    }
+
+    @DeleteMapping("/message/{messageId}/reaction")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteGroupReaction(@AuthUser UUID userId, @PathVariable UUID messageId) {
+        reactionCommandService.deleteReaction(userId, messageId);
     }
 
     @GetMapping("/{groupId}/members")

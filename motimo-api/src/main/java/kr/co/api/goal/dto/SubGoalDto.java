@@ -4,7 +4,8 @@ import java.util.UUID;
 
 public record SubGoalDto(
         UUID id,
-        String title
+        String title,
+        boolean isCompleted
 ) {
 
 }

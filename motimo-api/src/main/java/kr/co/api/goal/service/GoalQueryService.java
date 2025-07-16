@@ -93,7 +93,7 @@ public class GoalQueryService {
     private List<SubGoalDto> getSubGoals(Goal goal) {
         return goal.getSubGoals().stream()
                 .sorted(Comparator.comparing(SubGoal::getOrder))
-                .map(subGoal -> new SubGoalDto(subGoal.getId(), subGoal.getTitle()))
+                .map(subGoal -> new SubGoalDto(subGoal.getId(), subGoal.getTitle(), subGoal.isCompleted()))
                 .toList();
     }
 

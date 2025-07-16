@@ -73,7 +73,7 @@ public class GoalEntity extends BaseEntity {
         this.completedAt = completedAt;
     }
 
-    public void joinGroup(UUID groupId) {
+    public void connectGroup(UUID groupId) {
         this.groupId = groupId;
     }
 

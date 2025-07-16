@@ -11,15 +11,15 @@ import kr.co.api.goal.dto.CompletedGoalItemDto;
 import kr.co.api.goal.dto.GoalDetailDto;
 import kr.co.api.goal.dto.GoalItemDto;
 import kr.co.api.goal.dto.GoalNotInGroupDto;
-import kr.co.api.goal.dto.GoalWithSubGoalTodoDto;
+import kr.co.api.goal.dto.GoalWithSubGoalDto;
 import kr.co.api.goal.dto.SubGoalDto;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.goal.Goal;
+import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.group.Group;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.domain.subGoal.SubGoal;
-import kr.co.domain.todo.dto.TodoSummary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +41,6 @@ public class GoalQueryService {
         return new GoalDetailDto(
                 goal.getId(),
                 goal.getTitle(),
-                goal.getDueDate().isMonth(),
                 goal.getDueDate().getMonth(),
                 goal.getDueDateValue(),
                 goal.calculateProgress(),
@@ -94,7 +93,7 @@ public class GoalQueryService {
     private List<SubGoalDto> getSubGoals(Goal goal) {
         return goal.getSubGoals().stream()
                 .sorted(Comparator.comparing(SubGoal::getOrder))
-                .map(subGoal -> new SubGoalDto(subGoal.getId(), subGoal.getTitle()))
+                .map(subGoal -> new SubGoalDto(subGoal.getId(), subGoal.getTitle(), subGoal.isCompleted()))
                 .toList();
     }
 

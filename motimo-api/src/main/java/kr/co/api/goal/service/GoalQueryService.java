@@ -12,7 +12,9 @@ import kr.co.api.goal.dto.GoalDetailDto;
 import kr.co.api.goal.dto.GoalItemDto;
 import kr.co.api.goal.dto.GoalNotInGroupDto;
 import kr.co.api.goal.dto.GoalWithSubGoalDto;
+import kr.co.api.goal.dto.GoalWithSubGoalTodoDto;
 import kr.co.api.goal.dto.SubGoalDto;
+import kr.co.api.goal.dto.SubGoalWithTodosDto;
 import kr.co.api.todo.service.TodoQueryService;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.dto.GoalTodoCount;
@@ -20,6 +22,7 @@ import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.group.Group;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.domain.subGoal.SubGoal;
+import kr.co.domain.todo.dto.TodoItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,10 +93,30 @@ public class GoalQueryService {
         return goalRepository.findBySubGoalId(subGoalId);
     }
 
+    public GoalWithSubGoalTodoDto getGoalWithIncompleteSubGoalTodayTodos(UUID goalId) {
+        Goal goal = goalRepository.findById(goalId);
+        List<SubGoalWithTodosDto> subGoals = getTodoByIncompleteSubGoalList(goal.getSubGoals());
+        return GoalWithSubGoalTodoDto.of(goal, subGoals);
+    }
+
+    private List<SubGoalWithTodosDto> getTodoByIncompleteSubGoalList(List<SubGoal> subGoals) {
+        return subGoals.stream()
+                .sorted(Comparator.comparing(SubGoal::getOrder))
+                .map(subGoal -> {
+                    List<TodoItemDto> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
+                            subGoal.getId());
+
+                    return new SubGoalWithTodosDto(subGoal.getId(), subGoal.getTitle(),
+                            subGoal.isCompleted(), todos);
+                })
+                .toList();
+    }
+
     private List<SubGoalDto> getSubGoals(Goal goal) {
         return goal.getSubGoals().stream()
                 .sorted(Comparator.comparing(SubGoal::getOrder))
-                .map(subGoal -> new SubGoalDto(subGoal.getId(), subGoal.getTitle(), subGoal.isCompleted()))
+                .map(subGoal -> new SubGoalDto(subGoal.getId(), subGoal.getTitle(),
+                        subGoal.isCompleted()))
                 .toList();
     }
 

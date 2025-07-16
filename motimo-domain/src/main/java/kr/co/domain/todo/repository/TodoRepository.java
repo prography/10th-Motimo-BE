@@ -21,6 +21,8 @@ public interface TodoRepository {
     List<TodoItemDto> findAllByUserId(UUID userId);
 
     List<TodoItemDto> findAllBySubGoalId(UUID subGoalId);
+    
+    List<TodoItemDto> findAllIncompleteOrDateTodoBySubGoalId(UUID subGoalId, LocalDate today);
 
     CustomSlice<TodoItemDto> findAllBySubGoalIdWithSlice(UUID subGoalId, int offset, int size);
 

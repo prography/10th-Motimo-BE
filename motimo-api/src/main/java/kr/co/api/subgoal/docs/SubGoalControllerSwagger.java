@@ -2,7 +2,6 @@ package kr.co.api.subgoal.docs;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -54,8 +53,7 @@ public interface SubGoalControllerSwagger {
                     """
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TodoRs.class)))),
+            @ApiResponse(responseCode = "200", description = "세부목표의 투두 리스트(완료, 미완료 모두)조회 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "404", description = "세부 목표를 찾을 수 없음",
@@ -79,11 +77,7 @@ public interface SubGoalControllerSwagger {
                     """
     )
     @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "TODO 목록 조회 성공",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TodoRs.class)))
-            ),
+            @ApiResponse(responseCode = "200", description = "세부 목표의 오늘이거나 완료되지 않은 TODO 목록 조회 성공"),
             @ApiResponse(
                     responseCode = "400",
                     description = "잘못된 요청 데이터",

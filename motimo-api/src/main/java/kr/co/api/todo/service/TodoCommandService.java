@@ -2,9 +2,8 @@ package kr.co.api.todo.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import kr.co.domain.common.event.Events;
 import kr.co.domain.common.event.FileDeletedEvent;
 import kr.co.domain.common.event.FileRollbackEvent;
@@ -15,6 +14,7 @@ import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.dto.TodoItemDto;
+import kr.co.domain.todo.dto.TodoResultItemDto;
 import kr.co.domain.todo.exception.TodoNotCompleteException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.domain.todo.repository.TodoResultRepository;
@@ -77,11 +77,13 @@ public class TodoCommandService {
     }
 
     public void deleteAllBySubGoalId(UUID subGoalId) {
-        List<TodoItemDto> todos =todoRepository.findAllBySubGoalId(subGoalId).stream().toList();
+        List<TodoItemDto> todos = todoRepository.findAllBySubGoalId(subGoalId).stream().toList();
 
-        Set<UUID> todoIds = todos.stream().map(TodoItemDto::id).collect(Collectors.toSet());
-
-        todoIds.forEach(id -> Events.publishEvent(new FileDeletedEvent(String.format("todo/%s", id))));
+        List<String> deleteFilePath = todos.stream().map(TodoItemDto::todoResultItem)
+                .filter(Objects::nonNull)
+                .map(TodoResultItemDto::fileUrl)
+                .filter(Objects::nonNull).toList();
+        deleteFilePath.forEach(filePath -> Events.publishEvent(new FileDeletedEvent(filePath)));
 
         todoRepository.deleteAllTodoCascadeBySubGoalId(subGoalId);
     }

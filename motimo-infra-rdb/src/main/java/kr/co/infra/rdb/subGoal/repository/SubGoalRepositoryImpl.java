@@ -60,4 +60,8 @@ public class SubGoalRepositoryImpl implements SubGoalRepository {
 
         subGoalJpaRepository.saveAll(subGoalEntities);
     }
+
+    public void deleteAllByGoalId(UUID goalId) {
+        subGoalJpaRepository.deleteAllByGoalId(goalId);
+    }
 }

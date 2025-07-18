@@ -12,4 +12,6 @@ public interface TodoResultJpaRepository extends JpaRepository<TodoResultEntity,
     Optional<TodoResultEntity> findByTodoId(UUID todoId);
 
     List<TodoResultEntity> findAllByIdIn(Set<UUID> todoResultIds);
+
+    void deleteAllByTodoIdIn(Set<UUID> todoIds);
 }

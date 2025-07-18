@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface TodoJpaRepository extends JpaRepository<TodoEntity, UUID> {
 
     List<TodoEntity> findAllByIdIn(Set<UUID> todoIds);
+
+    void deleteAllBySubGoalIdIn(Set<UUID> subGoalIds);
 }

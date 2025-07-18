@@ -1,15 +1,19 @@
 package kr.co.api.goal.service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import kr.co.api.goal.dto.GoalCreateDto;
 import kr.co.api.goal.dto.GoalUpdateDto;
 import kr.co.api.goal.dto.SubGoalUpdateDto;
+import kr.co.api.todo.service.TodoCommandService;
 import kr.co.domain.goal.DueDate;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.subGoal.SubGoal;
+import kr.co.domain.subGoal.repository.SubGoalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class GoalCommandService {
 
     private final GoalRepository goalRepository;
+    private final SubGoalRepository subGoalRepository;
+    private final TodoCommandService todoCommandService;
 
     public UUID createGoal(UUID userId, GoalCreateDto dto) {
         DueDate dueDate =
@@ -88,5 +94,19 @@ public class GoalCommandService {
         goal.complete();
 
         return goalRepository.update(goal).getId();
+    }
+
+    public void deleteGoalCascade(UUID userId, UUID goalId) {
+        Goal goal = goalRepository.findById(goalId);
+        goal.validateOwner(userId);
+
+        Set<UUID> subGoalIds = goal.getSubGoals().stream().map(SubGoal::getId).collect(Collectors.toSet());
+
+        // 투두 삭제 (file 삭제 고려 안 한 버전)
+        todoCommandService.deleteAllTodoAndResultBySubGoalIds(subGoalIds);
+
+        // 목표 삭제
+        subGoalRepository.deleteAllByGoalId(goalId);
+        goalRepository.deleteById(goalId);
     }
 }

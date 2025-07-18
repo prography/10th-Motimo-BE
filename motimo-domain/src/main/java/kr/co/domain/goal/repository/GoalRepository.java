@@ -23,5 +23,7 @@ public interface GoalRepository {
     List<Goal> findCompletedGoalsByUserId(UUID userId);
 
     void connectGroupByGoalId(UUID goalId, UUID groupId);
+
+    void deleteById(UUID goalId);
 }
 

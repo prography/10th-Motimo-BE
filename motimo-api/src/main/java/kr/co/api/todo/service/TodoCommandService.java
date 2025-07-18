@@ -1,6 +1,7 @@
 package kr.co.api.todo.service;
 
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.UUID;
 import kr.co.domain.common.event.Events;
 import kr.co.domain.common.event.FileDeletedEvent;
@@ -88,6 +89,10 @@ public class TodoCommandService {
         TodoResult todoResult = todoResultRepository.findById(todoResultId);
         todoResult.validateOwner(userId);
         deleteTodoResult(todoResult);
+    }
+
+    public void deleteAllTodoAndResultBySubGoalIds(Set<UUID> subGoalIds) {
+        todoRepository.deleteAllTodoCascadeBySubGoalIds(subGoalIds);
     }
 
     private UUID createTodoResult(UUID userId, Todo todo, Emotion emotion, String content,

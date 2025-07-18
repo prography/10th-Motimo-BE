@@ -4,6 +4,7 @@ import static com.querydsl.core.types.ExpressionUtils.anyOf;
 
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
@@ -128,6 +129,24 @@ public class TodoRepositoryImpl implements TodoRepository {
     @Override
     public void deleteById(UUID id) {
         todoJpaRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteAllTodoCascadeBySubGoalId(UUID subGoalId) {
+        QTodoResultEntity todoResult = QTodoResultEntity.todoResultEntity;
+        QTodoEntity todo = QTodoEntity.todoEntity;
+
+        jpaQueryFactory
+                .delete(todoResult)
+                .where(todoResult.todoId.in(
+                        JPAExpressions
+                                .select(todo.id)
+                                .from(todo)
+                                .where(todo.subGoalId.eq(subGoalId))
+                ))
+                .execute();
+
+        todoJpaRepository.deleteAllBySubGoalId(subGoalId);
     }
 
     @Override

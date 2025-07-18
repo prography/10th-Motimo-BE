@@ -31,11 +31,13 @@ public class SubGoalRepositoryImpl implements SubGoalRepository {
     }
 
     public List<SubGoal> findAllByGoalId(UUID goalId) {
-        return subGoalJpaRepository.findByGoalId(goalId).stream().map(SubGoalMapper::toDomain).toList();
+        return subGoalJpaRepository.findByGoalId(goalId).stream().map(SubGoalMapper::toDomain)
+                .toList();
     }
 
     public SubGoal create(SubGoal subGoal) {
-        GoalEntity goalEntity = goalJpaRepository.findById(subGoal.getGoalId()).orElseThrow(GoalNotFoundException::new);
+        GoalEntity goalEntity = goalJpaRepository.findById(subGoal.getGoalId())
+                .orElseThrow(GoalNotFoundException::new);
         SubGoalEntity subGoalEntity = SubGoalMapper.toEntity(goalEntity, subGoal);
         SubGoalEntity savedSubGoal = subGoalJpaRepository.save(subGoalEntity);
         return SubGoalMapper.toDomain(savedSubGoal);
@@ -59,5 +61,16 @@ public class SubGoalRepositoryImpl implements SubGoalRepository {
         });
 
         subGoalJpaRepository.saveAll(subGoalEntities);
+    }
+
+    // FIXME 개선 필요
+    public void deleteAllByGoalId(UUID goalId) {
+//        QSubGoalEntity subGoal = QSubGoalEntity.subGoalEntity;
+//
+//        jpaQueryFactory
+//                .delete(subGoal)
+//                .where(subGoal.goalId.eq(goalId))
+//                .execute();
+        subGoalJpaRepository.deleteAllByGoalId(goalId);
     }
 }

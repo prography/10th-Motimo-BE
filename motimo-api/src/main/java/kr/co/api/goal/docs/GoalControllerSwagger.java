@@ -11,6 +11,7 @@ import kr.co.api.exception.ErrorResponse;
 import kr.co.api.goal.rqrs.GoalCreateRq;
 import kr.co.api.goal.rqrs.GoalIdRs;
 import kr.co.api.goal.rqrs.GoalUpdateRq;
+import kr.co.api.security.annotation.AuthUser;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "목표 API", description = "목표 관련 API 목록입니다")
@@ -21,6 +22,9 @@ public interface GoalControllerSwagger {
 
     @Operation(summary = "목표 수정 API", description = "목표를 수정합니다.")
     GoalIdRs updateGoal(UUID userId, UUID goalId, GoalUpdateRq rq);
+
+    @Operation(summary = "목표 삭제 API", description = "목표를 삭제합니다. (세부목표, 투두, 투두결과가 함께 삭제됩니다.)")
+    void deleteGoal(@AuthUser UUID userId, @PathVariable UUID goalId);
 
     @Operation(summary = "목표 완료 API", description = "목표를 완료합니다.")
     @ApiResponses({

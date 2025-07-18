@@ -7,9 +7,6 @@ import kr.co.api.goal.dto.GoalUpdateDto;
 import kr.co.api.goal.dto.SubGoalCreateDto;
 import kr.co.api.goal.rqrs.GoalCreateRq;
 import kr.co.api.goal.rqrs.GoalIdRs;
-import kr.co.api.goal.rqrs.GoalItemRs;
-import kr.co.api.goal.rqrs.GoalListRs;
-import kr.co.api.goal.rqrs.GoalNotInGroupRs;
 import kr.co.api.goal.rqrs.GoalUpdateRq;
 import kr.co.api.goal.rqrs.SubGoalCreateRq;
 import kr.co.api.goal.service.GoalCommandService;
@@ -17,6 +14,7 @@ import kr.co.api.security.annotation.AuthUser;
 import kr.co.api.subgoal.rqrs.SubGoalIdRs;
 import kr.co.api.subgoal.service.SubGoalCommandService;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,6 +58,11 @@ public class GoalController implements GoalControllerSwagger {
     @PatchMapping("/{goalId}/completion")
     public GoalIdRs goalComplete(@AuthUser UUID userId, @PathVariable UUID goalId) {
         return new GoalIdRs(goalCommandService.completeGoal(userId, goalId));
+    }
+
+    @DeleteMapping("/{goalId}")
+    public void deleteGoal(@AuthUser UUID userId, @PathVariable UUID goalId) {
+        goalCommandService.deleteGoalCascade(userId, goalId);
     }
 
 }

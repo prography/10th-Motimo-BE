@@ -88,4 +88,8 @@ public class GoalRepositoryImpl implements GoalRepository {
 
     }
 
+    public void deleteById(UUID goalId) {
+        goalJpaRepository.deleteById(goalId);
+    }
+
 }

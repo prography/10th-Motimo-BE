@@ -10,4 +10,5 @@ public interface SubGoalRepository {
     SubGoal create(SubGoal subGoal);
     SubGoal update(SubGoal subGoal);
     void updateAllOrder(List<SubGoal> subGoal);
+    void deleteAllByGoalId(UUID goalId);
 }

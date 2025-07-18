@@ -102,8 +102,7 @@ public class GoalCommandService {
 
         Set<UUID> subGoalIds = goal.getSubGoals().stream().map(SubGoal::getId).collect(Collectors.toSet());
 
-        // 투두 삭제 (file 삭제 고려 안 한 버전)
-        todoCommandService.deleteAllTodoAndResultBySubGoalIds(subGoalIds);
+        subGoalIds.forEach(todoCommandService::deleteAllBySubGoalId);
 
         // 목표 삭제
         subGoalRepository.deleteAllByGoalId(goalId);

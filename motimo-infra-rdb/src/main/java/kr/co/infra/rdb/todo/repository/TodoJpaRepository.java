@@ -10,5 +10,5 @@ public interface TodoJpaRepository extends JpaRepository<TodoEntity, UUID> {
 
     List<TodoEntity> findAllByIdIn(Set<UUID> todoIds);
 
-    void deleteAllBySubGoalIdIn(Set<UUID> subGoalIds);
+    void deleteAllBySubGoalId(UUID subGoalIds);
 }

@@ -1,8 +1,10 @@
 package kr.co.api.todo.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import kr.co.domain.common.event.Events;
 import kr.co.domain.common.event.FileDeletedEvent;
 import kr.co.domain.common.event.FileRollbackEvent;
@@ -12,6 +14,7 @@ import kr.co.domain.common.event.group.message.TodoResultSubmittedEvent;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.dto.TodoItemDto;
 import kr.co.domain.todo.exception.TodoNotCompleteException;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.domain.todo.repository.TodoResultRepository;
@@ -73,6 +76,16 @@ public class TodoCommandService {
         return todoRepository.update(todo).getId();
     }
 
+    public void deleteAllBySubGoalId(UUID subGoalId) {
+        List<TodoItemDto> todos =todoRepository.findAllBySubGoalId(subGoalId).stream().toList();
+
+        Set<UUID> todoIds = todos.stream().map(TodoItemDto::id).collect(Collectors.toSet());
+
+        todoIds.forEach(id -> Events.publishEvent(new FileDeletedEvent(String.format("todo/%s", id))));
+
+        todoRepository.deleteAllTodoCascadeBySubGoalId(subGoalId);
+    }
+
     public void deleteById(UUID userId, UUID todoId) {
         Todo todo = todoRepository.findById(todoId);
         todo.validateOwner(userId);
@@ -89,10 +102,6 @@ public class TodoCommandService {
         TodoResult todoResult = todoResultRepository.findById(todoResultId);
         todoResult.validateOwner(userId);
         deleteTodoResult(todoResult);
-    }
-
-    public void deleteAllTodoAndResultBySubGoalIds(Set<UUID> subGoalIds) {
-        todoRepository.deleteAllTodoCascadeBySubGoalIds(subGoalIds);
     }
 
     private UUID createTodoResult(UUID userId, Todo todo, Emotion emotion, String content,

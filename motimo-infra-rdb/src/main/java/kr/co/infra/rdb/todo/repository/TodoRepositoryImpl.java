@@ -132,7 +132,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public void deleteAllTodoCascadeBySubGoalIds(Set<UUID> subGoalIds) {
+    public void deleteAllTodoCascadeBySubGoalId(UUID subGoalId) {
         QTodoResultEntity todoResult = QTodoResultEntity.todoResultEntity;
         QTodoEntity todo = QTodoEntity.todoEntity;
 
@@ -142,11 +142,11 @@ public class TodoRepositoryImpl implements TodoRepository {
                         JPAExpressions
                                 .select(todo.id)
                                 .from(todo)
-                                .where(todo.subGoalId.in(subGoalIds))
+                                .where(todo.subGoalId.eq(subGoalId))
                 ))
                 .execute();
 
-        todoJpaRepository.deleteAllBySubGoalIdIn(subGoalIds);
+        todoJpaRepository.deleteAllBySubGoalId(subGoalId);
     }
 
     @Override

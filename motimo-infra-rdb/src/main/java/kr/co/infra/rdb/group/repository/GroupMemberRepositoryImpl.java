@@ -19,8 +19,14 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepository {
 
     @Override
     public List<GroupMember> findAllByGroupId(UUID groupId) {
-        List<GroupMemberUserProjection> groupMemberEntities = groupMemberJpaRepository.findByGroupId(groupId);
+        List<GroupMemberUserProjection> groupMemberEntities = groupMemberJpaRepository.findByGroupId(
+                groupId);
         return groupMemberEntities.stream().map(GroupMemberMapper::toDomain).toList();
+    }
+
+    @Override
+    public boolean existsByGroupIdAndMemberId(UUID groupId, UUID userId) {
+        return groupMemberJpaRepository.existsByGoalIdAndUserId(groupId, userId);
     }
 
     @Override

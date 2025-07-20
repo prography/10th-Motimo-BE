@@ -7,5 +7,8 @@ import kr.co.domain.group.GroupMember;
 public interface GroupMemberRepository {
 
     List<GroupMember> findAllByGroupId(UUID groupId);
+
+    boolean existsByGroupIdAndMemberId(UUID groupId, UUID userId);
+
     void deleteByGroupIdAndMemberId(UUID groupId, UUID userId);
 }

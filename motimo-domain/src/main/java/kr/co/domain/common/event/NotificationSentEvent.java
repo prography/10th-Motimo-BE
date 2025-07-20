@@ -13,15 +13,13 @@ public class NotificationSentEvent extends Event{
     private UUID receiverId;
     private UUID referenceId;
     private String title;
-    private String content;
 
-    public NotificationSentEvent(NotificationType type, UUID senderId, UUID receiverId, UUID referenceId, String title, String content) {
+    public NotificationSentEvent(NotificationType type, UUID senderId, UUID receiverId, UUID referenceId, String title) {
         super();
         this.type = type;
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.referenceId = referenceId;
         this.title = title;
-        this.content = content;
     }
 }

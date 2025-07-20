@@ -1,5 +1,6 @@
 package kr.co.domain.notification;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,17 +16,15 @@ public class Notification {
     private UUID senderId;
     private UUID receiverId;
     private UUID referenceId;
-    private String title;
-    private String content;
     private NotificationType type;
+    private boolean isRead;
+    private LocalDateTime createdAt;
 
     @Builder(builderMethodName = "createNotification")
-    private Notification(UUID senderId, UUID receiverId, UUID referenceId, String title, String content, NotificationType type) {
+    private Notification(UUID senderId, UUID receiverId, UUID referenceId, NotificationType type) {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.referenceId = referenceId;
-        this.title = title;
-        this.content = content;
         this.type = type;
     }
 }

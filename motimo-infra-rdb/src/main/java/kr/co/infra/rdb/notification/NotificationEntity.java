@@ -30,8 +30,10 @@ public class NotificationEntity extends BaseEntity {
 
     private UUID receiverId;
 
+    @Deprecated
     private String title;
 
+    @Deprecated
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -41,11 +43,9 @@ public class NotificationEntity extends BaseEntity {
 
     private boolean isRead = false;
 
-    public NotificationEntity(UUID senderId, UUID receiverId, String title, String content, NotificationType type, UUID referenceId) {
+    public NotificationEntity(UUID senderId, UUID receiverId, NotificationType type, UUID referenceId) {
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.title = title;
-        this.content = content;
         this.type = type;
         this.referenceId = referenceId;
     }

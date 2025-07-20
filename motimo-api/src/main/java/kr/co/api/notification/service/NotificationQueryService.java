@@ -18,8 +18,8 @@ public class NotificationQueryService {
     public CustomPage<NotificationItemDto> getNotificationList(UUID userId, int page, int size) {
         CustomPage<Notification> pageNotifications = notificationRepository.findAllByReceiverId(userId, page, size);
 
-        Map<UUID, String> notificationConentMap = assembler.convertNotificationContent(pageNotifications.content());
+        Map<UUID, String> notificationContentMap = assembler.convertNotificationContent(pageNotifications.content());
 
-        return pageNotifications.map(notification -> NotificationItemDto.of(notification, notificationConentMap.get(notification.getId())));
+        return pageNotifications.map(notification -> NotificationItemDto.of(notification, notificationContentMap.get(notification.getId())));
     }
 }

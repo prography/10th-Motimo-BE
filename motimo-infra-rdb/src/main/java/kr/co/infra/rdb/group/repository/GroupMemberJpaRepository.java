@@ -60,5 +60,5 @@ public interface GroupMemberJpaRepository extends JpaRepository<GroupMemberEntit
     Optional<GroupMemberGoalGroupProjection> findGoalAndGroupByUserIdAndGroupId(
             @Param("userId") UUID userId, @Param("groupId") UUID groupId);
 
-    boolean existsByGoalIdAndUserId(UUID groupId, UUID userId);
+    boolean existsByGroupIdAndUserId(UUID groupId, UUID userId);
 }

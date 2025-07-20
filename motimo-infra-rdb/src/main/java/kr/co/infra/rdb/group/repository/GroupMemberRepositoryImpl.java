@@ -26,7 +26,7 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepository {
 
     @Override
     public boolean existsByGroupIdAndMemberId(UUID groupId, UUID userId) {
-        return groupMemberJpaRepository.existsByGoalIdAndUserId(groupId, userId);
+        return groupMemberJpaRepository.existsByGroupIdAndUserId(groupId, userId);
     }
 
     @Override

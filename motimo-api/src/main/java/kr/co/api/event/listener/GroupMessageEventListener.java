@@ -4,6 +4,7 @@ import java.util.UUID;
 import kr.co.api.event.service.OutboxCommandService;
 import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.group.service.GroupMessageCommandService;
+import kr.co.domain.common.event.group.message.GoalTitleUpdatedEvent;
 import kr.co.domain.common.event.group.message.GroupJoinedEvent;
 import kr.co.domain.common.event.group.message.GroupLeftEvent;
 import kr.co.domain.common.event.group.message.GroupMessageDeletedEvent;
@@ -110,5 +111,19 @@ public class GroupMessageEventListener {
             log.error("그룹 메시지 삭제에 실패 메시지 관련 ID: {}", event.getReferenceId(), e);
             outboxCommandService.createOutboxEvent(OutboxEvent.from(event));
         }
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleGoalTitleUpdateEvent(GoalTitleUpdatedEvent event) {
+        GroupMessage groupMessage = GroupMessage.createGroupMessage()
+                .groupId(event.getGroupId())
+                .userId(event.getUserId())
+                .messageType(GroupMessageType.GOAL_TITLE_UPDATE)
+                .messageReference(
+                        new MessageReference(MessageReferenceType.GOAL, event.getGoalId()))
+                .build();
+
+        groupMessageCommandService.createGroupMessage(groupMessage);
     }
 }

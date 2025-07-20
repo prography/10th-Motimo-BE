@@ -30,12 +30,6 @@ public class NotificationEntity extends BaseEntity {
 
     private UUID receiverId;
 
-    @Deprecated
-    private String title;
-
-    @Deprecated
-    private String content;
-
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 

@@ -1,6 +1,7 @@
 package kr.co.infra.rdb.goal.repository;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.exception.GoalNotFoundException;
@@ -77,6 +78,14 @@ public class GoalRepositoryImpl implements GoalRepository {
     public List<Goal> findCompletedGoalsByUserId(UUID userId) {
         return goalJpaRepository.findAllByUserIdAndCompleted(userId, true)
                 .stream().map(GoalMapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Goal> findAllByIdsIn(Set<UUID> goalIds) {
+        return goalJpaRepository.findAllByIdIn(goalIds)
+                .stream()
+                .map(GoalMapper::toDomain)
+                .toList();
     }
 
     @Override

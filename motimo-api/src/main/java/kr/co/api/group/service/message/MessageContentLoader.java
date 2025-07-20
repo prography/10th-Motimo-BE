@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import kr.co.domain.goal.Goal;
+import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.group.exception.MessageContentLoadingException;
 import kr.co.domain.group.message.GroupMessage;
 import kr.co.domain.group.message.MessageReference;
@@ -31,6 +33,7 @@ public class MessageContentLoader {
     private final TodoRepository todoRepository;
     private final TodoResultRepository todoResultRepository;
     private final UserRepository userRepository;
+    private final GoalRepository goalRepository;
 
     public MessageContentData loadMessageContentData(List<GroupMessage> messages) {
 
@@ -40,6 +43,7 @@ public class MessageContentLoader {
 
             referenceTypeIds.put(MessageReferenceType.TODO, new HashSet<>());
             referenceTypeIds.put(MessageReferenceType.TODO_RESULT, new HashSet<>());
+            referenceTypeIds.put(MessageReferenceType.GOAL, new HashSet<>());
 
             // 메시지 타입별로 필요한 ID들 추출
             Set<UUID> userIds = messages.stream()
@@ -63,7 +67,9 @@ public class MessageContentLoader {
 
             Map<UUID, User> userMap = loadUsers(userIds);
 
-            return new MessageContentData(todoMap, todoResultMap, userMap);
+            Map<UUID, Goal> goalMap = loadGoals(referenceTypeIds.get(MessageReferenceType.GOAL));
+
+            return new MessageContentData(todoMap, todoResultMap, userMap, goalMap);
         } catch (DataAccessException e) {
             log.error("메시지 content 로드중 Database 에러가 발생했습니다 - {} messages", messages.size(), e);
             throw new MessageContentLoadingException();
@@ -104,5 +110,14 @@ public class MessageContentLoader {
 
         return userRepository.findAllByIdsIn(userIds).stream()
                 .collect(Collectors.toMap(User::getId, user -> user));
+    }
+
+    private Map<UUID, Goal> loadGoals(Set<UUID> goalIds) {
+        if (goalIds.isEmpty()) {
+            return Map.of();
+        }
+
+        return goalRepository.findAllByIdsIn(goalIds).stream()
+                .collect(Collectors.toMap(Goal::getId, goal -> goal));
     }
 }

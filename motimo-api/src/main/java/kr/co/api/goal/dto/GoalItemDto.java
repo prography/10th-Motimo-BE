@@ -13,12 +13,12 @@ public record GoalItemDto(
         LocalDateTime createdAt
 ) {
 
-    public static GoalItemDto from(Goal goal) {
+    public static GoalItemDto of(Goal goal, float calculatedProgress) {
         return new GoalItemDto(
                 goal.getId(),
                 goal.getTitle(),
                 goal.getDueDateValue(),
-                goal.calculateProgress(),
+                calculatedProgress,
                 goal.getCreatedAt()
         );
     }

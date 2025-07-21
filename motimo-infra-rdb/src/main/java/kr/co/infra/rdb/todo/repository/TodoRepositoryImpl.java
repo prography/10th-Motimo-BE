@@ -180,6 +180,23 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
+    public List<Todo> findAllByGoalId(UUID goalId) {
+        QSubGoalEntity subGoalEntity = QSubGoalEntity.subGoalEntity;
+        QTodoEntity todoEntity = QTodoEntity.todoEntity;
+        QTodoResultEntity todoResultEntity = QTodoResultEntity.todoResultEntity;
+
+        List<TodoEntity> todoEntities = jpaQueryFactory
+                .select(todoEntity).distinct()
+                .from(todoEntity)
+                .join(subGoalEntity).on(todoEntity.subGoalId.eq(subGoalEntity.id))
+                .leftJoin(todoResultEntity).on(todoResultEntity.todoId.eq(todoEntity.id))
+                .where(subGoalEntity.goal.id.eq(goalId))
+                .fetch();
+
+        return todoEntities.stream().map(TodoMapper::toDomain).toList();
+    }
+
+    @Override
     public CustomSlice<TodoItemDto> findAllBySubGoalIdWithSlice(UUID subGoalId, int offset,
             int size) {
         QTodoEntity todoEntity = QTodoEntity.todoEntity;

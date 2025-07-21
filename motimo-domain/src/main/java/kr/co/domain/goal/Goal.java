@@ -10,6 +10,7 @@ import kr.co.domain.goal.exception.GoalCompleteFailedException;
 import kr.co.domain.goal.exception.GoalErrorCode;
 import kr.co.domain.subGoal.SubGoal;
 import kr.co.domain.subGoal.exception.SubGoalNotFoundException;
+import kr.co.domain.todo.Todo;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -67,6 +68,18 @@ public class Goal {
         }
     }
 
+
+    public float calculateProgress(List<Todo> todos) {
+        if (todos.isEmpty()) {
+            return 0;
+        }
+
+        long completedTodos = todos.stream().filter(Todo::isComplete).count();
+
+        return (float) completedTodos / todos.size() * 100;
+    }
+
+    @Deprecated
     public float calculateProgress() {
         if (subGoals.isEmpty()) {
             return 0;

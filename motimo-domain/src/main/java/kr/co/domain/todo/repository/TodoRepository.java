@@ -37,4 +37,6 @@ public interface TodoRepository {
     void deleteAllTodoCascadeBySubGoalId(UUID subGoalId);
 
     List<Todo> findAllByIdsIn(Set<UUID> todoIds);
+
+    List<Todo> findAllByGoalId(UUID goalId);
 }

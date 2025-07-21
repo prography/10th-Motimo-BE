@@ -23,7 +23,9 @@ public class UserNotificationStrategy implements NotificationStrategy {
 
     @Override
     public void collectRequiredIds(Notification notification, NotificationDataCollector collector) {
-        collector.addSenderId(notification.getSenderId());
+        if(notification.getSenderId() != null) {
+            collector.addSenderId(notification.getSenderId());
+        }
     }
 
     @Override

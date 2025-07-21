@@ -78,8 +78,7 @@ public class GroupCommandService {
                 userId,
                 receiverId,
                 groupId,
-                NotificationType.POKE.getDefaultTitle(),
-                NotificationType.POKE.getDefaultContent()
+                NotificationType.POKE.getDefaultTitle()
         ));
     }
 

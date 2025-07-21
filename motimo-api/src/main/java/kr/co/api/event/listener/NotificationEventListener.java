@@ -24,8 +24,6 @@ public class NotificationEventListener {
                 .senderId(event.getSenderId())
                 .receiverId(event.getReceiverId())
                 .referenceId(event.getReferenceId())
-                .title(event.getTitle())
-                .content(event.getContent())
                 .type(event.getType()).build();
 
 

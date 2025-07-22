@@ -8,6 +8,7 @@ import kr.co.domain.common.event.group.message.GroupLeftEvent;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.group.Group;
+import kr.co.domain.group.GroupMember;
 import kr.co.domain.group.dto.GroupJoinDto;
 import kr.co.domain.group.exception.AlreadyJoinedGroupException;
 import kr.co.domain.group.exception.AlreadyTodayPokeException;
@@ -62,10 +63,12 @@ public class GroupCommandService {
 
     public void leaveGroup(UUID userId, UUID groupId) {
         Group group = groupRepository.findById(groupId);
-//        group.removeMember(userId);
+        GroupMember member = group.getMember(userId);
+
+        groupRepository.left(groupId, member);
+        goalRepository.disconnectGroupByGoalId(member.getGoalId());
 
         Events.publishEvent(new GroupLeftEvent(groupId, userId));
-        groupMemberRepository.deleteByGroupIdAndMemberId(groupId, userId);
     }
 
     public void createPokeNotification(UUID userId, UUID groupId, UUID receiverId) {

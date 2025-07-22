@@ -43,6 +43,10 @@ public class Group {
         members.add(member);
     }
 
+    public GroupMember getMember(UUID memberId) {
+        return members.stream().filter(member -> member.getMemberId().equals(memberId)).findFirst().orElseThrow(UserNotInGroupException::new);
+    }
+
     public void removeMember(UUID userId) {
         if (!hasMember(userId)) {
             throw new UserNotInGroupException();

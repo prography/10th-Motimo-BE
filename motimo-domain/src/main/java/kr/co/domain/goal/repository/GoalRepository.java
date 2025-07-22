@@ -24,6 +24,8 @@ public interface GoalRepository {
 
     void connectGroupByGoalId(UUID goalId, UUID groupId);
 
+    void disconnectGroupByGoalId(UUID goalId);
+
     void deleteById(UUID goalId);
 }
 

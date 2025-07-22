@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.group.Group;
+import kr.co.domain.group.GroupMember;
 import kr.co.domain.group.dto.GroupJoinDto;
 import kr.co.domain.group.exception.GroupNotFoundException;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.infra.rdb.goal.entity.QGoalEntity;
+import kr.co.infra.rdb.goal.repository.GoalJpaRepository;
 import kr.co.infra.rdb.group.entity.GroupEntity;
 import kr.co.infra.rdb.group.entity.GroupMemberEntity;
 import kr.co.infra.rdb.group.entity.QGroupEntity;
@@ -28,6 +30,7 @@ public class GroupRepositoryImpl implements GroupRepository {
 
     private final GroupJpaRepository groupJpaRepository;
     private final GroupMemberJpaRepository groupMemberJpaRepository;
+    private final GoalJpaRepository goalJpaRepository;
 
     private final JPAQueryFactory jpaQueryFactory;
     private final GroupJpaSubQuery groupJpaQuery;
@@ -53,6 +56,11 @@ public class GroupRepositoryImpl implements GroupRepository {
         );
 
         return GroupMapper.toDomain(groupEntity);
+    }
+
+    @Override
+    public void left(UUID groupId, GroupMember member) {
+        groupMemberJpaRepository.deleteByGroupIdAndUserId(groupId, member.getMemberId());
     }
 
     @Override

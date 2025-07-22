@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MessageReactionFirstCreatedEvent extends Event {
-    public UUID userId;
-    public ReactionType reactionType;
-    public UUID referenceMessageId;
+    private UUID userId;
+    private ReactionType reactionType;
+    private UUID referenceMessageId;
 
     public MessageReactionFirstCreatedEvent(UUID userId, ReactionType reactionType, UUID messageId) {
         this.userId = userId;

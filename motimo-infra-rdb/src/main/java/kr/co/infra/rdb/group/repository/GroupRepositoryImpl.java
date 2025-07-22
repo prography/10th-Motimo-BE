@@ -13,7 +13,6 @@ import kr.co.domain.group.dto.GroupJoinDto;
 import kr.co.domain.group.exception.GroupNotFoundException;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.infra.rdb.goal.entity.QGoalEntity;
-import kr.co.infra.rdb.goal.repository.GoalJpaRepository;
 import kr.co.infra.rdb.group.entity.GroupEntity;
 import kr.co.infra.rdb.group.entity.GroupMemberEntity;
 import kr.co.infra.rdb.group.entity.QGroupEntity;
@@ -30,7 +29,6 @@ public class GroupRepositoryImpl implements GroupRepository {
 
     private final GroupJpaRepository groupJpaRepository;
     private final GroupMemberJpaRepository groupMemberJpaRepository;
-    private final GoalJpaRepository goalJpaRepository;
 
     private final JPAQueryFactory jpaQueryFactory;
     private final GroupJpaSubQuery groupJpaQuery;

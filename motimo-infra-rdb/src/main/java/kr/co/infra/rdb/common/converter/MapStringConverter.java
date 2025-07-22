@@ -8,11 +8,11 @@ import jakarta.persistence.Converter;
 import java.util.Map;
 
 @Converter
-public class MapStringConverter implements AttributeConverter<Map<String, Object>, String> {
+public class MapStringConverter implements AttributeConverter<Map<String, String>, String> {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public String convertToDatabaseColumn(Map<String, Object> attribute) {
+    public String convertToDatabaseColumn(Map<String, String> attribute) {
         try {
             return attribute == null ? null : objectMapper.writeValueAsString(attribute);
         } catch (JsonProcessingException e) {
@@ -21,12 +21,13 @@ public class MapStringConverter implements AttributeConverter<Map<String, Object
     }
 
     @Override
-    public Map<String, Object> convertToEntityAttribute(String dbData) {
+    public Map<String, String> convertToEntityAttribute(String dbData) {
         try {
             if (dbData == null) return null;
-            return objectMapper.readValue(dbData, new TypeReference<Map<String, Object>>() {});
+            return objectMapper.readValue(dbData, new TypeReference<>() {
+            });
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 파싱 실패", e);
+            throw new RuntimeException("JSON 파싱 실패: " + e.getMessage(), e);
         }
     }
 }

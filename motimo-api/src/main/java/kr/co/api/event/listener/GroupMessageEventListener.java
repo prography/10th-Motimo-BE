@@ -81,16 +81,16 @@ public class GroupMessageEventListener {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleMessageReactionEvent(MessageReactionFirstCreatedEvent event) {
-        GroupMessage message = groupMessageCommandService.getGroupMessageById(event.referenceMessageId);
+        GroupMessage message = groupMessageCommandService.getGroupMessageById(event.getReferenceMessageId());
 
         GroupMessage groupMessage = GroupMessage.createGroupMessage()
                 .groupId(message.getGroupId())
                 .userId(event.getUserId())
-                .messageReference(new MessageReference(MessageReferenceType.OTHER_MESSAGE, event.referenceMessageId))
+                .messageReference(new MessageReference(MessageReferenceType.OTHER_MESSAGE, event.getReferenceMessageId()))
                 .messageType(GroupMessageType.MESSAGE_REACTION)
                 .build();
 
-        groupMessage.setFrozenData(new ReactionFrozenData(event.reactionType));
+        groupMessage.setFrozenData(new ReactionFrozenData(event.getReactionType()));
 
         groupMessageCommandService.createGroupMessage(groupMessage);
     }

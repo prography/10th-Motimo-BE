@@ -29,7 +29,7 @@ public class GroupMessage {
     @Builder.Default
     private String staticJson = null;
     @Builder.Default
-    private Map<String, String> frozenData= new HashMap<>();
+    private Map<String, String> frozenData = new HashMap<>();
     @Builder.Default
     private List<Reaction> reactions = new ArrayList<>();
     @Builder.Default
@@ -49,7 +49,7 @@ public class GroupMessage {
     }
 
     public <T extends FrozenData> T getFrozenData(Class<T> type) {
-        return FrozenDataConverter.convertTo(frozenData, type);
+        return FrozenDataConverter.convertTo(this.frozenData, type);
     }
 
     public <T extends FrozenData> void setFrozenData(T data) {

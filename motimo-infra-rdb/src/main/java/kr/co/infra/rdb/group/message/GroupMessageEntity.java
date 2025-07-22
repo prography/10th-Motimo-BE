@@ -1,6 +1,7 @@
 package kr.co.infra.rdb.group.message;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -9,8 +10,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 import kr.co.domain.group.message.GroupMessageType;
+import kr.co.infra.rdb.common.converter.MapStringConverter;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -46,6 +49,10 @@ public class GroupMessageEntity {
 
     @Embedded
     private MessageReferenceEmbeddable messageReference;
+
+    @Convert(converter = MapStringConverter.class)
+    @Column(columnDefinition = "TEXT")
+    private Map<String, String> frozenData;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

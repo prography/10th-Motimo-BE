@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 public class MessageReactionFirstCreatedEvent extends Event {
     public UUID userId;
     public ReactionType reactionType;
-    public UUID messageId;
+    public UUID referenceMessageId;
 
     public MessageReactionFirstCreatedEvent(UUID userId, ReactionType reactionType, UUID messageId) {
         this.userId = userId;
         this.reactionType = reactionType;
-        this.messageId = messageId;
+        this.referenceMessageId = messageId;
     }
 }

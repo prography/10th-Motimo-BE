@@ -23,6 +23,11 @@ public class ReactionCommandService {
                         .messageId(messageId)
                         .reactionType(type).build());
 
+        // 첫번째 남기는 리액션이라면
+//        if (true) {
+//            Events.publishEvent(new TodoReactionFirstCreatedEvent(userId, type, ));
+//        }
+
         return upsertedReaction.getMessageId();
     }
 

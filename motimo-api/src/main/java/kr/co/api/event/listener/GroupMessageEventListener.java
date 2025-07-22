@@ -7,6 +7,7 @@ import kr.co.api.group.service.GroupMessageCommandService;
 import kr.co.domain.common.event.group.message.GroupJoinedEvent;
 import kr.co.domain.common.event.group.message.GroupLeftEvent;
 import kr.co.domain.common.event.group.message.GroupMessageDeletedEvent;
+import kr.co.domain.common.event.group.message.MessageReactionFirstCreatedEvent;
 import kr.co.domain.common.event.group.message.TodoCompletedEvent;
 import kr.co.domain.common.event.group.message.TodoResultSubmittedEvent;
 import kr.co.domain.common.outbox.OutboxEvent;
@@ -15,6 +16,7 @@ import kr.co.domain.group.message.GroupMessage;
 import kr.co.domain.group.message.GroupMessageType;
 import kr.co.domain.group.message.MessageReference;
 import kr.co.domain.group.message.MessageReferenceType;
+import kr.co.domain.group.message.frozenData.ReactionFrozenData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -75,6 +77,24 @@ public class GroupMessageEventListener {
 
         groupMessageCommandService.createGroupMessage(groupMessage);
     }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleMessageReactionEvent(MessageReactionFirstCreatedEvent event) {
+        GroupMessage message = groupMessageCommandService.getGroupMessageById(event.messageId);
+
+        GroupMessage groupMessage = GroupMessage.createGroupMessage()
+                .groupId(message.getGroupId())
+                .userId(event.getUserId())
+                .messageType(GroupMessageType.MESSAGE_REACTION)
+                .build();
+
+        groupMessage.setFrozenData(new ReactionFrozenData(event.reactionType));
+
+        groupMessageCommandService.createGroupMessage(groupMessage);
+    }
+
+
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

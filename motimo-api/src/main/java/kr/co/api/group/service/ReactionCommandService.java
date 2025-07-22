@@ -1,7 +1,10 @@
 package kr.co.api.group.service;
 
 import java.util.UUID;
+import kr.co.domain.common.event.Events;
+import kr.co.domain.common.event.group.message.MessageReactionFirstCreatedEvent;
 import kr.co.domain.group.reaction.Reaction;
+import kr.co.domain.group.reaction.ReactionDomainId;
 import kr.co.domain.group.reaction.ReactionType;
 import kr.co.domain.group.reaction.repository.ReactionRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,17 +19,17 @@ public class ReactionCommandService {
     private final ReactionRepository reactionRepository;
 
     public UUID upsertReaction(UUID userId, UUID messageId, ReactionType type) {
-        // TODO 그룹 메시지 발행
+        boolean existsBefore = reactionRepository.existsById(ReactionDomainId.of(userId, messageId));
 
-        Reaction upsertedReaction = reactionRepository.upsert(Reaction.builder()
-                        .userId(userId)
-                        .messageId(messageId)
+        Reaction upsertedReaction = reactionRepository.upsert(Reaction
+                        .createReaction()
+                        .id(ReactionDomainId.of(userId, messageId))
                         .reactionType(type).build());
 
-        // 첫번째 남기는 리액션이라면
-//        if (true) {
-//            Events.publishEvent(new TodoReactionFirstCreatedEvent(userId, type, ));
-//        }
+
+        if (!existsBefore) {
+            Events.publishEvent(new MessageReactionFirstCreatedEvent(userId, type, messageId));
+        }
 
         return upsertedReaction.getMessageId();
     }

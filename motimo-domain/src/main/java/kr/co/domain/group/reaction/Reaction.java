@@ -19,8 +19,8 @@ public class Reaction {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Builder(builderMethodName = "createReaction")
-    private Reaction(UUID userId, UUID messageId, ReactionType reactionType) {
-        this.id = ReactionDomainId.of(userId, messageId);
+    private Reaction(ReactionDomainId id, ReactionType reactionType) {
+        this.id = id;
         this.reactionType = reactionType;
     }
 

@@ -30,7 +30,7 @@ public class ReactionRepositoryImpl implements ReactionRepository {
         return ReactionMapper.toDomain(reactionEntity);
     }
 
-    public boolean exitsById(ReactionDomainId id) {
+    public boolean existsById(ReactionDomainId id) {
         return reactionJpaRepository.existsById(ReactionId.from(id));
     }
 

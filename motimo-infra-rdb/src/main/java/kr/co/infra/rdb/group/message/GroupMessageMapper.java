@@ -15,6 +15,7 @@ public class GroupMessageMapper {
                 groupMessage.getUserId(),
                 groupMessage.getMessageType(),
                 MessageReferenceEmbeddable.from(groupMessage.getMessageReference()),
+                groupMessage.getFrozenData(),
                 groupMessage.getSendAt()
         );
     }

@@ -12,5 +12,5 @@ public interface ReactionRepository {
 
     void deleteByUserIdAndMessageId(UUID userId, UUID messageId);
 
-    boolean exitsById(ReactionDomainId id);
+    boolean existsById(ReactionDomainId id);
 }

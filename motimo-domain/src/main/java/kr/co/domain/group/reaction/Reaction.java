@@ -13,16 +13,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Reaction {
-    private UUID userId;
-    private UUID messageId;
+    private ReactionDomainId id;
     private ReactionType reactionType;
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Builder(builderMethodName = "createReaction")
-    private Reaction(UUID userId, UUID messageId, ReactionType reactionType) {
-        this.userId = userId;
-        this.messageId = messageId;
+    private Reaction(ReactionDomainId id, ReactionType reactionType) {
+        this.id = id;
         this.reactionType = reactionType;
+    }
+
+    public UUID getUserId() {
+        return id.getUserId();
+    }
+
+    public UUID getMessageId() {
+        return id.getMessageId();
     }
 }

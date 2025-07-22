@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.group.Group;
+import kr.co.domain.group.GroupMember;
 import kr.co.domain.group.dto.GroupJoinDto;
 import kr.co.domain.group.exception.GroupNotFoundException;
 import kr.co.domain.group.repository.GroupRepository;
@@ -53,6 +54,11 @@ public class GroupRepositoryImpl implements GroupRepository {
         );
 
         return GroupMapper.toDomain(groupEntity);
+    }
+
+    @Override
+    public void left(UUID groupId, GroupMember member) {
+        groupMemberJpaRepository.deleteByGroupIdAndUserId(groupId, member.getMemberId());
     }
 
     @Override

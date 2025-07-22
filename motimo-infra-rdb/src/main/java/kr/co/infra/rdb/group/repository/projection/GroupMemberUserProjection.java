@@ -8,7 +8,7 @@ public interface GroupMemberUserProjection {
     UUID getGoalId();
     String getNickname();
     String getEmail();
-    String getProfileImageUrl();
+    String getProfileImagePath();
     LocalDateTime getJoinedDate();
     boolean getIsNotificationActive();
 }

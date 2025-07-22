@@ -14,7 +14,7 @@ public class GroupMemberMapper {
                 .goalId(entity.getGoalId())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
-                .profileImageUrl(user.getProfileImagePath())
+                .profileImagePath(user.getProfileImagePath())
                 .joinedDate(entity.getJoinedDate())
                 .lastOnlineDate(LocalDateTime.now())
                 .isNotificationActive(entity.isNotificationActive()).build();
@@ -26,7 +26,7 @@ public class GroupMemberMapper {
                 .goalId(projection.getGoalId())
                 .nickname(projection.getNickname())
                 .email(projection.getEmail())
-                .profileImageUrl(projection.getProfileImageUrl())
+                .profileImagePath(projection.getProfileImagePath())
                 .joinedDate(projection.getJoinedDate())
                 .lastOnlineDate(LocalDateTime.now())
                 .isNotificationActive(projection.getIsNotificationActive()).build();

@@ -105,6 +105,7 @@ public class GroupController implements GroupControllerSwagger {
     }
 
     @DeleteMapping("/{groupId}/members/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void exitGroup(@AuthUser UUID userId, @PathVariable UUID groupId) {
         groupCommandService.leaveGroup(userId, groupId);
     }

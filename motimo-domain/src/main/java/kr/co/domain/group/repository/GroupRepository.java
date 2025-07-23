@@ -12,6 +12,8 @@ public interface GroupRepository {
 
     Group findById(UUID groupId);
 
+    Group findByIdWithoutMembers(UUID groupId);
+
     Group create(Group group);
 
     Group join(GroupJoinDto dto);

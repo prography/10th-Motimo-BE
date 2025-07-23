@@ -48,6 +48,9 @@ public class TodoResultEntity {
     @Column(name = "file_path")
     private String filePath;
 
+    @Column(name = "file_name")
+    private String fileName;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -57,18 +60,20 @@ public class TodoResultEntity {
     private LocalDateTime updatedAt;
 
     public TodoResultEntity(UUID id, UUID todoId, UUID userId, Emotion emotion, String content,
-            String filePath) {
+            String filePath, String fileName) {
         this.id = id;
         this.todoId = todoId;
         this.userId = userId;
         this.emotion = emotion;
         this.content = content;
         this.filePath = filePath;
+        this.fileName = fileName;
     }
 
-    public void update(Emotion emotion, String content, String filePath) {
+    public void update(Emotion emotion, String content, String filePath, String fileName) {
         this.emotion = emotion;
         this.content = content;
         this.filePath = filePath;
+        this.fileName = fileName;
     }
 }

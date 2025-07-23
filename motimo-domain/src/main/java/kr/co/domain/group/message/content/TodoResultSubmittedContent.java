@@ -10,7 +10,8 @@ public record TodoResultSubmittedContent(
         UUID todoResultId,
         Emotion emotion,
         String content,
-        String fileUrl) implements GroupMessageContent {
+        String fileUrl,
+        String fileName) implements GroupMessageContent {
 
     @Override
     public GroupMessageType getType() {

@@ -16,13 +16,17 @@ public record TodoResultRs(
         String content,
 
         @Schema(description = "투두 기록 파일 url")
-        String fileUrl
+        String fileUrl,
+
+        @Schema(description = "투두 기록 파일 이름")
+        String fileName
 ) {
 
     public static TodoResultRs from(TodoResultItemDto result) {
         if (result == null) {
             return null;
         }
-        return new TodoResultRs(result.id(), result.emotion(), result.content(), result.fileUrl());
+        return new TodoResultRs(result.id(), result.emotion(), result.content(), result.fileUrl(),
+                result.fileName());
     }
 }

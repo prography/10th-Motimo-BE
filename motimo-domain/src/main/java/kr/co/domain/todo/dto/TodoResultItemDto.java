@@ -8,15 +8,16 @@ public record TodoResultItemDto(
         UUID id,
         Emotion emotion,
         String content,
-        String fileUrl
+        String fileUrl,
+        String fileName
 ) {
 
-    public static TodoResultItemDto of(TodoResult result, String fileUrl) {
+    public static TodoResultItemDto of(TodoResult result, String fileUrl, String fileName) {
         return new TodoResultItemDto(
-                result.getId(), result.getEmotion(), result.getContent(), fileUrl);
+                result.getId(), result.getEmotion(), result.getContent(), fileUrl, fileName);
     }
 
-    public TodoResultItemDto withFileUrl(String fileUrl) {
-        return new TodoResultItemDto(id, emotion, content, fileUrl);
+    public TodoResultItemDto withFileUrl(String fileUrl, String fileName) {
+        return new TodoResultItemDto(id, emotion, content, fileUrl, fileName);
     }
 }

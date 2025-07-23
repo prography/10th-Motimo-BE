@@ -28,7 +28,8 @@ public class TodoResultSubmitMessageStrategy implements MessageContentStrategy {
         }
 
         return new TodoResultSubmittedContent(todo.getId(), todo.getTitle(), todoResult.getId(),
-                todoResult.getEmotion(), todoResult.getContent(), todoResult.getFilePath());
+                todoResult.getEmotion(), todoResult.getContent(), todoResult.getFilePath(),
+                todoResult.getFileName());
     }
 
     @Override

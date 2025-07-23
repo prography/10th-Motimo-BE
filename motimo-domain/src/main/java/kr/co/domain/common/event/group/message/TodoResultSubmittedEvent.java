@@ -21,11 +21,13 @@ public class TodoResultSubmittedEvent extends Event {
     private Emotion emotion;
     private String content;
     private String filePath;
+    private String fileName;
 
     public static TodoResultSubmittedEvent of(UUID userId, Todo todo, TodoResult todoResult) {
         return new TodoResultSubmittedEvent(
                 userId, todo.getSubGoalId(), todo.getId(), todo.getTitle(), todoResult.getId(),
-                todoResult.getEmotion(), todoResult.getContent(), todoResult.getFilePath()
+                todoResult.getEmotion(), todoResult.getContent(), todoResult.getFilePath(),
+                todoResult.getFileName()
         );
     }
 }

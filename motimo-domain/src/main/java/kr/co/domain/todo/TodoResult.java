@@ -23,16 +23,19 @@ public class TodoResult {
     private Emotion emotion;
     private String content;
     private String filePath;
+    private String fileName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder(builderMethodName = "createTodoResult")
-    private TodoResult(UUID todoId, UUID userId, Emotion emotion, String content, String filePath) {
+    private TodoResult(UUID todoId, UUID userId, Emotion emotion, String content, String filePath,
+            String fileName) {
         this.todoId = todoId;
         this.userId = userId;
         this.emotion = emotion;
         this.content = content;
         this.filePath = filePath;
+        this.fileName = fileName;
     }
 
     public void validateOwner(UUID userId) {

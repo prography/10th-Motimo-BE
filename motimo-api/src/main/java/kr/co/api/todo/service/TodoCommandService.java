@@ -109,8 +109,10 @@ public class TodoCommandService {
     private UUID createTodoResult(UUID userId, Todo todo, Emotion emotion, String content,
             MultipartFile file) {
         String filePath = "";
+        String fileName = "";
         if (file != null && !file.isEmpty()) {
             filePath = String.format("todo/%s/%s", todo.getId(), UUID.randomUUID());
+            fileName = file.getOriginalFilename();
             storageService.store(file, filePath);
             Events.publishEvent(new FileRollbackEvent(filePath));
         }
@@ -121,10 +123,12 @@ public class TodoCommandService {
                 .emotion(emotion)
                 .content(content)
                 .filePath(filePath)
+                .fileName(fileName)
                 .build();
 
         TodoResult todoResult = todoResultRepository.create(result);
-        Events.publishEvent(TodoResultSubmittedEvent.of(userId, todo, todoResult));
+        Events.publishEvent(
+                TodoResultSubmittedEvent.of(userId, todo, todoResult));
         return todoResult.getId();
     }
 

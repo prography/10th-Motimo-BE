@@ -15,6 +15,7 @@ public class TodoResultMapper {
                 .emotion(entity.getEmotion())
                 .content(entity.getContent())
                 .filePath(entity.getFilePath())
+                .fileName(entity.getFileName())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();
@@ -27,7 +28,8 @@ public class TodoResultMapper {
                 domain.getUserId(),
                 domain.getEmotion(),
                 domain.getContent(),
-                domain.getFilePath()
+                domain.getFilePath(),
+                domain.getFileName()
         );
     }
 

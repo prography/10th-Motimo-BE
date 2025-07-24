@@ -29,8 +29,7 @@ public class TodoResultRepositoryImpl implements TodoResultRepository {
         TodoResultEntity entity = todoResultJpaRepository.findById(todoResult.getId())
                 .orElseThrow(TodoResultNotSubmittedException::new);
 
-        entity.update(todoResult.getEmotion(), todoResult.getContent(),
-                todoResult.getFilePath(), todoResult.getFileName());
+        entity.update(todoResult.getEmotion(), todoResult.getContent(), todoResult.getFile());
         return TodoResultMapper.toDomain(todoResultJpaRepository.save(entity));
     }
 

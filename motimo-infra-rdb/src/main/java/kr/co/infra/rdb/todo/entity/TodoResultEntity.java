@@ -1,6 +1,7 @@
 package kr.co.infra.rdb.todo.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -10,6 +11,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import kr.co.domain.todo.Emotion;
+import kr.co.domain.todo.TodoResultFile;
 import kr.co.infra.rdb.common.uuid.GeneratedUuidV7Value;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -45,11 +47,8 @@ public class TodoResultEntity {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "file_path")
-    private String filePath;
-
-    @Column(name = "file_name")
-    private String fileName;
+    @Embedded
+    private TodoResultFileEmbeddable file;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
@@ -60,20 +59,18 @@ public class TodoResultEntity {
     private LocalDateTime updatedAt;
 
     public TodoResultEntity(UUID id, UUID todoId, UUID userId, Emotion emotion, String content,
-            String filePath, String fileName) {
+            TodoResultFile file) {
         this.id = id;
         this.todoId = todoId;
         this.userId = userId;
         this.emotion = emotion;
         this.content = content;
-        this.filePath = filePath;
-        this.fileName = fileName;
+        this.file = TodoResultFileEmbeddable.from(file);
     }
 
-    public void update(Emotion emotion, String content, String filePath, String fileName) {
+    public void update(Emotion emotion, String content, TodoResultFile file) {
         this.emotion = emotion;
         this.content = content;
-        this.filePath = filePath;
-        this.fileName = fileName;
+        this.file = TodoResultFileEmbeddable.from(file);
     }
 }

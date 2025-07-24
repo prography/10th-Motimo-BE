@@ -104,16 +104,15 @@ public class TodoQueryService {
             return todoItem;
         }
         String url = storageService.getFileUrl(todoResultItem.fileUrl());
-        return todoItem.withTodoResultItem(
-                todoResultItem.withFileUrl(url, todoResultItem.fileName()));
+        return todoItem.withTodoResultItem(todoResultItem.withFileUrl(url));
     }
 
     private TodoResultItemDto toTodoResultItemWithFileUrl(TodoResult result) {
-        if (!StringUtils.hasText(result.getFilePath())) {
-            return TodoResultItemDto.of(result, null, result.getFileName());
+        if (!StringUtils.hasText(result.getFile().getFilePath())) {
+            return TodoResultItemDto.of(result, null);
         }
-        String fileUrl = storageService.getFileUrl(result.getFilePath());
-        return TodoResultItemDto.of(result, fileUrl, result.getFileName());
+        String fileUrl = storageService.getFileUrl(result.getFile().getFilePath());
+        return TodoResultItemDto.of(result, fileUrl);
     }
 
     private Comparator<TodoItemDto> todoPriorityComparator() {

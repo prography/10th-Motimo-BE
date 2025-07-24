@@ -224,8 +224,10 @@ public class TodoRepositoryImpl implements TodoRepository {
                         todoResultEntity.id,
                         todoResultEntity.emotion,
                         todoResultEntity.content,
-                        todoResultEntity.filePath,
-                        todoResultEntity.fileName);
+                        todoResultEntity.file.filePath,
+                        todoResultEntity.file.fileName,
+                        todoResultEntity.file.mimeType
+                );
 
         ConstructorExpression<TodoItemDto> todoItem =
                 Projections.constructor(TodoItemDto.class,

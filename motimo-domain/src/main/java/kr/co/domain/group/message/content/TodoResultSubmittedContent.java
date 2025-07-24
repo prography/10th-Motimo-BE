@@ -11,7 +11,8 @@ public record TodoResultSubmittedContent(
         Emotion emotion,
         String content,
         String fileUrl,
-        String fileName) implements GroupMessageContent {
+        String fileName,
+        String mimeType) implements GroupMessageContent {
 
     @Override
     public GroupMessageType getType() {

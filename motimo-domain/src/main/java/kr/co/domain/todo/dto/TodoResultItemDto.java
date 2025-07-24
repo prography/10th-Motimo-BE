@@ -9,15 +9,17 @@ public record TodoResultItemDto(
         Emotion emotion,
         String content,
         String fileUrl,
-        String fileName
+        String fileName,
+        String fileMimeType
 ) {
 
-    public static TodoResultItemDto of(TodoResult result, String fileUrl, String fileName) {
+    public static TodoResultItemDto of(TodoResult result, String fileUrl) {
         return new TodoResultItemDto(
-                result.getId(), result.getEmotion(), result.getContent(), fileUrl, fileName);
+                result.getId(), result.getEmotion(), result.getContent(), fileUrl,
+                result.getFile().getFileName(), result.getFile().getMimeType());
     }
 
-    public TodoResultItemDto withFileUrl(String fileUrl, String fileName) {
-        return new TodoResultItemDto(id, emotion, content, fileUrl, fileName);
+    public TodoResultItemDto withFileUrl(String fileUrl) {
+        return new TodoResultItemDto(id, emotion, content, fileUrl, fileName, fileMimeType);
     }
 }

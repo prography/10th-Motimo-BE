@@ -13,9 +13,9 @@ public class NotificationMapper {
                 .senderId(entity.getSenderId())
                 .receiverId(entity.getReceiverId())
                 .referenceId(entity.getReferenceId())
-                .title(entity.getTitle())
-                .content(entity.getContent())
                 .type(entity.getType())
+                .isRead(entity.isRead())
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 
@@ -23,8 +23,6 @@ public class NotificationMapper {
         return new NotificationEntity(
                 notification.getSenderId(),
                 notification.getReceiverId(),
-                notification.getTitle(),
-                notification.getContent(),
                 notification.getType(),
                 notification.getReferenceId()
         );

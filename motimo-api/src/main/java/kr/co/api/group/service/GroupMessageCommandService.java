@@ -1,6 +1,7 @@
 package kr.co.api.group.service;
 
 import java.util.UUID;
+import kr.co.domain.group.exception.MessageNotFoundException;
 import kr.co.domain.group.message.GroupMessage;
 import kr.co.domain.group.message.repository.GroupMessageRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,10 @@ public class GroupMessageCommandService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteAllByReferenceId(UUID referenceId) {
         groupMessageRepository.deleteAllByReferenceId(referenceId);
+    }
+
+    public GroupMessage getGroupMessageById(UUID messageId) {
+        return groupMessageRepository.findById(messageId)
+                .orElseThrow(MessageNotFoundException::new);
     }
 }

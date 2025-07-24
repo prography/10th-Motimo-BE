@@ -44,6 +44,7 @@ public class MessageContentLoader {
             referenceTypeIds.put(MessageReferenceType.TODO, new HashSet<>());
             referenceTypeIds.put(MessageReferenceType.TODO_RESULT, new HashSet<>());
             referenceTypeIds.put(MessageReferenceType.GOAL, new HashSet<>());
+            referenceTypeIds.put(MessageReferenceType.OTHER_MESSAGE, new HashSet<>());
 
             // 메시지 타입별로 필요한 ID들 추출
             Set<UUID> userIds = messages.stream()

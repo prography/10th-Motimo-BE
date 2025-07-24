@@ -4,7 +4,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import kr.co.domain.common.pagination.CustomPage;
 import kr.co.domain.notification.Notification;
 import kr.co.domain.notification.NotificationType;
 import kr.co.domain.notification.repository.NotificationRepository;
@@ -12,6 +14,10 @@ import kr.co.infra.rdb.notification.NotificationEntity;
 import kr.co.infra.rdb.notification.QNotificationEntity;
 import kr.co.infra.rdb.notification.util.NotificationMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -46,5 +52,23 @@ public class NotificationRepositoryImpl implements NotificationRepository {
                 .from(notification)
                 .where(condition)
                 .fetchFirst() != null;
+    }
+
+    @Override
+    public CustomPage<Notification> findAllByReceiverId(UUID receiverId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<NotificationEntity> pageEntities = notificationJpaRepository.findAllByReceiverId(receiverId, pageable);
+
+        List<Notification> content = pageEntities.getContent().stream()
+                .map(NotificationMapper::toDomain)
+                .toList();
+
+        return new CustomPage<>(
+                content,
+                pageEntities.getTotalElements(),
+                pageEntities.getTotalPages(),
+                page,
+                size
+        );
     }
 }

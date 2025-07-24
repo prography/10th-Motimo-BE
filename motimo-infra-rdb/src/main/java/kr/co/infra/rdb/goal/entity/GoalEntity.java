@@ -77,4 +77,7 @@ public class GoalEntity extends BaseEntity {
         this.groupId = groupId;
     }
 
+    public void disconnectGroup() {
+        this.groupId = null;
+    }
 }

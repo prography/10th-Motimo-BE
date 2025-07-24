@@ -1,9 +1,10 @@
 package kr.co.api.notification.service;
 
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import kr.co.api.notification.dto.NotificationItemDto;
-import kr.co.domain.common.pagination.CustomSlice;
+import kr.co.domain.common.pagination.CustomPage;
+import kr.co.domain.notification.Notification;
 import kr.co.domain.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,13 +13,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationQueryService {
     private final NotificationRepository notificationRepository;
+    private final NotificationAssembler assembler;
 
-    public CustomSlice<NotificationItemDto> getNotificationList(UUID userId, int offset, int limit) {
-        List<NotificationItemDto> notificationListRs = List.of(
-                new NotificationItemDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()),
-                new NotificationItemDto(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID())
-        );
+    public CustomPage<NotificationItemDto> getNotificationList(UUID userId, int page, int size) {
+        CustomPage<Notification> pageNotifications = notificationRepository.findAllByReceiverId(userId, page, size);
 
-        return new CustomSlice<>(notificationListRs, true, offset, limit);
+        Map<UUID, String> notificationContentMap = assembler.convertNotificationContent(pageNotifications.content());
+
+        return pageNotifications.map(notification -> NotificationItemDto.of(notification, notificationContentMap.get(notification.getId())));
     }
 }

@@ -130,6 +130,13 @@ public class GroupMessageRepositoryImpl implements GroupMessageRepository {
         return groupMessageEntity.map(GroupMessageMapper::toDomain);
     }
 
+    @Override
+    public Optional<GroupMessage> findById(UUID id) {
+        Optional<GroupMessageEntity> entity = groupMessageJpaRepository.findById(id);
+
+        return entity.map(GroupMessageMapper::toDomain);
+    }
+
     private List<GroupMessage> processMessagesWithReactions(List<GroupMessageEntity> messages) {
         if (messages.isEmpty()) {
             return List.of();

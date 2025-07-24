@@ -22,6 +22,7 @@ import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.group.Group;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.domain.subGoal.SubGoal;
+import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.dto.TodoItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,16 +38,18 @@ public class GoalQueryService {
     private final TodoQueryService todoQueryService;
 
     public GoalDetailDto getGoalDetail(UUID goalId) {
-        Goal goal = goalRepository.findById(goalId);
+        Goal goal = goalRepository.findByIdWithoutSubGoals(goalId);
 
         Optional<Group> group = groupRepository.findByGoalId(goalId);
+
+        List<Todo> allTodos = todoQueryService.getTodosByGoalId(goalId);
 
         return new GoalDetailDto(
                 goal.getId(),
                 goal.getTitle(),
                 goal.getDueDate().getMonth(),
                 goal.getDueDateValue(),
-                goal.calculateProgress(),
+                goal.calculateProgress(allTodos),
                 goal.getCreatedAt(),
                 goal.completed,
                 group.isPresent(),
@@ -56,7 +59,12 @@ public class GoalQueryService {
 
     public List<GoalItemDto> getGoalList(UUID userId) {
         List<Goal> goals = goalRepository.findAllByUserId(userId);
-        return goals.stream().map(GoalItemDto::from).toList();
+        return goals.stream().map(goal -> {
+            List<Todo> todos = todoQueryService.getTodosByGoalId(goal.getId());
+            return GoalItemDto.of(
+                    goal, goal.calculateProgress(todos)
+            );
+        }).toList();
     }
 
     public GoalWithSubGoalDto getGoalWithSubGoal(UUID goalId) {

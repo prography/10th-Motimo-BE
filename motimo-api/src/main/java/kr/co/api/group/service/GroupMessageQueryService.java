@@ -101,9 +101,9 @@ public class GroupMessageQueryService {
         }
 
         Group group = groupRepository.findById(groupId);
-        if (!groupMemberRepository.existsByGroupIdAndMemberId(groupId, userId)) {
-            throw new UserNotInGroupException();
-        }
+//        if (!groupMemberRepository.existsByGroupIdAndMemberId(groupId, userId)) {
+//            throw new UserNotInGroupException();
+//        }
 
         CustomCursor cursor = cursorUtil.parseCursor(latestCursor);
 

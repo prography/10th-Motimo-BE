@@ -8,10 +8,10 @@ import kr.co.domain.common.event.group.message.GroupLeftEvent;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.group.Group;
+import kr.co.domain.group.GroupMember;
 import kr.co.domain.group.dto.GroupJoinDto;
 import kr.co.domain.group.exception.AlreadyJoinedGroupException;
 import kr.co.domain.group.exception.AlreadyTodayPokeException;
-import kr.co.domain.group.repository.GroupMemberRepository;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.domain.notification.NotificationType;
 import kr.co.domain.notification.repository.NotificationRepository;
@@ -26,7 +26,6 @@ public class GroupCommandService {
 
     private final GoalRepository goalRepository;
     private final GroupRepository groupRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final NotificationRepository notificationRepository;
 
     public UUID joinGroup(UUID userId, UUID goalId) {
@@ -62,10 +61,12 @@ public class GroupCommandService {
 
     public void leaveGroup(UUID userId, UUID groupId) {
         Group group = groupRepository.findById(groupId);
-//        group.removeMember(userId);
+        GroupMember member = group.getMember(userId);
+
+        groupRepository.left(groupId, member);
+        goalRepository.disconnectGroupByGoalId(member.getGoalId());
 
         Events.publishEvent(new GroupLeftEvent(groupId, userId));
-        groupMemberRepository.deleteByGroupIdAndMemberId(groupId, userId);
     }
 
     public void createPokeNotification(UUID userId, UUID groupId, UUID receiverId) {
@@ -78,8 +79,7 @@ public class GroupCommandService {
                 userId,
                 receiverId,
                 groupId,
-                NotificationType.POKE.getDefaultTitle(),
-                NotificationType.POKE.getDefaultContent()
+                NotificationType.POKE.getDefaultTitle()
         ));
     }
 

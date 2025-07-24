@@ -14,7 +14,7 @@ public class GroupMember {
     private UUID memberId;
     private String nickname;
     private String email;
-    private String profileImageUrl;
+    private String profileImagePath;
     private UUID goalId;
     private LocalDateTime joinedDate;
     private LocalDateTime lastOnlineDate;

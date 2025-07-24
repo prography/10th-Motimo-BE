@@ -7,7 +7,8 @@ public enum GroupMessageType {
     TODO_COMPLETE("투두 완료"),
     TODO_RESULT_SUBMIT("투두 결과 제출"),
 
-    GOAL_TITLE_UPDATE("목표명 변경");
+    GOAL_TITLE_UPDATE("목표명 변경"),
+    MESSAGE_REACTION("메시지 리액션");
 
     private final String description;
 

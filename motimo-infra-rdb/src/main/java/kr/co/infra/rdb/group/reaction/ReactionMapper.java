@@ -1,6 +1,7 @@
 package kr.co.infra.rdb.group.reaction;
 
 import kr.co.domain.group.reaction.Reaction;
+import kr.co.domain.group.reaction.ReactionDomainId;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -8,9 +9,7 @@ public class ReactionMapper {
 
     public static Reaction toDomain(ReactionEntity entity) {
         return Reaction.builder()
-//                .id(entity.getId())
-                .userId(entity.getUserId())
-                .messageId(entity.getMessageId())
+                .id(ReactionDomainId.of(entity.getUserId(), entity.getMessageId()))
                 .reactionType(entity.getReactionType())
                 .createdAt(entity.getCreatedAt())
                 .build();

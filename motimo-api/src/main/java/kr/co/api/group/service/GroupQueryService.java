@@ -7,15 +7,15 @@ import kr.co.api.group.service.dto.GroupDto;
 import kr.co.api.group.service.dto.GroupMemberDto;
 import kr.co.api.group.service.dto.JoinedGroupDto;
 import kr.co.domain.group.Group;
-import kr.co.domain.group.GroupMember;
 import kr.co.domain.group.message.GroupMessage;
 import kr.co.domain.group.message.repository.GroupMessageRepository;
-import kr.co.domain.group.repository.GroupMemberRepository;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.domain.notification.repository.NotificationRepository;
+import kr.co.infra.storage.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @Transactional(readOnly = true)
@@ -24,8 +24,8 @@ public class GroupQueryService {
 
     private final GroupRepository groupRepository;
     private final GroupMessageRepository groupMessageRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final NotificationRepository notificationRepository;
+    private final StorageService storageService;
 
     public List<JoinedGroupDto> getJoinedGroupList(UUID userId) {
         List<Group> groups = groupRepository.findAllGroupDetailByUserId(userId);
@@ -48,18 +48,27 @@ public class GroupQueryService {
     }
 
     public List<GroupMemberDto> getGroupMemberList(UUID userId, UUID groupId) {
-        List<GroupMember> groupMembers = groupMemberRepository.findAllByGroupId(groupId);
+        Group group = groupRepository.findById(groupId);
 
-        return groupMembers.stream()
+
+        return group.getMembers().stream()
                 .map(member -> {
                     boolean isLoginUser = member.getMemberId().equals(userId);
 
                     Boolean isActivePoke = isLoginUser ? null
                             : !notificationRepository.existsByTodayPoke(userId, member.getMemberId(), groupId);
 
+                    String profileUrl = resolveProfileImageUrl(member.getProfileImagePath());
                     return new GroupMemberDto(member.getMemberId(), member.getNickname(),
                             member.getLastOnlineDate(), isActivePoke);
                 })
                 .toList();
+    }
+
+    private String resolveProfileImageUrl(String path) {
+        if (!StringUtils.hasText(path)) {
+            return "";
+        }
+        return storageService.getFileUrl(path);
     }
 }

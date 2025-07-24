@@ -6,7 +6,7 @@ import kr.co.api.notification.dto.NotificationItemDto;
 import kr.co.api.notification.rqrs.NotificationItemRs;
 import kr.co.api.notification.service.NotificationQueryService;
 import kr.co.api.security.annotation.AuthUser;
-import kr.co.domain.common.pagination.CustomSlice;
+import kr.co.domain.common.pagination.CustomPage;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,12 +23,10 @@ public class NotificationController implements NotificationControllerSwagger {
     }
 
     @GetMapping
-    public CustomSlice<NotificationItemRs> getNotificationList(@AuthUser UUID userId, @RequestParam int offset, @RequestParam int limit) {
-        CustomSlice<NotificationItemDto> dtos = notificationQueryService.getNotificationList(
-                userId, offset, limit);
+    public CustomPage<NotificationItemRs> getNotificationList(@AuthUser UUID userId, @RequestParam(defaultValue = "0") int page, @RequestParam int size) {
+        CustomPage<NotificationItemDto> dtos = notificationQueryService.getNotificationList(userId, page, size);
 
-        return new CustomSlice<>(dtos.content().stream().map(NotificationItemRs::from).toList(),
-                true, offset, limit);
+        return dtos.map(NotificationItemRs::from);
     }
 
 }

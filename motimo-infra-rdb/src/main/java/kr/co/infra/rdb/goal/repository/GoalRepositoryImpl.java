@@ -97,6 +97,14 @@ public class GoalRepositoryImpl implements GoalRepository {
 
     }
 
+    @Override
+    public void disconnectGroupByGoalId(UUID goalId) {
+        GoalEntity goalEntity = goalJpaRepository.findById(goalId).orElseThrow(
+                GoalNotFoundException::new);
+
+        goalEntity.disconnectGroup();
+    }
+
     public void deleteById(UUID goalId) {
         goalJpaRepository.deleteById(goalId);
     }

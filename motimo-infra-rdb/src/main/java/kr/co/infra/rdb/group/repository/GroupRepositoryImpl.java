@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.group.Group;
+import kr.co.domain.group.GroupMember;
 import kr.co.domain.group.dto.GroupJoinDto;
 import kr.co.domain.group.exception.GroupNotFoundException;
 import kr.co.domain.group.repository.GroupRepository;
@@ -19,6 +20,7 @@ import kr.co.infra.rdb.group.entity.QGroupMemberEntity;
 import kr.co.infra.rdb.group.repository.projection.GroupMemberGoalGroupProjection;
 import kr.co.infra.rdb.group.repository.query.GroupJpaSubQuery;
 import kr.co.infra.rdb.group.util.GroupMapper;
+import kr.co.infra.rdb.group.util.GroupMemberMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -55,8 +57,20 @@ public class GroupRepositoryImpl implements GroupRepository {
         return GroupMapper.toDomain(groupEntity);
     }
 
-    @Override
+    public void left(UUID groupId, GroupMember member) {
+        groupMemberJpaRepository.deleteByGroupIdAndUserId(groupId, member.getMemberId());
+    }
+
     public Group findById(UUID groupId) {
+        GroupEntity groupEntity = groupJpaRepository.findById(groupId)
+                .orElseThrow(GroupNotFoundException::new);
+
+        List<GroupMember> members = groupMemberJpaRepository.findByGroupId(groupId).stream().map(GroupMemberMapper::toDomain).toList();
+
+        return GroupMapper.toDomain(groupEntity, members);
+    }
+
+    public Group findByIdWithoutMembers(UUID groupId) {
         GroupEntity groupEntity = groupJpaRepository.findById(groupId)
                 .orElseThrow(GroupNotFoundException::new);
         return GroupMapper.toDomain(groupEntity);
@@ -102,7 +116,6 @@ public class GroupRepositoryImpl implements GroupRepository {
         return result == null ? Optional.empty() : Optional.of(GroupMapper.toDomain(result));
     }
 
-    @Override
     public List<Group> findAllGroupDetailByUserId(UUID userId) {
         List<GroupMemberGoalGroupProjection> groupProjections = groupMemberJpaRepository.findAllGoalAndGroupByUserId(
                 userId);
@@ -112,7 +125,6 @@ public class GroupRepositoryImpl implements GroupRepository {
                         projection.getGoalTitle(), projection.getGroupFinishedDate())).toList();
     }
 
-    @Override
     public boolean existsByGoalId(UUID goalId) {
         return groupMemberJpaRepository.existsByGoalId(goalId);
     }

@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.goal.dto.GoalTodoCount;
+import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
 import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.dto.TodoItemDto;
@@ -71,6 +72,10 @@ public class TodoQueryService {
                 .sorted(todoPriorityComparator())
                 .map(this::enrichTodoItemWithUrl)
                 .toList();
+    }
+
+    public List<Todo> getTodosByGoalId(UUID goalId) {
+        return todoRepository.findAllByGoalId(goalId);
     }
 
     public Optional<TodoResultItemDto> getTodoResultByTodoId(UUID todoId) {

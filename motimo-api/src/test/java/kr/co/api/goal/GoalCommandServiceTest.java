@@ -3,6 +3,8 @@ package kr.co.api.goal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +20,8 @@ import kr.co.api.goal.dto.GoalUpdateDto;
 import kr.co.api.goal.dto.SubGoalCreateDto;
 import kr.co.api.goal.dto.SubGoalUpdateDto;
 import kr.co.api.goal.service.GoalCommandService;
+import kr.co.domain.common.event.Events;
+import kr.co.domain.common.event.group.message.GoalTitleUpdatedEvent;
 import kr.co.domain.goal.DueDate;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.exception.GoalCompleteFailedException;
@@ -25,6 +29,8 @@ import kr.co.domain.goal.exception.GoalErrorCode;
 import kr.co.domain.goal.repository.GoalRepository;
 import kr.co.domain.subGoal.SubGoal;
 import kr.co.domain.subGoal.repository.SubGoalRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +38,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +57,19 @@ class GoalCommandServiceTest {
     @Captor
     private ArgumentCaptor<Goal> goalCaptor;
 
+    private MockedStatic<Events> mockedEvents;
+
     final String goalTitle = "goal title";
+
+    @BeforeEach
+    void setUp() {
+        mockedEvents = mockStatic(Events.class);
+    }
+
+    @AfterEach
+    void clear() {
+        mockedEvents.close();
+    }
 
     @Test
     void 목표_정상_생성() {
@@ -167,7 +186,8 @@ class GoalCommandServiceTest {
 
         GoalUpdateDto dto = createGoalUpdateDto(existingSubGoal);
 
-        Goal testGoal = dommyTestGoal(userId, goalId, convertToSubGoals(dto.subGoals(), goalId, userId));
+        Goal testGoal = dommyTestGoal(userId, goalId,
+                convertToSubGoals(dto.subGoals(), goalId, userId));
         testGoal.putSubGoals(List.of(existingSubGoal));
 
         when(goalRepository.findById(testGoal.getId())).thenReturn(testGoal);
@@ -202,6 +222,93 @@ class GoalCommandServiceTest {
         assertThat(addedSubGoal.getOrder()).isEqualTo(3);
     }
 
+    @Test
+    void 그룹에_참여한_목표_제목을_수정시_이벤트_발행() {
+        // given
+        UUID userId = UUID.randomUUID();
+        UUID goalId = UUID.randomUUID();
+        UUID groupId = UUID.randomUUID();
+        String updatedTitle = "updated title";
+
+        GoalUpdateDto dto = new GoalUpdateDto(
+                updatedTitle,
+                true,
+                5,
+                null,
+                List.of(),
+                Set.of()
+        );
+
+        Goal testGoal = dommyTestGoal(userId, goalId,
+                convertToSubGoals(dto.subGoals(), goalId, userId));
+        testGoal.joinGroup(groupId);
+        when(goalRepository.findById(testGoal.getId())).thenReturn(testGoal);
+        when(goalRepository.update(any(Goal.class))).thenReturn(testGoal);
+
+        // when
+        goalCommandService.updateGoal(userId, testGoal.getId(), dto);
+
+        // then
+        mockedEvents.verify(() -> Events.publishEvent(any(GoalTitleUpdatedEvent.class)));
+    }
+
+    @Test
+    void 그룹에_참여한_목표의_제목_변경이_없으면_이벤트_미발행() {
+        // given
+        UUID userId = UUID.randomUUID();
+        UUID groupId = UUID.randomUUID();
+        UUID goalId = UUID.randomUUID();
+
+        GoalUpdateDto dto = new GoalUpdateDto(
+                goalTitle,
+                true,
+                5,
+                null,
+                List.of(),
+                Set.of()
+        );
+
+        Goal testGoal = dommyTestGoal(userId, goalId,
+                convertToSubGoals(dto.subGoals(), goalId, userId));
+        testGoal.joinGroup(groupId);
+        when(goalRepository.findById(testGoal.getId())).thenReturn(testGoal);
+        when(goalRepository.update(any(Goal.class))).thenReturn(testGoal);
+
+        // when
+        goalCommandService.updateGoal(userId, testGoal.getId(), dto);
+
+        // then
+        mockedEvents.verify(() -> Events.publishEvent(any(GoalTitleUpdatedEvent.class)),
+                never());
+    }
+
+    @Test
+    void 그룹에_참여하지_않은_목표_제목을_수정시_이벤트_미발행() {
+        // given
+        UUID userId = UUID.randomUUID();
+        String updatedTitle = "updated title";
+
+        GoalUpdateDto dto = new GoalUpdateDto(
+                updatedTitle,
+                true,
+                5,
+                null,
+                List.of(),
+                Set.of()
+        );
+
+        Goal testGoal = createTestGoal(userId);
+        when(goalRepository.findById(testGoal.getId())).thenReturn(testGoal);
+        when(goalRepository.update(any(Goal.class))).thenReturn(testGoal);
+
+        // when
+        goalCommandService.updateGoal(userId, testGoal.getId(), dto);
+
+        // then
+        mockedEvents.verify(() -> Events.publishEvent(any(GoalTitleUpdatedEvent.class)),
+                never());
+    }
+
     private GoalUpdateDto createGoalUpdateDto(SubGoal existingSubGoal) {
         return new GoalUpdateDto(
                 "updated goal title",
@@ -224,7 +331,8 @@ class GoalCommandServiceTest {
         );
     }
 
-    private List<SubGoal> convertToSubGoals(List<SubGoalUpdateDto> subGoalDtos, UUID goalId, UUID userId) {
+    private List<SubGoal> convertToSubGoals(List<SubGoalUpdateDto> subGoalDtos, UUID goalId,
+            UUID userId) {
         return subGoalDtos.stream()
                 .map(dto -> SubGoal.builder()
                         .id(dto.updateId())

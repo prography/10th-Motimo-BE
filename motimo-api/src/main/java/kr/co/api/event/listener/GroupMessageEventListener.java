@@ -4,6 +4,7 @@ import java.util.UUID;
 import kr.co.api.event.service.OutboxCommandService;
 import kr.co.api.goal.service.GoalQueryService;
 import kr.co.api.group.service.GroupMessageCommandService;
+import kr.co.domain.common.event.group.message.GoalTitleUpdatedEvent;
 import kr.co.domain.common.event.group.message.GroupJoinedEvent;
 import kr.co.domain.common.event.group.message.GroupLeftEvent;
 import kr.co.domain.common.event.group.message.GroupMessageDeletedEvent;
@@ -16,6 +17,7 @@ import kr.co.domain.group.message.GroupMessage;
 import kr.co.domain.group.message.GroupMessageType;
 import kr.co.domain.group.message.MessageReference;
 import kr.co.domain.group.message.MessageReferenceType;
+import kr.co.domain.group.message.frozenData.GoalTitleFrozenData;
 import kr.co.domain.group.message.frozenData.ReactionFrozenData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -81,12 +83,14 @@ public class GroupMessageEventListener {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleMessageReactionEvent(MessageReactionFirstCreatedEvent event) {
-        GroupMessage message = groupMessageCommandService.getGroupMessageById(event.getReferenceMessageId());
+        GroupMessage message = groupMessageCommandService.getGroupMessageById(
+                event.getReferenceMessageId());
 
         GroupMessage groupMessage = GroupMessage.createGroupMessage()
                 .groupId(message.getGroupId())
                 .userId(event.getUserId())
-                .messageReference(new MessageReference(MessageReferenceType.OTHER_MESSAGE, event.getReferenceMessageId()))
+                .messageReference(new MessageReference(MessageReferenceType.OTHER_MESSAGE,
+                        event.getReferenceMessageId()))
                 .messageType(GroupMessageType.MESSAGE_REACTION)
                 .build();
 
@@ -94,8 +98,6 @@ public class GroupMessageEventListener {
 
         groupMessageCommandService.createGroupMessage(groupMessage);
     }
-
-
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -131,5 +133,21 @@ public class GroupMessageEventListener {
             log.error("그룹 메시지 삭제에 실패 메시지 관련 ID: {}", event.getReferenceId(), e);
             outboxCommandService.createOutboxEvent(OutboxEvent.from(event));
         }
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleGoalTitleUpdateEvent(GoalTitleUpdatedEvent event) {
+        GroupMessage groupMessage = GroupMessage.createGroupMessage()
+                .groupId(event.getGroupId())
+                .userId(event.getUserId())
+                .messageType(GroupMessageType.GOAL_TITLE_UPDATE)
+                .messageReference(
+                        new MessageReference(MessageReferenceType.GOAL, event.getGoalId()))
+                .build();
+
+        groupMessage.setFrozenData(new GoalTitleFrozenData(event.getTitle()));
+
+        groupMessageCommandService.createGroupMessage(groupMessage);
     }
 }

@@ -11,14 +11,12 @@ import kr.co.domain.common.pagination.CursorUtil;
 import kr.co.domain.common.pagination.CustomCursor;
 import kr.co.domain.common.pagination.PagingDirection;
 import kr.co.domain.group.Group;
-import kr.co.domain.group.exception.UserNotInGroupException;
 import kr.co.domain.group.message.GroupMessage;
 import kr.co.domain.group.message.NewGroupMessages;
 import kr.co.domain.group.message.content.GroupMessageContent;
 import kr.co.domain.group.message.repository.GroupMessageRepository;
 import kr.co.domain.group.message.strategy.MessageContentData;
 import kr.co.domain.group.message.strategy.MessageContentStrategyFactory;
-import kr.co.domain.group.repository.GroupMemberRepository;
 import kr.co.domain.group.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class GroupMessageQueryService {
 
     private final GroupRepository groupRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final GroupMessageRepository groupMessageRepository;
     private final MessageContentLoader contentLoader;
     private final MessageContentStrategyFactory strategyFactory;
@@ -42,9 +39,8 @@ public class GroupMessageQueryService {
     public GroupChatDto findMessagesByGroupIdWithCursor(UUID userId, UUID groupId,
             String latestCursor, int limit, PagingDirection direction) {
         Group group = groupRepository.findById(groupId);
-        if (!groupMemberRepository.existsByGroupIdAndMemberId(groupId, userId)) {
-            throw new UserNotInGroupException();
-        }
+
+        group.checkMember(userId);
 
         // 커서값 파싱
         CustomCursor cursor = cursorUtil.parseCursor(latestCursor);
@@ -101,9 +97,7 @@ public class GroupMessageQueryService {
         }
 
         Group group = groupRepository.findById(groupId);
-//        if (!groupMemberRepository.existsByGroupIdAndMemberId(groupId, userId)) {
-//            throw new UserNotInGroupException();
-//        }
+        group.checkMember(userId);
 
         CustomCursor cursor = cursorUtil.parseCursor(latestCursor);
 

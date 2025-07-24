@@ -19,7 +19,10 @@ public record TodoResultRs(
         String fileUrl,
 
         @Schema(description = "투두 기록 파일 이름")
-        String fileName
+        String fileName,
+
+        @Schema(description = "투두 기록 파일 데이터 종류")
+        String fileMimeType
 ) {
 
     public static TodoResultRs from(TodoResultItemDto result) {
@@ -27,6 +30,6 @@ public record TodoResultRs(
             return null;
         }
         return new TodoResultRs(result.id(), result.emotion(), result.content(), result.fileUrl(),
-                result.fileName());
+                result.fileName(), result.fileMimeType());
     }
 }

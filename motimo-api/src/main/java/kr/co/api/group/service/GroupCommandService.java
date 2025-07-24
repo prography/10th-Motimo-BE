@@ -12,7 +12,6 @@ import kr.co.domain.group.GroupMember;
 import kr.co.domain.group.dto.GroupJoinDto;
 import kr.co.domain.group.exception.AlreadyJoinedGroupException;
 import kr.co.domain.group.exception.AlreadyTodayPokeException;
-import kr.co.domain.group.repository.GroupMemberRepository;
 import kr.co.domain.group.repository.GroupRepository;
 import kr.co.domain.notification.NotificationType;
 import kr.co.domain.notification.repository.NotificationRepository;
@@ -27,7 +26,6 @@ public class GroupCommandService {
 
     private final GoalRepository goalRepository;
     private final GroupRepository groupRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final NotificationRepository notificationRepository;
 
     public UUID joinGroup(UUID userId, UUID goalId) {

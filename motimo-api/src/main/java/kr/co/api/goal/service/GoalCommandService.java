@@ -59,7 +59,8 @@ public class GoalCommandService {
         goal.validateOwner(userId);
 
         if (goal.isJoinedGroup() && !goal.getTitle().equals(dto.title())) {
-            Events.publishEvent(new GoalTitleUpdatedEvent(userId, goalId, goal.getGroupId()));
+            Events.publishEvent(
+                    new GoalTitleUpdatedEvent(userId, goalId, dto.title(), goal.getGroupId()));
         }
 
         goal.update(dto.title(), getDueDate(dto));

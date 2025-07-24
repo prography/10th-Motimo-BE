@@ -17,6 +17,7 @@ import kr.co.domain.group.message.GroupMessage;
 import kr.co.domain.group.message.GroupMessageType;
 import kr.co.domain.group.message.MessageReference;
 import kr.co.domain.group.message.MessageReferenceType;
+import kr.co.domain.group.message.frozenData.GoalTitleFrozenData;
 import kr.co.domain.group.message.frozenData.ReactionFrozenData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,12 +83,14 @@ public class GroupMessageEventListener {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleMessageReactionEvent(MessageReactionFirstCreatedEvent event) {
-        GroupMessage message = groupMessageCommandService.getGroupMessageById(event.getReferenceMessageId());
+        GroupMessage message = groupMessageCommandService.getGroupMessageById(
+                event.getReferenceMessageId());
 
         GroupMessage groupMessage = GroupMessage.createGroupMessage()
                 .groupId(message.getGroupId())
                 .userId(event.getUserId())
-                .messageReference(new MessageReference(MessageReferenceType.OTHER_MESSAGE, event.getReferenceMessageId()))
+                .messageReference(new MessageReference(MessageReferenceType.OTHER_MESSAGE,
+                        event.getReferenceMessageId()))
                 .messageType(GroupMessageType.MESSAGE_REACTION)
                 .build();
 
@@ -95,8 +98,6 @@ public class GroupMessageEventListener {
 
         groupMessageCommandService.createGroupMessage(groupMessage);
     }
-
-
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -144,6 +145,8 @@ public class GroupMessageEventListener {
                 .messageReference(
                         new MessageReference(MessageReferenceType.GOAL, event.getGoalId()))
                 .build();
+
+        groupMessage.setFrozenData(new GoalTitleFrozenData(event.getTitle()));
 
         groupMessageCommandService.createGroupMessage(groupMessage);
     }

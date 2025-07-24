@@ -68,9 +68,7 @@ public class MessageContentLoader {
 
             Map<UUID, User> userMap = loadUsers(userIds);
 
-            Map<UUID, Goal> goalMap = loadGoals(referenceTypeIds.get(MessageReferenceType.GOAL));
-
-            return new MessageContentData(todoMap, todoResultMap, userMap, goalMap);
+            return new MessageContentData(todoMap, todoResultMap, userMap);
         } catch (DataAccessException e) {
             log.error("메시지 content 로드중 Database 에러가 발생했습니다 - {} messages", messages.size(), e);
             throw new MessageContentLoadingException();

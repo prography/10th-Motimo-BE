@@ -77,6 +77,7 @@ class GoalQueryServiceTest {
 
             when(goalRepository.findByIdWithoutSubGoals(goalId)).thenReturn(goal);
             when(groupRepository.findByGoalId(goalId)).thenReturn(Optional.of(group));
+            when(todoQueryService.getTodosByGoalId(goalId)).thenReturn(List.of());
 
             // when
             GoalDetailDto result = goalQueryService.getGoalDetail(goalId);
@@ -88,8 +89,10 @@ class GoalQueryServiceTest {
             assertThat(result.isJoinedGroup()).isTrue();
             assertThat(result.groupId()).isEqualTo(group.getId());
 
-            verify(goalRepository).findById(goalId);
+            // 수정: findById -> findByIdWithoutSubGoals
+            verify(goalRepository).findByIdWithoutSubGoals(goalId);
             verify(groupRepository).findByGoalId(goalId);
+            verify(todoQueryService).getTodosByGoalId(goalId); // 이것도 추가하는 것이 좋습니다
         }
 
         @Test
@@ -97,8 +100,9 @@ class GoalQueryServiceTest {
             // given
             Goal goal = createMockGoal(userId, goalId, List.of());
 
-            when(goalRepository.findById(goalId)).thenReturn(goal);
+            when(goalRepository.findByIdWithoutSubGoals(goalId)).thenReturn(goal);
             when(groupRepository.findByGoalId(goalId)).thenReturn(Optional.empty());
+            when(todoQueryService.getTodosByGoalId(goalId)).thenReturn(List.of()); // 이것도 추가
 
             // when
             GoalDetailDto result = goalQueryService.getGoalDetail(goalId);
@@ -110,8 +114,10 @@ class GoalQueryServiceTest {
             assertThat(result.isJoinedGroup()).isFalse();
             assertThat(result.groupId()).isNull();
 
-            verify(goalRepository).findById(goalId);
+            // 수정: findById -> findByIdWithoutSubGoals
+            verify(goalRepository).findByIdWithoutSubGoals(goalId);
             verify(groupRepository).findByGoalId(goalId);
+            verify(todoQueryService).getTodosByGoalId(goalId); // 이것도 추가하는 것이 좋습니다
         }
     }
 

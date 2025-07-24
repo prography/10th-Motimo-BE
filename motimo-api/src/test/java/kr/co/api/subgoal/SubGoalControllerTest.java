@@ -166,7 +166,7 @@ class SubGoalControllerTest {
                         UUID.randomUUID(),
                         Emotion.PROUD,
                         "todo result",
-                        "", ""
+                        "", "", ""
                 ));
     }
 }

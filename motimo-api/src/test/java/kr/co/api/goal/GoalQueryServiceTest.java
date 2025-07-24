@@ -340,7 +340,8 @@ class GoalQueryServiceTest {
                     LocalDate.now(),
                     TodoStatus.INCOMPLETE,
                     LocalDateTime.now(),
-                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "todo result", "", ""));
+                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "todo result", "", "",
+                            ""));
             todos.add(todo);
         }
         return todos;

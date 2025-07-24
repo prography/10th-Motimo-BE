@@ -19,6 +19,7 @@ import kr.co.domain.common.pagination.CustomSlice;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.TodoResultFile;
 import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.dto.TodoItemDto;
 import kr.co.domain.todo.dto.TodoResultItemDto;
@@ -239,7 +240,7 @@ class TodoQueryServiceTest {
         void 투두_결과의_파일_URL이_없는_투두_결과가_있는_경우() {
             // given
             TodoItemDto todoWithNullFileUrl = createTodoItem(TodoStatus.COMPLETE, LocalDate.now(),
-                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "content", null, ""));
+                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "content", "", "", ""));
             when(todoRepository.findAllByUserId(userId)).thenReturn(List.of(todoWithNullFileUrl));
 
             // when
@@ -247,7 +248,7 @@ class TodoQueryServiceTest {
 
             // then
             assertThat(todos).hasSize(1);
-            assertThat(todos.getFirst().todoResultItem().fileUrl()).isNull();
+            assertThat(todos.getFirst().todoResultItem().fileUrl()).isEmpty();
             verify(storageService, never()).getFileUrl(anyString());
         }
     }
@@ -264,7 +265,7 @@ class TodoQueryServiceTest {
                     .todoId(todoId)
                     .emotion(Emotion.PROUD)
                     .content("투두 완료!")
-                    .filePath("todo/file.jpg")
+                    .file(TodoResultFile.of("", "", ""))
                     .build();
 
             when(todoResultRepository.findByTodoId(todoId)).thenReturn(Optional.of(mockResult));
@@ -366,7 +367,7 @@ class TodoQueryServiceTest {
                     TodoStatus.INCOMPLETE,
                     LocalDateTime.now(),
                     new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "todo result", "",
-                            "")));
+                            "", "")));
         }
         return items;
     }
@@ -395,7 +396,7 @@ class TodoQueryServiceTest {
                 Emotion.PROUD,
                 "todo result",
                 "file.jpg"
-                , "file.jpg"
+                , "file.jpg", "jpg"
         );
     }
 }

@@ -34,6 +34,15 @@ public class Group {
 
 
     public GroupMember getMember(UUID memberId) {
-        return members.stream().filter(member -> member.getMemberId().equals(memberId)).findFirst().orElseThrow(UserNotInGroupException::new);
+        return members.stream().filter(member -> member.getMemberId().equals(memberId)).findFirst()
+                .orElseThrow(UserNotInGroupException::new);
     }
+
+    public void checkMember(UUID userId) {
+        members.stream()
+                .filter(member -> member.getMemberId().equals(userId))
+                .findAny()
+                .orElseThrow(UserNotInGroupException::new);
+    }
+
 }

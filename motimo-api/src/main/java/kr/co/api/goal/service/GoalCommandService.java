@@ -9,6 +9,8 @@ import kr.co.api.goal.dto.GoalCreateDto;
 import kr.co.api.goal.dto.GoalUpdateDto;
 import kr.co.api.goal.dto.SubGoalUpdateDto;
 import kr.co.api.todo.service.TodoCommandService;
+import kr.co.domain.common.event.Events;
+import kr.co.domain.common.event.group.message.GoalTitleUpdatedEvent;
 import kr.co.domain.goal.DueDate;
 import kr.co.domain.goal.Goal;
 import kr.co.domain.goal.repository.GoalRepository;
@@ -56,6 +58,11 @@ public class GoalCommandService {
         Goal goal = goalRepository.findById(goalId);
         goal.validateOwner(userId);
 
+        if (goal.isJoinedGroup() && !goal.getTitle().equals(dto.title())) {
+            Events.publishEvent(
+                    new GoalTitleUpdatedEvent(userId, goalId, dto.title(), goal.getGroupId()));
+        }
+
         goal.update(dto.title(), getDueDate(dto));
         goal.putSubGoals(makeUpsertSubGoals(goalId, goal.getSubGoals(), dto.subGoals()));
 
@@ -100,7 +107,8 @@ public class GoalCommandService {
         Goal goal = goalRepository.findById(goalId);
         goal.validateOwner(userId);
 
-        Set<UUID> subGoalIds = goal.getSubGoals().stream().map(SubGoal::getId).collect(Collectors.toSet());
+        Set<UUID> subGoalIds = goal.getSubGoals().stream().map(SubGoal::getId)
+                .collect(Collectors.toSet());
 
         subGoalIds.forEach(todoCommandService::deleteAllBySubGoalId);
 

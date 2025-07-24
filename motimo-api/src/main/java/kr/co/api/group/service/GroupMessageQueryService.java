@@ -39,7 +39,8 @@ public class GroupMessageQueryService {
     public GroupChatDto findMessagesByGroupIdWithCursor(UUID userId, UUID groupId,
             String latestCursor, int limit, PagingDirection direction) {
         Group group = groupRepository.findById(groupId);
-        // TODO: group에 참여하고 있는 유저인지 확인 로직 필요
+
+        group.checkMember(userId);
 
         // 커서값 파싱
         CustomCursor cursor = cursorUtil.parseCursor(latestCursor);
@@ -96,7 +97,7 @@ public class GroupMessageQueryService {
         }
 
         Group group = groupRepository.findById(groupId);
-        // TODO: group에 참여하고 있는 유저인지 확인 로직 필요
+        group.checkMember(userId);
 
         CustomCursor cursor = cursorUtil.parseCursor(latestCursor);
 

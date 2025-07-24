@@ -22,17 +22,18 @@ public class TodoResult {
     private UUID userId;
     private Emotion emotion;
     private String content;
-    private String filePath;
+    private TodoResultFile file;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder(builderMethodName = "createTodoResult")
-    private TodoResult(UUID todoId, UUID userId, Emotion emotion, String content, String filePath) {
+    private TodoResult(UUID todoId, UUID userId, Emotion emotion, String content,
+            TodoResultFile file) {
         this.todoId = todoId;
         this.userId = userId;
         this.emotion = emotion;
         this.content = content;
-        this.filePath = filePath;
+        this.file = file;
     }
 
     public void validateOwner(UUID userId) {
@@ -41,9 +42,10 @@ public class TodoResult {
         }
     }
 
-    public void update(Emotion emotion, String content, String filePath) {
+    public void update(Emotion emotion, String content, String filePath, String fileName,
+            String mimeType) {
         this.emotion = emotion;
         this.content = content;
-        this.filePath = filePath;
+        this.file = TodoResultFile.of(filePath, fileName, mimeType);
     }
 }

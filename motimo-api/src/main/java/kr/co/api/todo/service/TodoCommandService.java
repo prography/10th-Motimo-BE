@@ -13,6 +13,7 @@ import kr.co.domain.common.event.group.message.TodoResultSubmittedEvent;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.TodoResultFile;
 import kr.co.domain.todo.dto.TodoItemDto;
 import kr.co.domain.todo.dto.TodoResultItemDto;
 import kr.co.domain.todo.exception.TodoNotCompleteException;
@@ -22,6 +23,7 @@ import kr.co.infra.storage.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -109,8 +111,13 @@ public class TodoCommandService {
     private UUID createTodoResult(UUID userId, Todo todo, Emotion emotion, String content,
             MultipartFile file) {
         String filePath = "";
+        String fileName = "";
+        String fileMimeType = "";
         if (file != null && !file.isEmpty()) {
             filePath = String.format("todo/%s/%s", todo.getId(), UUID.randomUUID());
+            fileName = file.getOriginalFilename();
+            fileMimeType = Objects.requireNonNullElse(file.getContentType(),
+                    "application/octet-stream"); // MIME 타입 가져오기
             storageService.store(file, filePath);
             Events.publishEvent(new FileRollbackEvent(filePath));
         }
@@ -120,11 +127,11 @@ public class TodoCommandService {
                 .userId(userId)
                 .emotion(emotion)
                 .content(content)
-                .filePath(filePath)
+                .file(TodoResultFile.of(filePath, fileName, fileMimeType))
                 .build();
-
         TodoResult todoResult = todoResultRepository.create(result);
-        Events.publishEvent(TodoResultSubmittedEvent.of(userId, todo, todoResult));
+        Events.publishEvent(
+                TodoResultSubmittedEvent.of(userId, todo, todoResult));
         return todoResult.getId();
     }
 
@@ -132,10 +139,16 @@ public class TodoCommandService {
             String content, MultipartFile file) {
         todoResult.validateOwner(userId);
 
-        String filePath = todoResult.getFilePath();
+        String filePath = todoResult.getFile().getFilePath();
+        String fileName = todoResult.getFile().getFileName();
+        String fileMimeType = todoResult.getFile().getMimeType();
         if (file != null && !file.isEmpty()) {
             String newFilePath = String.format("todo/%s/%s", todoResult.getTodoId(),
                     UUID.randomUUID());
+            fileName = file.getOriginalFilename();
+            fileMimeType = Objects.requireNonNullElse(file.getContentType(),
+                    "application/octet-stream");
+
             storageService.store(file, newFilePath);
             Events.publishEvent(new FileRollbackEvent(newFilePath));
             if (filePath != null && !filePath.isBlank()) {
@@ -144,14 +157,18 @@ public class TodoCommandService {
             filePath = newFilePath;
         }
 
-        todoResult.update(emotion, content, filePath);
+        todoResult.update(emotion, content, filePath, fileName, fileMimeType);
         return todoResultRepository.update(todoResult).getId();
     }
 
     private void deleteTodoResult(TodoResult todoResult) {
-        if (todoResult.getFilePath() != null && !todoResult.getFilePath().isBlank()) {
-            Events.publishEvent(new FileDeletedEvent(todoResult.getFilePath()));
+
+        if (StringUtils.hasText(todoResult.getFile().getFilePath())) {
+            Events.publishEvent(new FileDeletedEvent(todoResult.getFile().getFilePath()));
         }
+//        if (todoResult.getFile().getFilePath() != null && !todoResult.getFilePath().isBlank()) {
+//            Events.publishEvent(new FileDeletedEvent(todoResult.getFilePath()));
+//        }
         Events.publishEvent(new GroupMessageDeletedEvent(todoResult.getId()));
         todoResultRepository.deleteById(todoResult.getId());
     }

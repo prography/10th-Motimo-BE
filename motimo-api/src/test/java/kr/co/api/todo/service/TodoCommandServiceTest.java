@@ -23,6 +23,7 @@ import kr.co.domain.common.exception.AccessDeniedException;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.TodoResultFile;
 import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.exception.TodoErrorCode;
 import kr.co.domain.todo.exception.TodoNotCompleteException;
@@ -167,7 +168,7 @@ class TodoCommandServiceTest {
                     .userId(userId)
                     .emotion(emotion)
                     .content(content)
-                    .filePath("")
+                    .file(TodoResultFile.of("", "", ""))
                     .build();
         }
 
@@ -188,7 +189,7 @@ class TodoCommandServiceTest {
             assertThat(savedResult.getTodoId()).isEqualTo(todoId);
             assertThat(savedResult.getEmotion()).isEqualTo(emotion);
             assertThat(savedResult.getContent()).isEqualTo(content);
-            assertThat(savedResult.getFilePath()).isEqualTo("");
+            assertThat(savedResult.getFile().getFilePath()).isEqualTo("");
             assertThat(id).isEqualTo(expectedResult.getId());
 
             verify(storageService, never()).store(any(), any());
@@ -210,7 +211,7 @@ class TodoCommandServiceTest {
             verify(todoResultRepository).create(resultCaptor.capture());
 
             TodoResult savedResult = resultCaptor.getValue();
-            assertThat(savedResult.getFilePath()).isEqualTo("");
+            assertThat(savedResult.getFile().getFilePath()).isEqualTo("");
             assertThat(id).isEqualTo(expectedResult.getId());
 
             verify(storageService, never()).store(any(), any());
@@ -242,7 +243,7 @@ class TodoCommandServiceTest {
                 verify(todoResultRepository).create(resultCaptor.capture());
 
                 TodoResult savedResult = resultCaptor.getValue();
-                assertThat(savedResult.getFilePath()).isEqualTo(filePath);
+                assertThat(savedResult.getFile().getFilePath()).isEqualTo(filePath);
                 assertThat(id).isEqualTo(expectedResult.getId());
                 mockedEvents.verify(() -> Events.publishEvent(any(FileRollbackEvent.class)));
             }
@@ -302,7 +303,7 @@ class TodoCommandServiceTest {
             TodoResult mockResult = mock(TodoResult.class);
             when(todoRepository.findById(todoId)).thenReturn(todo);
             when(todoResultRepository.findByTodoId(todoId)).thenReturn(Optional.of(mockResult));
-            when(mockResult.getFilePath()).thenReturn("");
+            when(mockResult.getFile()).thenReturn(TodoResultFile.of("", "", ""));
             when(mockResult.getTodoId()).thenReturn(todoId);
             when(mockResult.getId()).thenReturn(todoResultId);
             doNothing().when(storageService).store(any(MultipartFile.class), anyString());
@@ -317,7 +318,8 @@ class TodoCommandServiceTest {
 
                 // then
                 verify(mockResult).validateOwner(userId);
-                verify(mockResult).update(emotion, content, newFilePath);
+                verify(mockResult).update(emotion, content, newFilePath, "new_image.jpg",
+                        "image/jpeg");
                 verify(storageService).store(file, newFilePath);
                 verify(todoResultRepository).update(mockResult);
                 mockedEvents.verify(() -> Events.publishEvent(any(FileRollbackEvent.class)));
@@ -341,7 +343,8 @@ class TodoCommandServiceTest {
             TodoResult mockResult = mock(TodoResult.class);
             when(todoRepository.findById(todoId)).thenReturn(todo);
             when(todoResultRepository.findByTodoId(todoId)).thenReturn(Optional.of(mockResult));
-            when(mockResult.getFilePath()).thenReturn(originalFilePath);
+            when(mockResult.getFile()).thenReturn(
+                    TodoResultFile.of(originalFilePath, "new_image", "jpg"));
             when(mockResult.getTodoId()).thenReturn(todoId);
             when(mockResult.getId()).thenReturn(todoResultId);
             doNothing().when(storageService).store(any(MultipartFile.class), anyString());
@@ -356,7 +359,8 @@ class TodoCommandServiceTest {
 
                 // then
                 verify(mockResult).validateOwner(userId);
-                verify(mockResult).update(emotion, content, newFilePath);
+                verify(mockResult).update(emotion, content, newFilePath, "new_image.jpg",
+                        "image/jpeg");
                 verify(storageService).store(file, newFilePath);
                 verify(todoResultRepository).update(mockResult);
                 mockedEvents.verify(() -> Events.publishEvent(any(FileRollbackEvent.class)));
@@ -614,7 +618,7 @@ class TodoCommandServiceTest {
                     .userId(userId)
                     .emotion(Emotion.PROUD)
                     .content("투두 완료!")
-                    .filePath("todo/test/file.jpg")
+                    .file(TodoResultFile.of("todo/test/file.jpg", "file.jpg", "jpg"))
                     .build();
 
             when(todoRepository.findById(todoId)).thenReturn(todo);
@@ -647,7 +651,7 @@ class TodoCommandServiceTest {
                     .userId(userId)
                     .emotion(Emotion.PROUD)
                     .content("투두 완료!")
-                    .filePath("")
+                    .file(TodoResultFile.of("", "", ""))
                     .build();
 
             when(todoRepository.findById(todoId)).thenReturn(todo);
@@ -732,7 +736,7 @@ class TodoCommandServiceTest {
         void 파일_없는_투두결과_삭제_성공() {
             // given
             when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
-            when(todoResult.getFilePath()).thenReturn("");
+            when(todoResult.getFile()).thenReturn(TodoResultFile.of("", "", ""));
             when(todoResult.getId()).thenReturn(todoResultId);
 
             // when
@@ -749,7 +753,8 @@ class TodoCommandServiceTest {
             // given
             String filePath = "todo/todo-id/uuid";
             when(todoResultRepository.findById(todoResultId)).thenReturn(todoResult);
-            when(todoResult.getFilePath()).thenReturn(filePath);
+            when(todoResult.getFile()).thenReturn(
+                    TodoResultFile.of(filePath, "todo-id/uuid", "txt"));
             when(todoResult.getId()).thenReturn(todoResultId);
 
             // when

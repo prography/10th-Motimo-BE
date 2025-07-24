@@ -16,6 +16,7 @@ import kr.co.domain.goal.DueDate;
 import kr.co.domain.goal.dto.GoalTodoCount;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.Todo;
+import kr.co.domain.todo.TodoResultFile;
 import kr.co.domain.todo.TodoStatus;
 import kr.co.domain.todo.dto.TodoItemDto;
 import kr.co.domain.todo.exception.TodoNotFoundException;
@@ -152,7 +153,7 @@ class TodoRepositoryImplTest {
                     userId,
                     Emotion.PROUD,
                     "투두 완료!",
-                    "image"
+                    TodoResultFile.of("image", "image", "jpg")
             );
             testEntityManager.persist(result);
         }

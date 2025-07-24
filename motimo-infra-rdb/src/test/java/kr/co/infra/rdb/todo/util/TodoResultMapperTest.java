@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.UUID;
 import kr.co.domain.todo.Emotion;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.TodoResultFile;
 import kr.co.infra.rdb.todo.entity.TodoResultEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class TodoResultMapperTest {
                 userId,
                 Emotion.PROUD,
                 "투두 완료!",
-                "/image.jpg"
+                TodoResultFile.of("/image.jpg", "image", "jpg")
         );
         // when
         TodoResult result = TodoResultMapper.toDomain(entity);
@@ -35,7 +36,7 @@ class TodoResultMapperTest {
         assertThat(result.getTodoId()).isEqualTo(todoId);
         assertThat(result.getEmotion()).isEqualTo(Emotion.PROUD);
         assertThat(result.getContent()).isEqualTo("투두 완료!");
-        assertThat(result.getFilePath()).isEqualTo("/image.jpg");
+        assertThat(result.getFile().getFilePath()).isEqualTo("/image.jpg");
     }
 
     @Test
@@ -49,7 +50,7 @@ class TodoResultMapperTest {
                 .todoId(todoId)
                 .emotion(Emotion.PROUD)
                 .content("투두 완료!")
-                .filePath("/image.jpg")
+                .file(TodoResultFile.of("/image.jpg", "image", "jpg"))
                 .build();
 
         // when
@@ -60,6 +61,6 @@ class TodoResultMapperTest {
         assertThat(entity.getTodoId()).isEqualTo(todoId);
         assertThat(entity.getEmotion()).isEqualTo(Emotion.PROUD);
         assertThat(entity.getContent()).isEqualTo("투두 완료!");
-        assertThat(entity.getFilePath()).isEqualTo("/image.jpg");
+        assertThat(entity.getFile().getFilePath()).isEqualTo("/image.jpg");
     }
 }

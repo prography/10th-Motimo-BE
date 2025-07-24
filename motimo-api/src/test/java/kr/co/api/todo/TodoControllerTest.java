@@ -167,7 +167,7 @@ class TodoControllerTest {
         // given
         UUID todoResultId = UUID.randomUUID();
         TodoResultItemDto response = new TodoResultItemDto(
-                todoResultId, Emotion.PROUD, "오늘도 투두 완료!", "http://file.url");
+                todoResultId, Emotion.PROUD, "오늘도 투두 완료!", "http://file.url", "file.url");
         when(todoQueryService.getTodoResultByTodoId(todoId)).thenReturn(Optional.of(response));
 
         // when & then

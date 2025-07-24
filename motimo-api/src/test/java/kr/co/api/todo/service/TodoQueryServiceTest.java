@@ -239,7 +239,7 @@ class TodoQueryServiceTest {
         void 투두_결과의_파일_URL이_없는_투두_결과가_있는_경우() {
             // given
             TodoItemDto todoWithNullFileUrl = createTodoItem(TodoStatus.COMPLETE, LocalDate.now(),
-                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "content", null));
+                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "content", null, ""));
             when(todoRepository.findAllByUserId(userId)).thenReturn(List.of(todoWithNullFileUrl));
 
             // when
@@ -365,7 +365,8 @@ class TodoQueryServiceTest {
                     LocalDate.now(),
                     TodoStatus.INCOMPLETE,
                     LocalDateTime.now(),
-                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "todo result", "")));
+                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "todo result", "",
+                            "")));
         }
         return items;
     }
@@ -394,6 +395,7 @@ class TodoQueryServiceTest {
                 Emotion.PROUD,
                 "todo result",
                 "file.jpg"
+                , "file.jpg"
         );
     }
 }

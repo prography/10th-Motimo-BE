@@ -75,7 +75,7 @@ class GoalQueryServiceTest {
             Group group = mock(Group.class);
             when(group.getId()).thenReturn(UUID.randomUUID());
 
-            when(goalRepository.findById(goalId)).thenReturn(goal);
+            when(goalRepository.findByIdWithoutSubGoals(goalId)).thenReturn(goal);
             when(groupRepository.findByGoalId(goalId)).thenReturn(Optional.of(group));
 
             // when
@@ -340,7 +340,7 @@ class GoalQueryServiceTest {
                     LocalDate.now(),
                     TodoStatus.INCOMPLETE,
                     LocalDateTime.now(),
-                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "todo result", ""));
+                    new TodoResultItemDto(UUID.randomUUID(), Emotion.PROUD, "todo result", "", ""));
             todos.add(todo);
         }
         return todos;

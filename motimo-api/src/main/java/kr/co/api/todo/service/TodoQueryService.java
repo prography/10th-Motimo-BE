@@ -109,7 +109,7 @@ public class TodoQueryService {
     }
 
     private TodoResultItemDto toTodoResultItemWithFileUrl(TodoResult result) {
-        if (StringUtils.hasText(result.getFilePath())) {
+        if (!StringUtils.hasText(result.getFilePath())) {
             return TodoResultItemDto.of(result, null, result.getFileName());
         }
         String fileUrl = storageService.getFileUrl(result.getFilePath());

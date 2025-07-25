@@ -2,6 +2,11 @@ package kr.co.api.user.service;
 
 import java.util.Set;
 import java.util.UUID;
+import kr.co.api.goal.service.GoalCommandService;
+import kr.co.api.goal.service.GoalQueryService;
+import kr.co.api.group.service.GroupCommandService;
+import kr.co.api.group.service.GroupMessageCommandService;
+import kr.co.api.group.service.GroupQueryService;
 import kr.co.domain.common.event.Events;
 import kr.co.domain.common.event.FileDeletedEvent;
 import kr.co.domain.common.event.FileRollbackEvent;
@@ -22,6 +27,11 @@ public class UserCommandService {
 
     private final UserRepository userRepository;
     private final StorageService storageService;
+    private final GoalQueryService goalQueryService;
+    private final GoalCommandService goalCommandService;
+    private final GroupCommandService groupCommandService;
+    private final GroupQueryService groupQueryService;
+    private final GroupMessageCommandService groupMessageCommandService;
 
     public User register(User user) {
         return userRepository.create(user);
@@ -42,6 +52,21 @@ public class UserCommandService {
 
         user.update(userName, bio, newProfilePath, interests);
         return userRepository.update(user).getId();
+    }
+
+    public void deleteUserCascadeById(UUID userId) {
+
+        groupQueryService.getJoinedGroupList(userId)
+                .forEach(group -> groupCommandService.removeUserFromGroup(userId, group.groupId()));
+
+        groupMessageCommandService.deleteAllByUserId(userId);
+
+        goalQueryService.getGoalsByUserId(userId)
+                .forEach(goal -> {
+                    goalCommandService.deleteGoalCascade(userId, goal.getId());
+                });
+
+        userRepository.deleteById(userId);
     }
 
     private String resolveNewProfileImagePath(User user, MultipartFile image) {

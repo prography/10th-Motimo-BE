@@ -10,4 +10,6 @@ public interface GroupMessageJpaRepository extends JpaRepository<GroupMessageEnt
     void deleteAllByMessageReferenceReferenceId(UUID referenceId);
 
     Optional<GroupMessageEntity> findTopByGroupIdOrderBySendAtDesc(UUID groupId);
+
+    void deleteAllByUserId(UUID userId);
 }

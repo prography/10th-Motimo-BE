@@ -61,8 +61,7 @@ public class GoalReadController implements GoalReadControllerSwagger {
         return GoalWithSubGoalTodoRs.from(
                 goalQueryService.getGoalWithSubGoalTodos(goalId));
     }
-
-
+    
     @GetMapping("/not-joined-group")
     public List<GoalNotInGroupRs> getGoalNotJoinGroup(@AuthUser UUID userId) {
         return goalQueryService.getGoalNotInGroup(userId).stream().map(GoalNotInGroupRs::from)

@@ -24,4 +24,6 @@ public interface GroupMessageRepository {
     Optional<GroupMessage> findLastGroupMessageByGroupId(UUID groupId);
 
     Optional<GroupMessage> findById(UUID id);
+
+    void deleteAllByUserId(UUID userId);
 }

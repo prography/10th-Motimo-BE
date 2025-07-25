@@ -59,4 +59,11 @@ public interface UserControllerSwagger {
             @RequestPart @Schema(implementation = UserUpdateRq.class) UserUpdateRq request,
             @Parameter(description = "프로필 이미지 파일", content = @Content(mediaType = "multipart/form-data"))
             @RequestPart(name = "file", required = false) MultipartFile image);
+
+    @Operation(summary = "유저 탈퇴")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "탈퇴 성공"),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content)
+    })
+    void deleteUser(UUID userId);
 }

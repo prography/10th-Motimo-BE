@@ -103,7 +103,7 @@ public class MessageContentLoader {
         }
 
         return todoResultRepository.findAllByIdsIn(todoResultIds).stream()
-                .peek(todoResult -> {
+                .map(todoResult -> {
                     TodoResultFile file = todoResult.getFile();
                     if (file != null && StringUtils.hasText(file.getFilePath())) {
                         String fileUrl = storageService.getFileUrl(file.getFilePath());
@@ -115,6 +115,7 @@ public class MessageContentLoader {
                         );
                         todoResult.updateFile(enrichedFile);
                     }
+                    return todoResult;
                 })
                 .collect(Collectors.toMap(TodoResult::getId, todoResult -> todoResult));
     }

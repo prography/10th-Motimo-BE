@@ -111,6 +111,12 @@ public class GoalQueryService {
         return GoalWithSubGoalTodoDto.of(goal, subGoals);
     }
 
+    public GoalWithSubGoalTodoDto getGoalWithSubGoalTodos(UUID goalId) {
+        Goal goal = goalRepository.findById(goalId);
+        List<SubGoalWithTodosDto> subGoals = getTodoBySubGoalList(goal.getSubGoals());
+        return GoalWithSubGoalTodoDto.of(goal, subGoals);
+    }
+
     private List<SubGoalWithTodosDto> getTodoByIncompleteSubGoalList(List<SubGoal> subGoals) {
         return subGoals.stream()
                 .sorted(Comparator.comparing(SubGoal::getOrder))
@@ -118,6 +124,18 @@ public class GoalQueryService {
                     List<TodoItemDto> todos = todoQueryService.getIncompleteOrTodayTodosBySubGoalId(
                             subGoal.getId());
 
+                    return new SubGoalWithTodosDto(subGoal.getId(), subGoal.getTitle(),
+                            subGoal.isCompleted(), todos);
+                })
+                .toList();
+    }
+
+    private List<SubGoalWithTodosDto> getTodoBySubGoalList(List<SubGoal> subGoals) {
+        return subGoals.stream()
+                .sorted(Comparator.comparing(SubGoal::getOrder))
+                .map(subGoal -> {
+                    List<TodoItemDto> todos = todoQueryService.getTodosBySubGoalId(
+                            subGoal.getId());
                     return new SubGoalWithTodosDto(subGoal.getId(), subGoal.getTitle(),
                             subGoal.isCompleted(), todos);
                 })

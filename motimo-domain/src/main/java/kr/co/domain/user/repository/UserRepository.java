@@ -13,7 +13,7 @@ public interface UserRepository {
     User findByEmail(String email);
 
     User findByEmailAndProviderType(String email, ProviderType providerType);
-    
+
     User create(User user);
 
     User update(User user);
@@ -21,4 +21,6 @@ public interface UserRepository {
     boolean existsByEmailAndProviderType(String email, ProviderType providerType);
 
     List<User> findAllByIdsIn(Set<UUID> userIds);
+
+    void deleteById(UUID userId);
 }

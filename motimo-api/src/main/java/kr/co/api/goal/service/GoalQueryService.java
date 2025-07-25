@@ -101,6 +101,10 @@ public class GoalQueryService {
         return goalRepository.findBySubGoalId(subGoalId);
     }
 
+    public List<Goal> getGoalsByUserId(UUID userId) {
+        return goalRepository.findAllByUserId(userId);
+    }
+
     public GoalWithSubGoalTodoDto getGoalWithIncompleteSubGoalTodayTodos(UUID goalId) {
         Goal goal = goalRepository.findById(goalId);
         List<SubGoalWithTodosDto> subGoals = getTodoByIncompleteSubGoalList(goal.getSubGoals());

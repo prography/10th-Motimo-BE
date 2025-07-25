@@ -30,4 +30,8 @@ public class GroupMessageCommandService {
         return groupMessageRepository.findById(messageId)
                 .orElseThrow(MessageNotFoundException::new);
     }
+
+    public void deleteAllByUserId(UUID userId) {
+        groupMessageRepository.deleteAllByUserId(userId);
+    }
 }

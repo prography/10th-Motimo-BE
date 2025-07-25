@@ -44,7 +44,7 @@ public class UserEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     private String email;
 
     @Column(name = "nickname")

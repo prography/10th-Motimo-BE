@@ -137,6 +137,11 @@ public class GroupMessageRepositoryImpl implements GroupMessageRepository {
         return entity.map(GroupMessageMapper::toDomain);
     }
 
+    @Override
+    public void deleteAllByUserId(UUID userId) {
+        groupMessageJpaRepository.deleteAllByUserId(userId);
+    }
+
     private List<GroupMessage> processMessagesWithReactions(List<GroupMessageEntity> messages) {
         if (messages.isEmpty()) {
             return List.of();

@@ -83,4 +83,12 @@ public class GroupCommandService {
         ));
     }
 
+    public void removeUserFromGroup(UUID userId, UUID groupId) {
+        Group group = groupRepository.findById(groupId);
+        GroupMember member = group.getMember(userId);
+
+        groupRepository.left(groupId, member);
+        goalRepository.disconnectGroupByGoalId(member.getGoalId());
+    }
+
 }

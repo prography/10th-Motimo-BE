@@ -10,6 +10,7 @@ import kr.co.api.user.rqrs.UserUpdateRq;
 import kr.co.api.user.service.UserCommandService;
 import kr.co.api.user.service.UserQueryService;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,5 +59,10 @@ public class UserController implements UserControllerSwagger {
         UUID id = userCommandService.updateProfile(userId,
                 request.userName(), request.bio(), request.interests(), image);
         return new UserIdRs(id);
+    }
+
+    @DeleteMapping()
+    public void deleteUser(@AuthUser UUID userId) {
+        userCommandService.deleteUserCascadeById(userId);
     }
 }

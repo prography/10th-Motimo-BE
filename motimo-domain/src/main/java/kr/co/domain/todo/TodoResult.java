@@ -48,4 +48,8 @@ public class TodoResult {
         this.content = content;
         this.file = TodoResultFile.of(filePath, fileName, mimeType);
     }
+
+    public void updateFile(TodoResultFile file) {
+        this.file = file;
+    }
 }

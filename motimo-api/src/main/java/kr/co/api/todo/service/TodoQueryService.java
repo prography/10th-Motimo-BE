@@ -74,6 +74,13 @@ public class TodoQueryService {
                 .toList();
     }
 
+    public List<TodoItemDto> getTodosBySubGoalId(UUID subGoalId) {
+        return todoRepository.findAllBySubGoalId(subGoalId).stream()
+                .sorted(todoPriorityComparator())
+                .map(this::enrichTodoItemWithUrl)
+                .toList();
+    }
+
     public List<Todo> getTodosByGoalId(UUID goalId) {
         return todoRepository.findAllByGoalId(goalId);
     }

@@ -42,6 +42,20 @@ public interface GoalReadControllerSwagger {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content),
             @ApiResponse(responseCode = "404", description = "해당 목표를 찾을 수 없음", content = @Content)
     })
+    GoalWithSubGoalTodoRs getGoalWithSubGoalAndIncompleteOrTodayTodos(
+            @Parameter(description = "목표 ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
+            @PathVariable UUID goalId
+    );
+
+    @Operation(
+            summary = "목표 + 세부목표 + 투두 조회 API",
+            description = "목표 ID에 해당하는 목표 정보와 모든 세부 목표 및 투두 목록을 조회합니다."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "목표, 세부목표, 투두 목록 반환", content = @Content(schema = @Schema(implementation = GoalWithSubGoalTodoRs.class))),
+            @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자", content = @Content),
+            @ApiResponse(responseCode = "404", description = "해당 목표를 찾을 수 없음", content = @Content)
+    })
     GoalWithSubGoalTodoRs getGoalWithSubGoalAndTodos(
             @Parameter(description = "목표 ID", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
             @PathVariable UUID goalId

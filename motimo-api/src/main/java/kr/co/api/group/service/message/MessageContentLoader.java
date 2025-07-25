@@ -16,14 +16,17 @@ import kr.co.domain.group.message.MessageReferenceType;
 import kr.co.domain.group.message.strategy.MessageContentData;
 import kr.co.domain.todo.Todo;
 import kr.co.domain.todo.TodoResult;
+import kr.co.domain.todo.TodoResultFile;
 import kr.co.domain.todo.repository.TodoRepository;
 import kr.co.domain.todo.repository.TodoResultRepository;
 import kr.co.domain.user.model.User;
 import kr.co.domain.user.repository.UserRepository;
+import kr.co.infra.storage.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
@@ -34,6 +37,7 @@ public class MessageContentLoader {
     private final TodoResultRepository todoResultRepository;
     private final UserRepository userRepository;
     private final GoalRepository goalRepository;
+    private final StorageService storageService;
 
     public MessageContentData loadMessageContentData(List<GroupMessage> messages) {
 
@@ -99,6 +103,20 @@ public class MessageContentLoader {
         }
 
         return todoResultRepository.findAllByIdsIn(todoResultIds).stream()
+                .map(todoResult -> {
+                    TodoResultFile file = todoResult.getFile();
+                    if (file != null && StringUtils.hasText(file.getFilePath())) {
+                        String fileUrl = storageService.getFileUrl(file.getFilePath());
+
+                        TodoResultFile enrichedFile = TodoResultFile.of(
+                                fileUrl,
+                                file.getFileName(),
+                                file.getMimeType()
+                        );
+                        todoResult.updateFile(enrichedFile);
+                    }
+                    return todoResult;
+                })
                 .collect(Collectors.toMap(TodoResult::getId, todoResult -> todoResult));
     }
 

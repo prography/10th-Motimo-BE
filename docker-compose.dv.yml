@@ -16,7 +16,7 @@ services:
 
   motimo:
     image: jongeuni/motimo:latest
-    container_name: motimo-dv
+    container_name: motimo
     env_file: .env
     ports:
       - "8080:8080"

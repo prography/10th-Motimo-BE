@@ -1,0 +1,39 @@
+name: Motimo CD
+
+on:
+  workflow_run:
+    workflows: ["Motimo CI"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to server with docker-compose
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
+            set -x
+
+            cd /path/to/your/compose/dir   # docker-compose.dv.yml 위치 경로로 변경하세요
+
+            # 불필요한 컨테이너, 이미지 정리 (옵션)
+            docker-compose -f docker-compose.dv.yml down --remove-orphans
+
+            # 최신 이미지 풀링 (motimo 이미지가 최신이어야 함)
+            docker-compose -f docker-compose.dv.yml pull
+
+            # 컨테이너 백그라운드 실행
+            docker-compose -f docker-compose.dv.yml up -d
+
+            # 필요 시 상태 확인
+            docker-compose -f docker-compose.dv.yml ps
+
+          EOF

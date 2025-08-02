@@ -15,9 +15,7 @@ services:
       - my-network
 
   motimo:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: jongeuni/motimo:latest
     container_name: motimo-dv
     env_file: .env
     ports:

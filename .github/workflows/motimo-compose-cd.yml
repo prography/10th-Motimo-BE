@@ -22,6 +22,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
             set -x
 
+            cd /home/opc/motimo
+
             # 불필요한 컨테이너, 이미지 정리 (옵션)
             docker compose -f docker-compose.dv.yml down --remove-orphans
 

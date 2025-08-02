@@ -43,11 +43,16 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
+
       - name: Add server to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-          
+
+      - name: Ensure deploy directory exists
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /home/opc/motimo"
+
       - name: Copy docker-compose file to server
         run: |
           scp docker-compose.dv.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/opc/motimo/

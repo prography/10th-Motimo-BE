@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import kr.co.api.goal.dto.GoalCreateDto;
 import kr.co.api.goal.dto.GoalUpdateDto;
 import kr.co.api.goal.dto.SubGoalUpdateDto;
@@ -33,16 +34,15 @@ public class GoalCommandService {
         DueDate dueDate =
                 dto.isPeriodByMonth() ? DueDate.of(dto.month()) : DueDate.of(dto.dueDate());
 
-        AtomicInteger index = new AtomicInteger(1);
 
-        List<SubGoal> subGoals = dto.subGoals().stream()
-                .map(sub -> {
-                    int currentIndex = index.getAndIncrement();
-                    return SubGoal.createSubGoal()
-                            .title(sub.title())
-                            .order(currentIndex)
-                            .build();
-                }).toList();
+        List<SubGoal> subGoals =
+                Stream.concat(
+                        Stream.of(SubGoal.createSubGoal()
+                                .title("기본함")
+                                .order(1)
+                                .build()),
+                        getSubGoalDomains(dto)
+                        ).toList();
 
         Goal createdGoal = goalRepository.create(Goal.createGoal()
                 .userId(userId)
@@ -52,6 +52,19 @@ public class GoalCommandService {
                 .build());
 
         return createdGoal.getId();
+    }
+
+    private Stream<SubGoal> getSubGoalDomains(GoalCreateDto dto) {
+        AtomicInteger index = new AtomicInteger(2);
+
+        return dto.subGoals().stream()
+                .map(sub -> {
+                    int currentIndex = index.getAndIncrement();
+                    return SubGoal.createSubGoal()
+                            .title(sub.title())
+                            .order(currentIndex)
+                            .build();
+                });
     }
 
     public UUID updateGoal(UUID userId, UUID goalId, GoalUpdateDto dto) {
